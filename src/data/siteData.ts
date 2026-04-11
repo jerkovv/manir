@@ -1,3 +1,19 @@
+import momBabyUlje1 from "@/assets/mom-baby-ulje-1.jpeg";
+import momBabyUlje2 from "@/assets/mom-baby-ulje-2.jpeg";
+import momBabyUlje3 from "@/assets/mom-baby-ulje-3.jpeg";
+import momBabyKrema1 from "@/assets/mom-baby-krema-1.jpeg";
+import momBabyKrema2 from "@/assets/mom-baby-krema-2.jpeg";
+import momBabyKrema3 from "@/assets/mom-baby-krema-3.jpeg";
+import hugMe from "@/assets/hug-me.jpeg";
+import serumK1 from "@/assets/serum-k1.jpeg";
+import hidrolatCajevca from "@/assets/hidrolat-cajevca.jpeg";
+import hidrolatLavande from "@/assets/hidrolat-lavande.jpeg";
+import theScent from "@/assets/the-scent.jpeg";
+import eduLash1 from "@/assets/edu-lash-1.png";
+import eduLash2 from "@/assets/edu-lash-2.png";
+import eduLash3 from "@/assets/edu-lash-3.png";
+import eduLash4 from "@/assets/edu-lash-4.png";
+
 export const products = [
   {
     id: "mom-baby-ulje",
@@ -7,11 +23,11 @@ export const products = [
     category: "Mom & Baby",
     categorySlug: "mom-baby",
     images: [
-      "https://0202skin.com/wp-content/uploads/2026/04/IMG-7689-1000x1239.jpeg",
-      "https://0202skin.com/wp-content/uploads/2026/04/IMG-7690-1000x1251.jpeg",
-      "https://0202skin.com/wp-content/uploads/2026/04/IMG-7688-1000x1239.jpeg",
+      momBabyUlje1,
+      momBabyUlje2,
+      momBabyUlje3,
     ],
-    image: "https://0202skin.com/wp-content/uploads/2026/04/IMG-7689.jpeg",
+    image: momBabyUlje1,
     featured: false,
     shortDescription: "Nežno prirodno ulje za bebe formulisano isključivo od hladno ceđenih biljnih ulja i biljnih macerata pruža dubinsku hidrataciju, regeneraciju kože i zaštitu osetljive kože od prvih dana života. Namenjeno je bebama, deci, trudnicama i osetljivoj koži odraslih, posebno kada je koža suva, reaktivna ili sklona crvenilu. Idealno za svakodnevnu negu i masažu beba.",
     description: "Nežno prirodno ulje za bebe formulisano isključivo od hladno ceđenih biljnih ulja i biljnih macerata pruža dubinsku hidrataciju, regeneraciju kože i zaštitu osetljive kože od prvih dana života. Namenjeno je bebama, deci, trudnicama i osetljivoj koži odraslih, posebno kada je koža suva, reaktivna ili sklona crvenilu. Idealno za svakodnevnu negu i masažu beba.",
@@ -56,11 +72,11 @@ export const products = [
     category: "Mom & Baby",
     categorySlug: "mom-baby",
     images: [
-      "https://0202skin.com/wp-content/uploads/2026/04/IMG-7691-1000x1246.jpeg",
-      "https://0202skin.com/wp-content/uploads/2026/04/IMG-7692-1000x1239.jpeg",
-      "https://0202skin.com/wp-content/uploads/2026/04/IMG-7693-1000x1244.jpeg",
+      momBabyKrema1,
+      momBabyKrema2,
+      momBabyKrema3,
     ],
-    image: "https://0202skin.com/wp-content/uploads/2026/04/IMG-7691.jpeg",
+    image: momBabyKrema1,
     featured: false,
     shortDescription: "Nežna prirodna krema za bebe razvijena sa 16 pažljivo odabranih aktivnih sastojaka pruža dubinsku hidrataciju kože, regeneraciju kože i obnovu zaštitne barijere kože od prvih dana života. Namenjena je bebama, deci, trudnicama i osetljivoj koži odraslih, posebno kada je koža suva, reaktivna ili sklona crvenilu. Idealna kao krema za osetljivu kožu beba i hidratantna krema za lice i telo cele porodice.",
     description: "Nežna prirodna krema za bebe razvijena sa 16 pažljivo odabranih aktivnih sastojaka pruža dubinsku hidrataciju kože, regeneraciju kože i obnovu zaštitne barijere kože od prvih dana života. Namenjena je bebama, deci, trudnicama i osetljivoj koži odraslih, posebno kada je koža suva, reaktivna ili sklona crvenilu. Idealna kao krema za osetljivu kožu beba i hidratantna krema za lice i telo cele porodice.",
@@ -113,9 +129,9 @@ export const products = [
     category: "Nega lica",
     categorySlug: "nega-lica",
     images: [
-      "https://0202skin.com/wp-content/uploads/2025/09/hug-me-1000x1250.jpeg",
+      hugMe,
     ],
-    image: "https://0202skin.com/wp-content/uploads/2025/09/hug-me-scaled.jpeg",
+    image: hugMe,
     featured: false,
     shortDescription: "Duboko hidrantna i umirujuća krema za lice. HUG ME – 11 aktivnih sastojaka, za sve tipove kože, uključujući osetljivu, mešovitu i masnu. Brzo se upija i ostavlja kožu glatkom, umirenom i nahranjenom, bez osećaja težine. Ne zatvara pore, ima antioksidativno dejstvo, obnavlja zaštitnu barijeru i ujednačava ten.",
     description: "Duboko hidrantna i umirujuća krema za lice. HUG ME – 11 aktivnih sastojaka, za sve tipove kože, uključujući osetljivu, mešovitu i masnu. Brzo se upija i ostavlja kožu glatkom, umirenom i nahranjenom, bez osećaja težine. Ne zatvara pore, ima antioksidativno dejstvo, obnavlja zaštitnu barijeru i ujednačava ten.",
@@ -143,9 +159,9 @@ export const products = [
     category: "Nega lica",
     categorySlug: "nega-lica",
     images: [
-      "https://0202skin.com/wp-content/uploads/2025/09/canabis-1000x1250.jpeg",
+      serumK1,
     ],
-    image: "https://0202skin.com/wp-content/uploads/2025/09/canabis-scaled.jpeg",
+    image: serumK1,
     featured: true,
     shortDescription: "Antiinflamatorno & anti-age dejstvo. 8 aktivnih sastojaka, za sve tipove kože. Dubinski regeneriše i hrani kožu, umiruje iritacije, akne i crvenilo. Serum je namenjen svim tipovima kože, uključujući osetljivu i problematičnu kožu.",
     description: "Dubinski regeneriše i hrani kožu, umiruje iritacije, akne i crvenilo. Serum je namenjen svim tipovima kože, uključujući osetljivu i problematičnu kožu.",
@@ -169,9 +185,9 @@ export const products = [
     category: "Nega lica",
     categorySlug: "nega-lica",
     images: [
-      "https://0202skin.com/wp-content/uploads/2025/09/cajevac-1000x1250.jpeg",
+      hidrolatCajevca,
     ],
-    image: "https://0202skin.com/wp-content/uploads/2025/09/cajevac-scaled.jpeg",
+    image: hidrolatCajevca,
     featured: false,
     shortDescription: "Prirodni tonik namenjen masnoj i problematičnoj koži. Prirodni tonik sa snažnim antiseptičkim i antibakterijskim dejstvom. Čisti i balansira kožu. 100% PRIRODAN.",
     description: "Prirodni tonik sa snažnim antiseptičkim i antibakterijskim dejstvom. Čisti i balansira kožu. 100% PRIRODAN.",
@@ -197,9 +213,9 @@ export const products = [
     category: "Nega lica",
     categorySlug: "nega-lica",
     images: [
-      "https://0202skin.com/wp-content/uploads/2025/09/lavanda-1000x1250.jpeg",
+      hidrolatLavande,
     ],
-    image: "https://0202skin.com/wp-content/uploads/2025/09/lavanda-scaled.jpeg",
+    image: hidrolatLavande,
     featured: false,
     shortDescription: "Prirodni tonik za sve tipove kože. Idealan je za osetljivu, suvu, dehidriranu i problematičnu kožu, jer deluje umirujuće, osvežavajuće i balansirajuće. Dobijen parnom destilacijom cveta lavande, zadržava sva dragocena svojstva biljke u nežnoj, koži prijatnoj formi. 100% PRIRODAN.",
     description: "Idealan je za osetljivu, suvu, dehidriranu i problematičnu kožu, jer deluje umirujuće, osvežavajuće i balansirajuće. Dobijen parnom destilacijom cveta lavande, zadržava sva dragocena svojstva biljke u nežnoj, koži prijatnoj formi. 100% PRIRODAN.",
@@ -226,9 +242,9 @@ export const products = [
     category: "Nega tela",
     categorySlug: "nega-tela",
     images: [
-      "https://0202skin.com/wp-content/uploads/2023/10/the-scent-1000x1250.jpeg",
+      theScent,
     ],
-    image: "https://0202skin.com/wp-content/uploads/2023/10/the-scent-scaled.jpeg",
+    image: theScent,
     featured: false,
     shortDescription: "Prirodni piling sa morskom solju i biljnim uljima. Naš piling kombinuje snagu morske soli i hranljivih biljnih ulja, uz dodatni zaštitni sloj koji pomaže koži da zadrži vlagu i ostane mekana. Kristali soli uklanjaju mrtve ćelije i stimulišu mikrocirkulaciju, dok biljna ulja hrane i obnavljaju kožu, ostavljajući je svilenkastom i elastičnom.",
     description: "Naš piling kombinuje snagu morske soli i hranljivih biljnih ulja, uz dodatni zaštitni sloj koji pomaže koži da zadrži vlagu i ostane mekana. Kristali soli uklanjaju mrtve ćelije i stimulišu mikrocirkulaciju, dok biljna ulja hrane i obnavljaju kožu, ostavljajući je svilenkastom i elastičnom.",
@@ -264,7 +280,7 @@ export const blogPosts = [
     date: "17. septembar 2025.",
     author: "Marina",
     category: "Nega tela",
-    image: "https://0202skin.com/wp-content/uploads/2025/09/canabis-scaled.jpeg",
+    image: serumK1,
     content: `Okej, moram da podelim ovo. Suva koža me prati još od detinjstva. Probala sam sve – kreme sa kortikosteroidima, razne losione, meleme… i svaki put čim prestanem da mažem, tretiram kožu – sve se vraća. Doslovno sam mislila da tako treba da živim i to je to.
 
 Ali onda mi se u rukama našao K1 serum za lice, sa ekstra devičanskim uljem kanabisa. Bila sam kod mame i tate u Nemačkoj, ostala bez kreme, a koža je počela da svrbi. Pomislila sam – ajde da probam serum za lice da namažem na članak.
@@ -301,7 +317,7 @@ export const educations = [
       "Koje greške da izbegavaš",
       "Prve smernice za rast i vidljivost",
     ],
-    image: "https://0202skin.com/wp-content/uploads/2025/10/1761685728791884.png",
+    image: eduLash1,
   },
   {
     id: "skin-level-1",
