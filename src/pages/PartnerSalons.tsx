@@ -33,7 +33,12 @@ const PartnerSalons = () => {
                     />
                   </div>
                   <div className="p-8 lg:p-10">
-                    <h3 className="font-heading text-2xl text-foreground mb-4">{salon.name}</h3>
+                    <div className="flex items-center gap-4 mb-4">
+                      {salon.logo && (
+                        <img src={salon.logo} alt={`${salon.name} logo`} className="w-12 h-12 object-contain" />
+                      )}
+                      <h3 className="font-heading text-2xl text-foreground">{salon.name}</h3>
+                    </div>
                     <div className="space-y-3">
                       <div className="flex items-start gap-3">
                         <MapPin size={16} className="text-warm-brown flex-shrink-0 mt-0.5" />
