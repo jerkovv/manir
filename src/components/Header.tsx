@@ -104,7 +104,6 @@ const Header = () => {
                 </Link>
               )
             )}
-            </a>
           </nav>
 
           {/* Right side */}
