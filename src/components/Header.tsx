@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ShoppingBag } from "lucide-react";
+import { Menu, X, ShoppingBag, Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
@@ -24,9 +24,30 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Close menu on route change
   useEffect(() => {
     setIsOpen(false);
-  }, [location]);
+  }, [location.pathname]);
+
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  const toggleMenu = useCallback(() => {
+    setIsOpen((prev) => !prev);
+  }, []);
+
+  const closeMenu = useCallback(() => {
+    setIsOpen(false);
+  }, []);
 
   return (
     <header
@@ -60,6 +81,13 @@ const Header = () => {
                 {link.name}
               </Link>
             ))}
+            <a
+              href="/0202-skin-katalog.pdf"
+              download
+              className="font-body text-[13px] tracking-[0.12em] uppercase text-warm-taupe hover:text-warm-brown transition-colors duration-300 inline-flex items-center gap-1.5"
+            >
+              Katalog <Download size={13} strokeWidth={1.5} />
+            </a>
           </nav>
 
           {/* Right side */}
@@ -68,8 +96,9 @@ const Header = () => {
               <ShoppingBag size={20} strokeWidth={1.5} />
             </Link>
             <button
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={toggleMenu}
               className="lg:hidden text-warm-dark relative z-50"
+              aria-label={isOpen ? "Zatvori meni" : "Otvori meni"}
             >
               {isOpen ? <X size={24} strokeWidth={1.5} /> : <Menu size={24} strokeWidth={1.5} />}
             </button>
@@ -78,25 +107,27 @@ const Header = () => {
       </div>
 
       {/* Mobile Menu */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {isOpen && (
           <motion.div
+            key="mobile-menu"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.25 }}
             className="fixed inset-0 z-40 bg-background"
           >
-            <nav className="flex flex-col items-center justify-center h-full gap-8">
+            <nav className="flex flex-col items-center justify-center h-full gap-7">
               {navLinks.map((link, i) => (
                 <motion.div
                   key={link.path}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05, duration: 0.3 }}
+                  transition={{ delay: i * 0.04, duration: 0.25 }}
                 >
                   <Link
                     to={link.path}
+                    onClick={closeMenu}
                     className={`font-heading text-3xl tracking-wider transition-colors ${
                       location.pathname === link.path
                         ? "text-warm-brown"
@@ -107,6 +138,20 @@ const Header = () => {
                   </Link>
                 </motion.div>
               ))}
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: navLinks.length * 0.04, duration: 0.25 }}
+              >
+                <a
+                  href="/0202-skin-katalog.pdf"
+                  download
+                  onClick={closeMenu}
+                  className="font-heading text-3xl tracking-wider text-warm-dark hover:text-warm-brown transition-colors inline-flex items-center gap-3"
+                >
+                  Katalog <Download size={22} strokeWidth={1.5} />
+                </a>
+              </motion.div>
             </nav>
           </motion.div>
         )}

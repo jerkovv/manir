@@ -21,16 +21,28 @@ const PartnerSalons = () => {
           <div className="grid md:grid-cols-2 gap-8">
             {partnerSalons.map((salon) => (
               <SectionReveal key={salon.name}>
-                <div className="bg-warm-cream p-8 lg:p-10">
-                  <h3 className="font-heading text-2xl text-foreground mb-4">{salon.name}</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <MapPin size={16} className="text-warm-brown flex-shrink-0" />
-                      <span className="font-body text-sm text-muted-foreground">{salon.address}, {salon.city}</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Phone size={16} className="text-warm-brown flex-shrink-0" />
-                      <a href={`tel:${salon.phone.replace(/\s/g, "")}`} className="font-body text-sm text-foreground hover:text-warm-brown transition-colors">{salon.phone}</a>
+                <div className="bg-warm-cream overflow-hidden">
+                  <div className="aspect-[4/3] overflow-hidden">
+                    <img
+                      src={salon.image}
+                      alt={salon.name}
+                      loading="lazy"
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                      width={800}
+                      height={600}
+                    />
+                  </div>
+                  <div className="p-8 lg:p-10">
+                    <h3 className="font-heading text-2xl text-foreground mb-4">{salon.name}</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3">
+                        <MapPin size={16} className="text-warm-brown flex-shrink-0 mt-0.5" />
+                        <span className="font-body text-sm text-muted-foreground">{salon.address}, {salon.city}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Phone size={16} className="text-warm-brown flex-shrink-0" />
+                        <a href={`tel:${salon.phone.replace(/\s/g, "")}`} className="font-body text-sm text-foreground hover:text-warm-brown transition-colors">{salon.phone}</a>
+                      </div>
                     </div>
                   </div>
                 </div>
