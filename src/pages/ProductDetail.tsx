@@ -251,110 +251,80 @@ const ProductDetail = () => {
                     ))}
                   </div>
                 )}
+
+                {/* Product Details Accordion */}
+                {hasAccordionContent && (
+                  <div className="mt-10 pt-10 border-t border-border/40">
+                    <div className="mb-8">
+                      <span className="font-body text-[10px] tracking-[0.3em] uppercase text-muted-foreground block mb-3">Detalji proizvoda</span>
+                      <h2 className="font-heading text-3xl font-light text-foreground">Sve što treba da znate</h2>
+                    </div>
+
+                    <div className="bg-warm-cream/30 border border-border/30">
+                      <div className="px-5 md:px-8">
+                        {hasBenefits && (
+                          <AccordionItem
+                            title="Benefiti"
+                            icon={<Sparkles size={20} strokeWidth={1.5} />}
+                            badge={`${product.benefits.length} benefita`}
+                          >
+                            <div className="space-y-3 pl-8">
+                              {product.benefits.map((b, i) => (
+                                <motion.div
+                                  key={i}
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: i * 0.05 }}
+                                  className="flex items-start gap-3"
+                                >
+                                  <div className="w-5 h-5 rounded-full bg-warm-cream flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <Check size={11} className="text-warm-brown" />
+                                  </div>
+                                  <p className="font-body text-sm text-muted-foreground leading-relaxed">{b}</p>
+                                </motion.div>
+                              ))}
+                            </div>
+                          </AccordionItem>
+                        )}
+
+                        {hasUsage && (
+                          <AccordionItem
+                            title="Način upotrebe"
+                            icon={<Droplets size={20} strokeWidth={1.5} />}
+                          >
+                            <div className="pl-8">
+                              <p className="font-body text-[15px] text-muted-foreground leading-[1.9]">{product.usage}</p>
+                            </div>
+                          </AccordionItem>
+                        )}
+
+                        {hasComposition && (
+                          <AccordionItem
+                            title="Sastav (INCI)"
+                            icon={<FlaskConical size={20} strokeWidth={1.5} />}
+                          >
+                            <div className="pl-8 space-y-4">
+                              {product.compositionNote && (
+                                <p className="font-body text-sm text-muted-foreground leading-relaxed">{product.compositionNote}</p>
+                              )}
+                              {product.inci && (
+                                <div className="bg-warm-cream/60 p-5 border border-border/30">
+                                  <p className="font-body text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-2">INCI lista</p>
+                                  <p className="font-body text-xs text-muted-foreground/80 leading-relaxed">{product.inci}</p>
+                                </div>
+                              )}
+                            </div>
+                          </AccordionItem>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </SectionReveal>
           </div>
         </div>
       </section>
-
-      {/* Accordion Details Section */}
-      {hasAccordionContent && (
-        <section className="py-16 lg:py-24 bg-warm-cream/40">
-          <div className="max-w-[900px] mx-auto px-6 lg:px-12">
-            <SectionReveal>
-              <div className="mb-10">
-                <span className="font-body text-[10px] tracking-[0.3em] uppercase text-muted-foreground block mb-3">Detalji proizvoda</span>
-                <h2 className="font-heading text-3xl md:text-4xl font-light text-foreground">Sve što treba da znate</h2>
-              </div>
-            </SectionReveal>
-
-            <SectionReveal delay={0.1}>
-              <div className="bg-background">
-                <div className="px-6 md:px-10">
-                  {/* Benefits - open by default */}
-                  {hasBenefits && (
-                    <AccordionItem
-                      title="Benefiti"
-                      icon={<Sparkles size={20} strokeWidth={1.5} />}
-                      defaultOpen={true}
-                      badge={`${product.benefits.length} benefita`}
-                    >
-                      <div className="space-y-3 pl-8">
-                        {product.benefits.map((b, i) => (
-                          <motion.div
-                            key={i}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.05 }}
-                            className="flex items-start gap-3"
-                          >
-                            <div className="w-5 h-5 rounded-full bg-warm-cream flex items-center justify-center flex-shrink-0 mt-0.5">
-                              <Check size={11} className="text-warm-brown" />
-                            </div>
-                            <p className="font-body text-sm text-muted-foreground leading-relaxed">{b}</p>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </AccordionItem>
-                  )}
-
-                  {/* Ingredients & Their Benefits */}
-                  {hasIngredients && (
-                    <AccordionItem
-                      title="Sastojci i njihovi benefiti"
-                      icon={<Leaf size={20} strokeWidth={1.5} />}
-                      badge={product.activeIngredientsCount ? `${product.activeIngredientsCount} aktivnih` : undefined}
-                    >
-                      <div className="grid gap-2 pl-8">
-                        {product.ingredientsBenefits.map((ing, i) => (
-                          <div key={i} className="flex items-start gap-3 py-2.5 border-b border-border/30 last:border-b-0">
-                            <span className="font-body text-[13px] font-medium text-foreground min-w-[160px] flex-shrink-0">
-                              {ing.name}
-                            </span>
-                            <span className="font-body text-[13px] text-muted-foreground leading-relaxed">{ing.benefit}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </AccordionItem>
-                  )}
-
-                  {/* Usage */}
-                  {hasUsage && (
-                    <AccordionItem
-                      title="Način upotrebe"
-                      icon={<Droplets size={20} strokeWidth={1.5} />}
-                    >
-                      <div className="pl-8">
-                        <p className="font-body text-[15px] text-muted-foreground leading-[1.9]">{product.usage}</p>
-                      </div>
-                    </AccordionItem>
-                  )}
-
-                  {/* Composition / INCI */}
-                  {hasComposition && (
-                    <AccordionItem
-                      title="Sastav (INCI)"
-                      icon={<FlaskConical size={20} strokeWidth={1.5} />}
-                    >
-                      <div className="pl-8 space-y-4">
-                        {product.compositionNote && (
-                          <p className="font-body text-sm text-muted-foreground leading-relaxed">{product.compositionNote}</p>
-                        )}
-                        {product.inci && (
-                          <div className="bg-warm-cream/60 p-5 border border-border/30">
-                            <p className="font-body text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-2">INCI lista</p>
-                            <p className="font-body text-xs text-muted-foreground/80 leading-relaxed">{product.inci}</p>
-                          </div>
-                        )}
-                      </div>
-                    </AccordionItem>
-                  )}
-                </div>
-              </div>
-            </SectionReveal>
-          </div>
-        </section>
-      )}
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (
