@@ -49,7 +49,7 @@ const SocialProofNotification = () => {
 
     return () => {
       clearTimeout(initialDelay);
-      clearInterval(interval);
+      clearTimeout(timeoutRef);
     };
   }, [showNotification]);
 
