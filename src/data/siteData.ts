@@ -13,6 +13,8 @@ import eduLash1 from "@/assets/edu-lash-1.png";
 import eduLash2 from "@/assets/edu-lash-2.png";
 import eduLash3 from "@/assets/edu-lash-3.png";
 import eduLash4 from "@/assets/edu-lash-4.png";
+import salonManir from "@/assets/salon-manir.jpg";
+import salonBeautique from "@/assets/salon-beautique.jpg";
 
 export const products = [
   {
@@ -361,14 +363,14 @@ export const partnerSalons = [
     address: "Pančevačka 12, ulaz 12, sprat 2, stan 12",
     city: "Zrenjanin",
     phone: "+381 62 8340 898",
-    image: "/placeholder.svg",
+    image: salonManir,
   },
   {
     name: "Beautique Spa",
     address: "Tošin bunar 181",
     city: "Beograd",
     phone: "+381 60 4316 363",
-    image: "/placeholder.svg",
+    image: salonBeautique,
   },
 ];
 
