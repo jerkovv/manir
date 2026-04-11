@@ -65,7 +65,7 @@ const Index = () => {
             >
               <span className="w-10 h-px bg-warm-gold" />
               <span className="font-body text-[10px] md:text-[11px] tracking-[0.35em] uppercase text-warm-gold">
-                Premium Skincare · Srbija
+                Premium Skincare
               </span>
             </motion.div>
 
