@@ -130,23 +130,27 @@ const Header = () => {
       </div>
 
       {/* Mobile Menu */}
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {isOpen && (
           <motion.div
             key="mobile-menu"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-40 bg-background"
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-40 bg-background flex flex-col items-center justify-center"
+            onClick={(e) => {
+              // Close if clicking the backdrop itself
+              if (e.target === e.currentTarget) closeMenu();
+            }}
           >
-            <nav className="flex flex-col items-center justify-center h-full gap-7">
+            <nav className="flex flex-col items-center gap-7">
               {navLinks.map((link, i) => (
                 <motion.div
                   key={link.path}
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.04, duration: 0.25 }}
+                  transition={{ delay: i * 0.04, duration: 0.2 }}
                 >
                   <Link
                     to={link.path}
@@ -164,7 +168,7 @@ const Header = () => {
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: navLinks.length * 0.04, duration: 0.25 }}
+                transition={{ delay: navLinks.length * 0.04, duration: 0.2 }}
               >
                 <a
                   href="/0202-skin-katalog.pdf"
