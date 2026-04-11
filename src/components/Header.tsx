@@ -106,7 +106,7 @@ const Header = () => {
             </Link>
             <button
               onClick={toggleMenu}
-              className="lg:hidden text-warm-dark relative z-50"
+              className={`lg:hidden relative z-50 transition-colors ${isOnHero ? "text-white" : "text-warm-dark"}`}
               aria-label={isOpen ? "Zatvori meni" : "Otvori meni"}
             >
               {isOpen ? <X size={24} strokeWidth={1.5} /> : <Menu size={24} strokeWidth={1.5} />}
