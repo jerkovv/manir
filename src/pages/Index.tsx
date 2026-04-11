@@ -83,7 +83,7 @@ const Index = () => {
             <div className="relative overflow-hidden group cursor-pointer">
               <Link to="/prodavnica">
                 <img
-                  src={heroImage}
+                  src={heroCoverBg}
                   alt="0202 SKIN trenutna ponuda"
                   loading="lazy"
                   className="w-full aspect-[21/9] object-cover transition-transform duration-700 group-hover:scale-105"
