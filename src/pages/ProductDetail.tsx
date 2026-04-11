@@ -1,8 +1,10 @@
 import { useParams, Link } from "react-router-dom";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Check, ShieldCheck, Leaf, Droplets, ChevronDown, Sparkles, FlaskConical } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, ShieldCheck, Leaf, Droplets, ChevronDown, Sparkles, FlaskConical, ShoppingBag, Plus } from "lucide-react";
 import { products } from "@/data/siteData";
+import { useCart } from "@/contexts/CartContext";
+import { toast } from "sonner";
 import SectionReveal from "@/components/SectionReveal";
 import ProductCard from "@/components/ProductCard";
 
@@ -61,6 +63,19 @@ const ProductDetail = () => {
   const { id } = useParams();
   const product = products.find((p) => p.id === id);
   const [activeImage, setActiveImage] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const { addItem } = useCart();
+
+  const handleAddToCart = () => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      size: product.size,
+    }, quantity);
+    toast.success(`${product.name} dodato u korpu`);
+  };
 
   if (!product) {
     return (
@@ -196,17 +211,32 @@ const ProductDetail = () => {
                   </div>
                 )}
 
-                {/* CTA */}
-                <motion.a
-                  href={`https://0202skin.com/product/${product.id}/`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  className="w-full inline-flex items-center justify-center gap-3 bg-warm-brown text-primary-foreground px-8 py-5 font-body text-[11px] tracking-[0.2em] uppercase hover:bg-warm-dark transition-colors duration-300"
-                >
-                  Poruči na 0202skin.com <ArrowRight size={14} />
-                </motion.a>
+                {/* Quantity + Add to Cart */}
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="flex items-center border border-border/60">
+                    <button
+                      onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                      className="w-11 h-12 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      −
+                    </button>
+                    <span className="w-10 text-center font-body text-sm text-foreground">{quantity}</span>
+                    <button
+                      onClick={() => setQuantity(q => q + 1)}
+                      className="w-11 h-12 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <Plus size={14} />
+                    </button>
+                  </div>
+                  <motion.button
+                    onClick={handleAddToCart}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                    className="flex-1 inline-flex items-center justify-center gap-3 bg-warm-brown text-primary-foreground px-8 py-4 font-body text-[11px] tracking-[0.2em] uppercase hover:bg-warm-dark transition-colors duration-300"
+                  >
+                    <ShoppingBag size={15} /> Dodaj u korpu
+                  </motion.button>
+                </div>
 
                 {/* Free From pills - always visible */}
                 {hasFreeFrom && (

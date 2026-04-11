@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CartDrawer from "@/components/CartDrawer";
+import { CartProvider } from "@/contexts/CartContext";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Shop from "./pages/Shop";
@@ -14,6 +16,7 @@ import BlogPost from "./pages/BlogPost";
 import Contact from "./pages/Contact";
 import Educations from "./pages/Educations";
 import EducationDetail from "./pages/EducationDetail";
+import Checkout from "./pages/Checkout";
 import PartnerSalons from "./pages/PartnerSalons";
 import NotFound from "./pages/NotFound";
 import { useEffect } from "react";
@@ -33,22 +36,26 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <ScrollToTop />
-        <Header />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/o-nama" element={<About />} />
-          <Route path="/prodavnica" element={<Shop />} />
-          <Route path="/proizvod/:id" element={<ProductDetail />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:id" element={<BlogPost />} />
-          <Route path="/kontakt" element={<Contact />} />
-          <Route path="/edukacije" element={<Educations />} />
-          <Route path="/edukacije/:id" element={<EducationDetail />} />
-          <Route path="/partner-saloni" element={<PartnerSalons />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <Footer />
+        <CartProvider>
+          <ScrollToTop />
+          <Header />
+          <CartDrawer />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/o-nama" element={<About />} />
+            <Route path="/prodavnica" element={<Shop />} />
+            <Route path="/proizvod/:id" element={<ProductDetail />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:id" element={<BlogPost />} />
+            <Route path="/kontakt" element={<Contact />} />
+            <Route path="/edukacije" element={<Educations />} />
+            <Route path="/edukacije/:id" element={<EducationDetail />} />
+            <Route path="/partner-saloni" element={<PartnerSalons />} />
+            <Route path="/naruci" element={<Checkout />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <Footer />
+        </CartProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

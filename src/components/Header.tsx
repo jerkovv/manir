@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ShoppingBag, Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useCart } from "@/contexts/CartContext";
 
 const navLinks = [
   { name: "Početna", path: "/" },
@@ -18,6 +19,7 @@ const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isHeroVisible, setIsHeroVisible] = useState(true);
   const location = useLocation();
+  const { totalItems, setIsCartOpen } = useCart();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -101,9 +103,21 @@ const Header = () => {
 
           {/* Right side */}
           <div className="flex items-center gap-4">
-            <Link to="/prodavnica" className={`transition-colors ${isOnHero ? "text-white/80 hover:text-white" : "text-warm-dark hover:text-warm-brown"}`}>
+            <button
+              onClick={() => setIsCartOpen(true)}
+              className={`relative transition-colors ${isOnHero ? "text-white/80 hover:text-white" : "text-warm-dark hover:text-warm-brown"}`}
+            >
               <ShoppingBag size={20} strokeWidth={1.5} />
-            </Link>
+              {totalItems > 0 && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-warm-brown text-primary-foreground text-[9px] font-body font-medium rounded-full flex items-center justify-center"
+                >
+                  {totalItems}
+                </motion.span>
+              )}
+            </button>
             <button
               onClick={toggleMenu}
               className={`lg:hidden relative z-50 transition-colors ${isOnHero ? "text-white" : "text-warm-dark"}`}
