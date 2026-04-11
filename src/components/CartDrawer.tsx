@@ -16,7 +16,7 @@ const CartDrawer = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-warm-dark/40 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-warm-dark/40 backdrop-blur-sm z-[60]"
             onClick={() => setIsCartOpen(false)}
           />
 
@@ -26,7 +26,7 @@ const CartDrawer = () => {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed top-0 right-0 h-full w-full max-w-md bg-background z-50 flex flex-col shadow-2xl"
+            className="fixed top-0 right-0 h-full w-full max-w-md bg-background z-[60] flex flex-col shadow-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-5 border-b border-border/60">
