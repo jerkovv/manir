@@ -4,8 +4,8 @@ import { ArrowRight, Droplets, Shield, Heart, Sparkles, FlaskConical, Leaf } fro
 import SectionReveal from "@/components/SectionReveal";
 import ProductCard from "@/components/ProductCard";
 import { products, brandValues, blogPosts, educations } from "@/data/siteData";
-import heroCoverBg from "@/assets/hero-cover-bg.jpg";
 import heroImage from "@/assets/hero-0202.jpg";
+import heroCoverBg from "@/assets/hero-cover-bg.jpg";
 import selfcareImage from "@/assets/selfcare-ritual.jpg";
 import scienceImage from "@/assets/brand-science.jpg";
 
@@ -26,7 +26,7 @@ const Index = () => {
       {/* Hero */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroCoverBg} alt="0202 SKIN premium skincare" className="w-full h-full object-cover" width={1920} height={1080} />
+          <img src={heroImage} alt="0202 SKIN premium skincare proizvodi" className="w-full h-full object-cover" width={1920} height={1080} />
           <div className="absolute inset-0 bg-gradient-to-r from-warm-dark/70 via-warm-dark/40 to-warm-dark/20" />
         </div>
         <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12 pt-24">
@@ -83,7 +83,7 @@ const Index = () => {
             <div className="relative overflow-hidden group cursor-pointer">
               <Link to="/prodavnica">
                 <img
-                  src={heroImage}
+                  src={heroCoverBg}
                   alt="0202 SKIN trenutna ponuda"
                   loading="lazy"
                   className="w-full aspect-[21/9] object-cover transition-transform duration-700 group-hover:scale-105"
