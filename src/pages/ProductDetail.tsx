@@ -1,9 +1,61 @@
 import { useParams, Link } from "react-router-dom";
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Check, ShieldCheck, Leaf, Droplets } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, ArrowRight, Check, ShieldCheck, Leaf, Droplets, ChevronDown, Sparkles, FlaskConical } from "lucide-react";
 import { products } from "@/data/siteData";
 import SectionReveal from "@/components/SectionReveal";
 import ProductCard from "@/components/ProductCard";
+
+interface AccordionItemProps {
+  title: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+  badge?: string;
+}
+
+const AccordionItem = ({ title, icon, children, defaultOpen = false, badge }: AccordionItemProps) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div className="border-b border-border/60 last:border-b-0">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between py-6 group cursor-pointer"
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-warm-brown">{icon}</span>
+          <h3 className="font-heading text-xl md:text-2xl text-foreground text-left">{title}</h3>
+          {badge && (
+            <span className="font-body text-[9px] tracking-[0.15em] uppercase bg-warm-cream text-warm-brown px-2.5 py-1">
+              {badge}
+            </span>
+          )}
+        </div>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          className="text-muted-foreground group-hover:text-warm-brown transition-colors"
+        >
+          <ChevronDown size={20} />
+        </motion.div>
+      </button>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="pb-8">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -24,37 +76,56 @@ const ProductDetail = () => {
   const relatedProducts = products.filter((p) => p.id !== product.id).slice(0, 3);
   const allImages = product.images && product.images.length > 0 ? product.images : [product.image];
 
+  const hasBenefits = product.benefits && product.benefits.length > 0;
+  const hasFreeFrom = product.freeFrom && product.freeFrom.length > 0;
+  const hasIngredients = product.ingredientsBenefits && product.ingredientsBenefits.length > 0;
+  const hasUsage = !!product.usage;
+  const hasComposition = !!(product.inci || product.compositionNote);
+  const hasAccordionContent = hasBenefits || hasFreeFrom || hasIngredients || hasUsage || hasComposition;
+
   return (
     <main className="pt-24">
       {/* Breadcrumb */}
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-6">
-        <div className="flex items-center gap-2 font-body text-xs text-muted-foreground">
+        <div className="flex items-center gap-2 font-body text-[10px] tracking-[0.1em] uppercase text-muted-foreground">
           <Link to="/" className="hover:text-foreground transition-colors">Početna</Link>
-          <span>/</span>
+          <span className="opacity-40">/</span>
           <Link to="/prodavnica" className="hover:text-foreground transition-colors">Prodavnica</Link>
-          <span>/</span>
+          <span className="opacity-40">/</span>
           <span className="text-foreground">{product.name}</span>
         </div>
       </div>
 
       {/* Product Hero */}
-      <section className="pb-16 lg:pb-24">
+      <section className="pb-20 lg:pb-32">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-24">
             {/* Gallery */}
             <SectionReveal>
-              <div>
-                <div className="bg-warm-cream aspect-[4/5] overflow-hidden mb-4">
-                  <img src={allImages[activeImage]} alt={product.name} className="w-full h-full object-cover" />
-                </div>
+              <div className="lg:sticky lg:top-28">
+                <motion.div
+                  key={activeImage}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                  className="bg-warm-cream aspect-[4/5] overflow-hidden mb-4"
+                >
+                  <img
+                    src={allImages[activeImage]}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
+                </motion.div>
                 {allImages.length > 1 && (
-                  <div className="grid grid-cols-4 gap-3">
+                  <div className="grid grid-cols-4 gap-2">
                     {allImages.map((img, i) => (
                       <button
                         key={i}
                         onClick={() => setActiveImage(i)}
-                        className={`aspect-square overflow-hidden border-2 transition-colors ${
-                          activeImage === i ? "border-warm-brown" : "border-transparent"
+                        className={`aspect-square overflow-hidden transition-all duration-300 ${
+                          activeImage === i
+                            ? "ring-2 ring-warm-brown ring-offset-2 ring-offset-background"
+                            : "opacity-60 hover:opacity-100"
                         }`}
                       >
                         <img src={img} alt={`${product.name} ${i + 1}`} className="w-full h-full object-cover" />
@@ -66,145 +137,190 @@ const ProductDetail = () => {
             </SectionReveal>
 
             {/* Product Info */}
-            <SectionReveal delay={0.2}>
-              <div className="lg:sticky lg:top-32">
-                <span className="font-body text-[10px] tracking-[0.2em] uppercase text-muted-foreground">{product.category}</span>
-                <h1 className="font-heading text-4xl md:text-5xl text-foreground mt-2 mb-2">{product.name}</h1>
-                {product.size && <p className="font-body text-sm text-muted-foreground mb-4">{product.size}</p>}
-                {product.activeIngredientsCount && (
-                  <p className="font-body text-xs tracking-[0.1em] uppercase text-warm-brown mb-4">
-                    {product.activeIngredientsCount} aktivnih sastojaka
-                  </p>
-                )}
-                <p className="font-heading text-3xl text-warm-brown mb-6">{product.price.toLocaleString("sr-RS")} RSD</p>
-                <p className="font-body text-xs text-muted-foreground mb-6">Cena proizvoda sa PDV-om bez iskazane cene transporta.</p>
-
-                <div className="border-t border-border pt-6 mb-6">
-                  <p className="font-body text-base text-muted-foreground leading-relaxed">{product.shortDescription}</p>
+            <SectionReveal delay={0.15}>
+              <div>
+                {/* Category & Badge */}
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="font-body text-[10px] tracking-[0.25em] uppercase text-muted-foreground">
+                    {product.category}
+                  </span>
+                  {product.featured && (
+                    <span className="font-body text-[9px] tracking-[0.15em] uppercase bg-warm-brown text-primary-foreground px-2.5 py-1">
+                      Izdvojeno
+                    </span>
+                  )}
                 </div>
 
+                {/* Name */}
+                <h1 className="font-heading text-4xl md:text-[2.75rem] leading-[1.1] text-foreground mb-3">
+                  {product.name}
+                </h1>
+
+                {/* Size & Active Count */}
+                <div className="flex items-center gap-4 mb-6">
+                  {product.size && (
+                    <span className="font-body text-sm text-muted-foreground">{product.size}</span>
+                  )}
+                  {product.activeIngredientsCount && (
+                    <>
+                      <span className="w-px h-4 bg-border" />
+                      <span className="font-body text-xs tracking-[0.1em] uppercase text-warm-brown">
+                        {product.activeIngredientsCount} aktivnih sastojaka
+                      </span>
+                    </>
+                  )}
+                </div>
+
+                {/* Price */}
+                <div className="mb-8">
+                  <p className="font-heading text-3xl text-foreground">{product.price.toLocaleString("sr-RS")} <span className="text-lg text-muted-foreground">RSD</span></p>
+                  <p className="font-body text-[10px] tracking-[0.05em] text-muted-foreground mt-1">Cena sa PDV-om, bez cene transporta</p>
+                </div>
+
+                {/* Divider */}
+                <div className="w-12 h-px bg-warm-brown/40 mb-8" />
+
+                {/* Description */}
+                <p className="font-body text-[15px] text-muted-foreground leading-[1.8] mb-8">
+                  {product.shortDescription}
+                </p>
+
+                {/* Target Audience */}
                 {product.targetAudience && (
-                  <div className="flex items-start gap-3 mb-6 p-4 bg-warm-cream">
-                    <Droplets size={16} className="text-warm-brown mt-0.5 flex-shrink-0" />
+                  <div className="flex items-start gap-4 mb-8 p-5 bg-warm-cream/60 border border-border/40">
+                    <Droplets size={18} className="text-warm-brown mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="font-body text-xs tracking-[0.15em] uppercase text-foreground mb-1">Kome je namenjen</p>
-                      <p className="font-body text-sm text-muted-foreground">{product.targetAudience}</p>
+                      <p className="font-body text-[10px] tracking-[0.2em] uppercase text-foreground mb-1.5">Kome je namenjen</p>
+                      <p className="font-body text-sm text-muted-foreground leading-relaxed">{product.targetAudience}</p>
                     </div>
                   </div>
                 )}
 
-                <a
-                  href={`https://0202skin.com/product/${product.id.replace(/-/g, "-")}/`}
+                {/* CTA */}
+                <motion.a
+                  href={`https://0202skin.com/product/${product.id}/`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-3 bg-warm-brown text-primary-foreground px-8 py-4 font-body text-xs tracking-[0.15em] uppercase hover:bg-warm-dark transition-colors"
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  className="w-full inline-flex items-center justify-center gap-3 bg-warm-brown text-primary-foreground px-8 py-5 font-body text-[11px] tracking-[0.2em] uppercase hover:bg-warm-dark transition-colors duration-300"
                 >
                   Poruči na 0202skin.com <ArrowRight size={14} />
-                </a>
+                </motion.a>
+
+                {/* Free From pills - always visible */}
+                {hasFreeFrom && (
+                  <div className="mt-8 flex flex-wrap gap-2">
+                    {product.freeFrom.map((item) => (
+                      <span
+                        key={item}
+                        className="font-body text-[10px] tracking-[0.1em] uppercase text-muted-foreground border border-border/60 px-3 py-1.5"
+                      >
+                        ✓ {item}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </SectionReveal>
           </div>
         </div>
       </section>
 
-      {/* Benefits Section */}
-      {product.benefits && product.benefits.length > 0 && (
-        <section className="py-16 lg:py-24 bg-warm-cream">
-          <div className="max-w-[1000px] mx-auto px-6 lg:px-12">
+      {/* Accordion Details Section */}
+      {hasAccordionContent && (
+        <section className="py-16 lg:py-24 bg-warm-cream/40">
+          <div className="max-w-[900px] mx-auto px-6 lg:px-12">
             <SectionReveal>
-              <div className="flex items-center gap-3 mb-8">
-                <ShieldCheck size={24} className="text-warm-brown" />
-                <h2 className="font-heading text-3xl md:text-4xl text-foreground">Benefiti</h2>
-              </div>
-              <div className="space-y-4">
-                {product.benefits.map((b, i) => (
-                  <div key={i} className="flex items-start gap-3 bg-background p-5">
-                    <Check size={16} className="text-warm-brown mt-1 flex-shrink-0" />
-                    <p className="font-body text-sm text-muted-foreground leading-relaxed">{b}</p>
-                  </div>
-                ))}
+              <div className="mb-10">
+                <span className="font-body text-[10px] tracking-[0.3em] uppercase text-muted-foreground block mb-3">Detalji proizvoda</span>
+                <h2 className="font-heading text-3xl md:text-4xl font-light text-foreground">Sve što treba da znate</h2>
               </div>
             </SectionReveal>
-          </div>
-        </section>
-      )}
 
-      {/* Free From Section */}
-      {product.freeFrom && product.freeFrom.length > 0 && (
-        <section className="py-16 lg:py-24">
-          <div className="max-w-[1000px] mx-auto px-6 lg:px-12">
-            <SectionReveal>
-              <h3 className="font-body text-xs tracking-[0.2em] uppercase text-muted-foreground mb-6">Razvijeno sa posebnom pažnjom za osetljivu kožu</h3>
-              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
-                {product.freeFrom.map((item) => (
-                  <div key={item} className="flex items-center gap-2 p-3 bg-warm-cream">
-                    <Check size={14} className="text-warm-brown flex-shrink-0" />
-                    <span className="font-body text-sm text-foreground">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </SectionReveal>
-          </div>
-        </section>
-      )}
-
-      {/* Ingredients & Their Benefits */}
-      {product.ingredientsBenefits && product.ingredientsBenefits.length > 0 && (
-        <section className="py-16 lg:py-24 bg-warm-cream">
-          <div className="max-w-[1000px] mx-auto px-6 lg:px-12">
-            <SectionReveal>
-              <div className="flex items-center gap-3 mb-8">
-                <Leaf size={24} className="text-warm-brown" />
-                <h2 className="font-heading text-3xl md:text-4xl text-foreground">
-                  Sastojci i njihovi benefiti
-                  {product.activeIngredientsCount && (
-                    <span className="font-body text-sm text-muted-foreground ml-3">({product.activeIngredientsCount} aktivnih)</span>
+            <SectionReveal delay={0.1}>
+              <div className="bg-background">
+                <div className="px-6 md:px-10">
+                  {/* Benefits - open by default */}
+                  {hasBenefits && (
+                    <AccordionItem
+                      title="Benefiti"
+                      icon={<Sparkles size={20} strokeWidth={1.5} />}
+                      defaultOpen={true}
+                      badge={`${product.benefits.length} benefita`}
+                    >
+                      <div className="space-y-3 pl-8">
+                        {product.benefits.map((b, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.05 }}
+                            className="flex items-start gap-3"
+                          >
+                            <div className="w-5 h-5 rounded-full bg-warm-cream flex items-center justify-center flex-shrink-0 mt-0.5">
+                              <Check size={11} className="text-warm-brown" />
+                            </div>
+                            <p className="font-body text-sm text-muted-foreground leading-relaxed">{b}</p>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </AccordionItem>
                   )}
-                </h2>
-              </div>
-              <div className="space-y-3">
-                {product.ingredientsBenefits.map((ing, i) => (
-                  <div key={i} className="bg-background p-5 flex flex-col sm:flex-row sm:items-center gap-2">
-                    <span className="font-body text-sm font-medium text-foreground min-w-[200px]">{ing.name}</span>
-                    <span className="hidden sm:block text-muted-foreground">—</span>
-                    <span className="font-body text-sm text-muted-foreground">{ing.benefit}</span>
-                  </div>
-                ))}
-              </div>
-            </SectionReveal>
-          </div>
-        </section>
-      )}
 
-      {/* Usage Section */}
-      {product.usage && (
-        <section className="py-16 lg:py-24">
-          <div className="max-w-[1000px] mx-auto px-6 lg:px-12">
-            <SectionReveal>
-              <h2 className="font-heading text-3xl md:text-4xl text-foreground mb-6">Način upotrebe</h2>
-              <div className="bg-warm-cream p-8">
-                <p className="font-body text-base text-muted-foreground leading-relaxed">{product.usage}</p>
-              </div>
-            </SectionReveal>
-          </div>
-        </section>
-      )}
+                  {/* Ingredients & Their Benefits */}
+                  {hasIngredients && (
+                    <AccordionItem
+                      title="Sastojci i njihovi benefiti"
+                      icon={<Leaf size={20} strokeWidth={1.5} />}
+                      badge={product.activeIngredientsCount ? `${product.activeIngredientsCount} aktivnih` : undefined}
+                    >
+                      <div className="grid gap-2 pl-8">
+                        {product.ingredientsBenefits.map((ing, i) => (
+                          <div key={i} className="flex items-start gap-3 py-2.5 border-b border-border/30 last:border-b-0">
+                            <span className="font-body text-[13px] font-medium text-foreground min-w-[160px] flex-shrink-0">
+                              {ing.name}
+                            </span>
+                            <span className="font-body text-[13px] text-muted-foreground leading-relaxed">{ing.benefit}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </AccordionItem>
+                  )}
 
-      {/* Composition / INCI */}
-      {(product.inci || product.compositionNote) && (
-        <section className="py-16 lg:py-24 bg-warm-cream">
-          <div className="max-w-[1000px] mx-auto px-6 lg:px-12">
-            <SectionReveal>
-              <h2 className="font-heading text-3xl md:text-4xl text-foreground mb-6">Sastav</h2>
-              {product.compositionNote && (
-                <p className="font-body text-base text-muted-foreground leading-relaxed mb-6">{product.compositionNote}</p>
-              )}
-              {product.inci && (
-                <div className="bg-background p-6">
-                  <p className="font-body text-xs tracking-[0.15em] uppercase text-muted-foreground mb-3">INCI</p>
-                  <p className="font-body text-sm text-muted-foreground leading-relaxed">{product.inci}</p>
+                  {/* Usage */}
+                  {hasUsage && (
+                    <AccordionItem
+                      title="Način upotrebe"
+                      icon={<Droplets size={20} strokeWidth={1.5} />}
+                    >
+                      <div className="pl-8">
+                        <p className="font-body text-[15px] text-muted-foreground leading-[1.9]">{product.usage}</p>
+                      </div>
+                    </AccordionItem>
+                  )}
+
+                  {/* Composition / INCI */}
+                  {hasComposition && (
+                    <AccordionItem
+                      title="Sastav (INCI)"
+                      icon={<FlaskConical size={20} strokeWidth={1.5} />}
+                    >
+                      <div className="pl-8 space-y-4">
+                        {product.compositionNote && (
+                          <p className="font-body text-sm text-muted-foreground leading-relaxed">{product.compositionNote}</p>
+                        )}
+                        {product.inci && (
+                          <div className="bg-warm-cream/60 p-5 border border-border/30">
+                            <p className="font-body text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-2">INCI lista</p>
+                            <p className="font-body text-xs text-muted-foreground/80 leading-relaxed">{product.inci}</p>
+                          </div>
+                        )}
+                      </div>
+                    </AccordionItem>
+                  )}
                 </div>
-              )}
+              </div>
             </SectionReveal>
           </div>
         </section>
@@ -212,10 +328,18 @@ const ProductDetail = () => {
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (
-        <section className="py-24">
+        <section className="py-24 lg:py-32">
           <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
             <SectionReveal>
-              <h2 className="font-heading text-3xl md:text-4xl font-light text-foreground mb-12">Slični proizvodi</h2>
+              <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+                <div>
+                  <span className="font-body text-[10px] tracking-[0.3em] uppercase text-muted-foreground block mb-3">Preporučujemo</span>
+                  <h2 className="font-heading text-3xl md:text-4xl font-light text-foreground">Slični proizvodi</h2>
+                </div>
+                <Link to="/prodavnica" className="inline-flex items-center gap-2 font-body text-xs tracking-[0.15em] uppercase text-warm-brown hover:text-warm-dark transition-colors">
+                  Svi proizvodi <ArrowRight size={12} />
+                </Link>
+              </div>
             </SectionReveal>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
               {relatedProducts.map((p) => (
@@ -226,7 +350,7 @@ const ProductDetail = () => {
         </section>
       )}
 
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pb-12">
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pb-16">
         <Link to="/prodavnica" className="inline-flex items-center gap-2 font-body text-xs tracking-[0.15em] uppercase text-warm-brown hover:text-warm-dark transition-colors">
           <ArrowLeft size={14} /> Nazad na prodavnicu
         </Link>
