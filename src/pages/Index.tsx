@@ -35,7 +35,7 @@ const Index = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.3 }}
-            className="max-w-[720px] border border-primary-foreground/10 bg-warm-dark/18 p-8 md:p-10 lg:p-12 backdrop-blur-md"
+            className="max-w-2xl"
           >
             <span className="font-body text-[11px] tracking-[0.3em] uppercase text-primary-foreground/70 block mb-6">
               Premium skincare · Srbija
