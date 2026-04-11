@@ -4,7 +4,7 @@ import { ArrowRight, Droplets, Shield, Heart, Sparkles, FlaskConical, Leaf } fro
 import SectionReveal from "@/components/SectionReveal";
 import ProductCard from "@/components/ProductCard";
 import { products, brandValues, blogPosts, educations } from "@/data/siteData";
-import heroImage from "@/assets/hero-skincare.jpg";
+import heroImage from "@/assets/hero-0202.jpg";
 import selfcareImage from "@/assets/selfcare-ritual.jpg";
 import scienceImage from "@/assets/brand-science.jpg";
 
