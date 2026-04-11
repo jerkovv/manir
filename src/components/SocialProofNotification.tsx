@@ -9,9 +9,17 @@ const NAMES = [
   "Katarina N.", "Teodora J.", "Sofija Đ.", "Aleksandra Z.", "Nina G.",
 ];
 
-const CITIES = [
-  "Beograd", "Novi Sad", "Niš", "Kragujevac", "Subotica",
-  "Zrenjanin", "Pančevo", "Čačak", "Novi Pazar", "Kraljevo",
+const CITIES: { name: string; genitive: string }[] = [
+  { name: "Beograd", genitive: "Beograda" },
+  { name: "Novi Sad", genitive: "Novog Sada" },
+  { name: "Niš", genitive: "Niša" },
+  { name: "Kragujevac", genitive: "Kragujevca" },
+  { name: "Subotica", genitive: "Subotice" },
+  { name: "Zrenjanin", genitive: "Zrenjanina" },
+  { name: "Pančevo", genitive: "Pančeva" },
+  { name: "Čačak", genitive: "Čačka" },
+  { name: "Novi Pazar", genitive: "Novog Pazara" },
+  { name: "Kraljevo", genitive: "Kraljeva" },
 ];
 
 const getRandomItem = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
