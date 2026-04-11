@@ -358,15 +358,17 @@ export const educations = [
 export const partnerSalons = [
   {
     name: "Manir Studio",
-    address: "Milivoja Toškova 31A",
+    address: "Pančevačka 12, ulaz 12, sprat 2, stan 12",
     city: "Zrenjanin",
     phone: "+381 62 8340 898",
+    image: "/placeholder.svg",
   },
   {
     name: "Beautique Spa",
     address: "Tošin bunar 181",
     city: "Beograd",
     phone: "+381 60 4316 363",
+    image: "/placeholder.svg",
   },
 ];
 
