@@ -20,26 +20,26 @@ const AccordionItem = ({ title, icon, children, defaultOpen = false, badge }: Ac
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="border-b border-border/60 last:border-b-0">
+    <div className="border-b border-border/40 last:border-b-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between py-6 group cursor-pointer"
+        className="w-full flex items-center justify-between py-5 group cursor-pointer"
       >
         <div className="flex items-center gap-3">
-          <span className="text-warm-brown">{icon}</span>
-          <h3 className="font-heading text-xl md:text-2xl text-foreground text-left">{title}</h3>
+          <span className="text-warm-brown/70">{icon}</span>
+          <h3 className="font-heading text-lg md:text-xl text-foreground text-left">{title}</h3>
           {badge && (
-            <span className="font-body text-[9px] tracking-[0.15em] uppercase bg-warm-cream text-warm-brown px-2.5 py-1">
+            <span className="font-body text-[9px] tracking-[0.15em] uppercase bg-warm-cream/80 text-warm-brown/80 px-2.5 py-1 rounded-sm">
               {badge}
             </span>
           )}
         </div>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="text-muted-foreground group-hover:text-warm-brown transition-colors"
+          transition={{ duration: 0.25, ease: "easeInOut" }}
+          className="text-muted-foreground/50 group-hover:text-warm-brown transition-colors"
         >
-          <ChevronDown size={20} />
+          <ChevronDown size={18} />
         </motion.div>
       </button>
       <AnimatePresence initial={false}>
@@ -48,10 +48,10 @@ const AccordionItem = ({ title, icon, children, defaultOpen = false, badge }: Ac
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
             className="overflow-hidden"
           >
-            <div className="pb-8">{children}</div>
+            <div className="pb-6">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>
