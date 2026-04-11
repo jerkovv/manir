@@ -10,6 +10,7 @@ const navLinks = [
   { name: "Prodavnica", path: "/prodavnica" },
   { name: "Blog", path: "/blog" },
   { name: "Edukacije", path: "/edukacije" },
+  { name: "Katalog", path: "/katalog", isDownload: true },
   { name: "Partner saloni", path: "/partner-saloni" },
   { name: "Kontakt", path: "/kontakt" },
 ];
