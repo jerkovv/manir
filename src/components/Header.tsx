@@ -54,6 +54,8 @@ const Header = () => {
     setIsOpen(false);
   }, []);
 
+  const isOnHero = location.pathname === "/" && isHeroVisible && !scrolled;
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
@@ -66,7 +68,7 @@ const Header = () => {
         <div className="flex items-center justify-between h-20 lg:h-24">
           {/* Logo */}
           <Link to="/" className="relative z-50">
-            <span className="font-heading text-2xl lg:text-3xl tracking-[0.15em] text-warm-dark font-light">
+            <span className={`font-heading text-2xl lg:text-3xl tracking-[0.15em] font-light transition-colors duration-500 ${isOnHero ? "text-white" : "text-warm-dark"}`}>
               0202 <span className="text-sm tracking-[0.3em] uppercase">skin</span>
             </span>
           </Link>
@@ -77,10 +79,10 @@ const Header = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`font-body text-[13px] tracking-[0.12em] uppercase transition-colors duration-300 hover:text-warm-brown ${
-                  location.pathname === link.path
-                    ? "text-warm-brown"
-                    : "text-warm-taupe"
+                className={`font-body text-[13px] tracking-[0.12em] uppercase transition-colors duration-300 ${
+                  isOnHero
+                    ? location.pathname === link.path ? "text-white" : "text-white/70 hover:text-white"
+                    : location.pathname === link.path ? "text-warm-brown" : "text-warm-taupe hover:text-warm-brown"
                 }`}
               >
                 {link.name}
@@ -89,7 +91,9 @@ const Header = () => {
             <a
               href="/0202-skin-katalog.pdf"
               download
-              className="font-body text-[13px] tracking-[0.12em] uppercase text-warm-taupe hover:text-warm-brown transition-colors duration-300 inline-flex items-center gap-1.5"
+              className={`font-body text-[13px] tracking-[0.12em] uppercase transition-colors duration-300 inline-flex items-center gap-1.5 ${
+                isOnHero ? "text-white/70 hover:text-white" : "text-warm-taupe hover:text-warm-brown"
+              }`}
             >
               Katalog <Download size={13} strokeWidth={1.5} />
             </a>
@@ -97,7 +101,7 @@ const Header = () => {
 
           {/* Right side */}
           <div className="flex items-center gap-4">
-            <Link to="/prodavnica" className="text-warm-dark hover:text-warm-brown transition-colors">
+            <Link to="/prodavnica" className={`transition-colors ${isOnHero ? "text-white/80 hover:text-white" : "text-warm-dark hover:text-warm-brown"}`}>
               <ShoppingBag size={20} strokeWidth={1.5} />
             </Link>
             <button
