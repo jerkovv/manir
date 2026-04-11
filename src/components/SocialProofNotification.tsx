@@ -9,9 +9,17 @@ const NAMES = [
   "Katarina N.", "Teodora J.", "Sofija Đ.", "Aleksandra Z.", "Nina G.",
 ];
 
-const CITIES = [
-  "Beograd", "Novi Sad", "Niš", "Kragujevac", "Subotica",
-  "Zrenjanin", "Pančevo", "Čačak", "Novi Pazar", "Kraljevo",
+const CITIES: { name: string; genitive: string }[] = [
+  { name: "Beograd", genitive: "Beograda" },
+  { name: "Novi Sad", genitive: "Novog Sada" },
+  { name: "Niš", genitive: "Niša" },
+  { name: "Kragujevac", genitive: "Kragujevca" },
+  { name: "Subotica", genitive: "Subotice" },
+  { name: "Zrenjanin", genitive: "Zrenjanina" },
+  { name: "Pančevo", genitive: "Pančeva" },
+  { name: "Čačak", genitive: "Čačka" },
+  { name: "Novi Pazar", genitive: "Novog Pazara" },
+  { name: "Kraljevo", genitive: "Kraljeva" },
 ];
 
 const getRandomItem = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
@@ -19,7 +27,7 @@ const getRandomMinutes = () => [3, 5, 8, 12, 15, 18, 22, 27, 33, 45][Math.floor(
 
 const SocialProofNotification = () => {
   const [visible, setVisible] = useState(false);
-  const [data, setData] = useState<{ name: string; city: string; product: typeof products[0]; minutes: number } | null>(null);
+  const [data, setData] = useState<{ name: string; city: typeof CITIES[0]; product: typeof products[0]; minutes: number } | null>(null);
 
   const showNotification = useCallback(() => {
     const product = getRandomItem(products);
@@ -78,10 +86,10 @@ const SocialProofNotification = () => {
             {/* Info */}
             <div className="min-w-0">
               <p className="font-heading text-sm text-foreground leading-tight">
-                {data.name} iz {data.city}
+                {data.name} iz {data.city.genitive}
               </p>
               <p className="font-body text-xs text-muted-foreground mt-0.5">
-                je kupio/la{" "}
+                je kupila{" "}
                 <span className="text-primary font-medium">{data.product.name}</span>
               </p>
               <p className="font-body text-[10px] text-muted-foreground/60 mt-1 flex items-center gap-1">
