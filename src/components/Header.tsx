@@ -78,27 +78,32 @@ const Header = () => {
 
           {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`font-body text-[13px] tracking-[0.12em] uppercase transition-colors duration-300 ${
-                  isOnHero
-                    ? location.pathname === link.path ? "text-white" : "text-white/70 hover:text-white"
-                    : location.pathname === link.path ? "text-warm-brown" : "text-warm-taupe hover:text-warm-brown"
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
-            <a
-              href="/0202-skin-katalog.pdf"
-              download
-              className={`font-body text-[13px] tracking-[0.12em] uppercase transition-colors duration-300 inline-flex items-center gap-1.5 ${
-                isOnHero ? "text-white/70 hover:text-white" : "text-warm-taupe hover:text-warm-brown"
-              }`}
-            >
-              Katalog <Download size={13} strokeWidth={1.5} />
+            {navLinks.map((link) =>
+              link.isDownload ? (
+                <a
+                  key={link.path}
+                  href="/0202-skin-katalog.pdf"
+                  download
+                  className={`font-body text-[13px] tracking-[0.12em] uppercase transition-colors duration-300 inline-flex items-center gap-1.5 ${
+                    isOnHero ? "text-white/70 hover:text-white" : "text-warm-taupe hover:text-warm-brown"
+                  }`}
+                >
+                  {link.name} <Download size={13} strokeWidth={1.5} />
+                </a>
+              ) : (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`font-body text-[13px] tracking-[0.12em] uppercase transition-colors duration-300 ${
+                    isOnHero
+                      ? location.pathname === link.path ? "text-white" : "text-white/70 hover:text-white"
+                      : location.pathname === link.path ? "text-warm-brown" : "text-warm-taupe hover:text-warm-brown"
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              )
+            )}
             </a>
           </nav>
 
