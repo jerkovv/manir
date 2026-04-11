@@ -4,6 +4,7 @@ import { ArrowRight, Droplets, Shield, Heart, Sparkles, FlaskConical, Leaf } fro
 import SectionReveal from "@/components/SectionReveal";
 import ProductCard from "@/components/ProductCard";
 import { products, brandValues, blogPosts, educations } from "@/data/siteData";
+import heroCoverBg from "@/assets/hero-cover-bg.jpg";
 import heroImage from "@/assets/hero-0202.jpg";
 import selfcareImage from "@/assets/selfcare-ritual.jpg";
 import scienceImage from "@/assets/brand-science.jpg";
@@ -25,8 +26,8 @@ const Index = () => {
       {/* Hero */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroImage} alt="0202 SKIN premium skincare proizvodi" className="w-full h-full object-cover" width={1920} height={1080} />
-          <div className="absolute inset-0 bg-gradient-to-r from-warm-dark/60 via-warm-dark/30 to-transparent" />
+          <img src={heroCoverBg} alt="0202 SKIN premium skincare" className="w-full h-full object-cover" width={1920} height={1080} />
+          <div className="absolute inset-0 bg-gradient-to-r from-warm-dark/70 via-warm-dark/40 to-warm-dark/20" />
         </div>
         <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12 pt-24">
           <motion.div
@@ -74,6 +75,36 @@ const Index = () => {
           ))}
         </div>
       </div>
+
+      {/* Trenutna ponuda */}
+      <section className="py-16 lg:py-24">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+          <SectionReveal>
+            <div className="relative overflow-hidden group cursor-pointer">
+              <Link to="/prodavnica">
+                <img
+                  src={heroImage}
+                  alt="0202 SKIN trenutna ponuda"
+                  loading="lazy"
+                  className="w-full aspect-[21/9] object-cover transition-transform duration-700 group-hover:scale-105"
+                  width={1920}
+                  height={1080}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-warm-dark/70 via-transparent to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-8 lg:p-12">
+                  <span className="font-body text-[10px] tracking-[0.3em] uppercase text-primary-foreground/60 block mb-2">Trenutna ponuda</span>
+                  <h3 className="font-heading text-3xl md:text-4xl lg:text-5xl text-primary-foreground font-light">
+                    Otkrijte našu <span className="italic">kolekciju</span>
+                  </h3>
+                  <span className="inline-flex items-center gap-2 mt-4 font-body text-xs tracking-[0.15em] uppercase text-primary-foreground/80 group-hover:text-primary-foreground transition-colors">
+                    Pogledajte ponudu <ArrowRight size={14} />
+                  </span>
+                </div>
+              </Link>
+            </div>
+          </SectionReveal>
+        </div>
+      </section>
 
       {/* Brand Intro */}
       <section className="py-24 lg:py-36">
