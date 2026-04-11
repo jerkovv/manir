@@ -10,6 +10,7 @@ const navLinks = [
   { name: "Prodavnica", path: "/prodavnica" },
   { name: "Blog", path: "/blog" },
   { name: "Edukacije", path: "/edukacije" },
+  { name: "Katalog", path: "/katalog", isDownload: true },
   { name: "Partner saloni", path: "/partner-saloni" },
   { name: "Kontakt", path: "/kontakt" },
 ];
@@ -77,28 +78,32 @@ const Header = () => {
 
           {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`font-body text-[13px] tracking-[0.12em] uppercase transition-colors duration-300 ${
-                  isOnHero
-                    ? location.pathname === link.path ? "text-white" : "text-white/70 hover:text-white"
-                    : location.pathname === link.path ? "text-warm-brown" : "text-warm-taupe hover:text-warm-brown"
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
-            <a
-              href="/0202-skin-katalog.pdf"
-              download
-              className={`font-body text-[13px] tracking-[0.12em] uppercase transition-colors duration-300 inline-flex items-center gap-1.5 ${
-                isOnHero ? "text-white/70 hover:text-white" : "text-warm-taupe hover:text-warm-brown"
-              }`}
-            >
-              Katalog <Download size={13} strokeWidth={1.5} />
-            </a>
+            {navLinks.map((link) =>
+              link.isDownload ? (
+                <a
+                  key={link.path}
+                  href="/0202-skin-katalog.pdf"
+                  download
+                  className={`font-body text-[13px] tracking-[0.12em] uppercase transition-colors duration-300 inline-flex items-center gap-1.5 ${
+                    isOnHero ? "text-white/70 hover:text-white" : "text-warm-taupe hover:text-warm-brown"
+                  }`}
+                >
+                  {link.name} <Download size={13} strokeWidth={1.5} />
+                </a>
+              ) : (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`font-body text-[13px] tracking-[0.12em] uppercase transition-colors duration-300 ${
+                    isOnHero
+                      ? location.pathname === link.path ? "text-white" : "text-white/70 hover:text-white"
+                      : location.pathname === link.path ? "text-warm-brown" : "text-warm-taupe hover:text-warm-brown"
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              )
+            )}
           </nav>
 
           {/* Right side */}
@@ -152,33 +157,30 @@ const Header = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.04, duration: 0.2 }}
                 >
-                  <Link
-                    to={link.path}
-                    onClick={closeMenu}
-                    className={`font-heading text-3xl tracking-wider transition-colors ${
-                      location.pathname === link.path
-                        ? "text-warm-brown"
-                        : "text-warm-dark hover:text-warm-brown"
-                    }`}
-                  >
-                    {link.name}
-                  </Link>
+                  {link.isDownload ? (
+                    <a
+                      href="/0202-skin-katalog.pdf"
+                      download
+                      onClick={closeMenu}
+                      className="font-heading text-3xl tracking-wider text-warm-dark hover:text-warm-brown transition-colors inline-flex items-center gap-3"
+                    >
+                      {link.name} <Download size={22} strokeWidth={1.5} />
+                    </a>
+                  ) : (
+                    <Link
+                      to={link.path}
+                      onClick={closeMenu}
+                      className={`font-heading text-3xl tracking-wider transition-colors ${
+                        location.pathname === link.path
+                          ? "text-warm-brown"
+                          : "text-warm-dark hover:text-warm-brown"
+                      }`}
+                    >
+                      {link.name}
+                    </Link>
+                  )}
                 </motion.div>
               ))}
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: navLinks.length * 0.04, duration: 0.2 }}
-              >
-                <a
-                  href="/0202-skin-katalog.pdf"
-                  download
-                  onClick={closeMenu}
-                  className="font-heading text-3xl tracking-wider text-warm-dark hover:text-warm-brown transition-colors inline-flex items-center gap-3"
-                >
-                  Katalog <Download size={22} strokeWidth={1.5} />
-                </a>
-              </motion.div>
             </nav>
           </motion.div>
         )}
