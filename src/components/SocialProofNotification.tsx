@@ -104,7 +104,7 @@ const SocialProofNotification = () => {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center ring-2 ring-background">
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary rounded-full flex items-center justify-center ring-2 ring-background">
                   <CheckCircle2 size={10} className="text-white" strokeWidth={3} />
                 </div>
               </div>
