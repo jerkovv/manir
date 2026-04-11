@@ -136,6 +136,15 @@ const Header = () => {
             className="fixed inset-0 z-[55] lg:hidden"
             style={{ backgroundColor: 'hsl(var(--background))' }}
           >
+            {/* Close button */}
+            <button
+              onClick={closeMenu}
+              className="absolute top-6 right-6 z-10 text-warm-dark hover:text-warm-brown transition-colors"
+              aria-label="Zatvori meni"
+            >
+              <X size={28} strokeWidth={1.5} />
+            </button>
+
             <nav className="flex flex-col items-center justify-center h-full gap-7 px-6 pt-20">
               {navLinks.map((link, i) => (
                 <motion.div
