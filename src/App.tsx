@@ -41,6 +41,7 @@ const App = () => (
           <ScrollToTop />
           <Header />
           <CartDrawer />
+          <SocialProofNotification />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/o-nama" element={<About />} />
