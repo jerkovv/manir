@@ -61,8 +61,8 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled
+      className={`fixed top-0 left-0 right-0 z-[70] transition-all duration-500 ${
+        scrolled || isOpen
           ? "bg-background/95 backdrop-blur-md shadow-[0_1px_0_hsl(var(--border))]"
           : "bg-transparent"
       }`}
@@ -70,8 +70,8 @@ const Header = () => {
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         <div className="flex items-center justify-between h-20 lg:h-24">
           {/* Logo */}
-          <Link to="/" className="relative z-50">
-            <span className={`font-heading text-2xl lg:text-3xl tracking-[0.15em] font-light transition-colors duration-500 ${isOnHero ? "text-white" : "text-warm-dark"}`}>
+          <Link to="/" className="relative z-[80]" onClick={closeMenu}>
+            <span className={`font-heading text-2xl lg:text-3xl tracking-[0.15em] font-light transition-colors duration-500 ${isOnHero && !isOpen ? "text-white" : "text-warm-dark"}`}>
               0202 <span className="text-sm tracking-[0.3em] uppercase">skin</span>
             </span>
           </Link>
@@ -110,7 +110,7 @@ const Header = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsCartOpen(true)}
-              className={`relative transition-colors ${isOnHero ? "text-white/80 hover:text-white" : "text-warm-dark hover:text-warm-brown"}`}
+              className={`relative transition-colors ${isOnHero && !isOpen ? "text-white/80 hover:text-white" : "text-warm-dark hover:text-warm-brown"}`}
             >
               <ShoppingBag size={20} strokeWidth={1.5} />
               {totalItems > 0 && (
@@ -125,8 +125,10 @@ const Header = () => {
             </button>
             <button
               onClick={toggleMenu}
-              className={`lg:hidden relative z-50 transition-colors ${isOnHero ? "text-white" : "text-warm-dark"}`}
+              className={`lg:hidden relative z-[80] transition-colors ${isOnHero && !isOpen ? "text-white" : "text-warm-dark"}`}
               aria-label={isOpen ? "Zatvori meni" : "Otvori meni"}
+              aria-expanded={isOpen}
+              aria-controls="mobile-menu"
             >
               {isOpen ? <X size={24} strokeWidth={1.5} /> : <Menu size={24} strokeWidth={1.5} />}
             </button>
@@ -139,18 +141,26 @@ const Header = () => {
         {isOpen && (
           <motion.div
             key="mobile-menu"
+            id="mobile-menu"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-background/100 flex flex-col items-center justify-center"
-            style={{ backgroundColor: 'hsl(var(--background))' }}
-            onClick={(e) => {
-              // Close if clicking the backdrop itself
-              if (e.target === e.currentTarget) closeMenu();
-            }}
+            className="fixed inset-0 z-[60] lg:hidden"
           >
-            <nav className="flex flex-col items-center gap-7">
+            <div
+              className="absolute inset-0 bg-background"
+              onClick={closeMenu}
+              aria-hidden="true"
+            />
+
+            <motion.nav
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute inset-x-0 top-20 bottom-0 overflow-y-auto px-6 pt-10 pb-12 bg-background flex flex-col items-center gap-7"
+            >
               {navLinks.map((link, i) => (
                 <motion.div
                   key={link.path}
@@ -182,7 +192,7 @@ const Header = () => {
                   )}
                 </motion.div>
               ))}
-            </nav>
+            </motion.nav>
           </motion.div>
         )}
       </AnimatePresence>
