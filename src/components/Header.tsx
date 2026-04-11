@@ -157,33 +157,30 @@ const Header = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.04, duration: 0.2 }}
                 >
-                  <Link
-                    to={link.path}
-                    onClick={closeMenu}
-                    className={`font-heading text-3xl tracking-wider transition-colors ${
-                      location.pathname === link.path
-                        ? "text-warm-brown"
-                        : "text-warm-dark hover:text-warm-brown"
-                    }`}
-                  >
-                    {link.name}
-                  </Link>
+                  {link.isDownload ? (
+                    <a
+                      href="/0202-skin-katalog.pdf"
+                      download
+                      onClick={closeMenu}
+                      className="font-heading text-3xl tracking-wider text-warm-dark hover:text-warm-brown transition-colors inline-flex items-center gap-3"
+                    >
+                      {link.name} <Download size={22} strokeWidth={1.5} />
+                    </a>
+                  ) : (
+                    <Link
+                      to={link.path}
+                      onClick={closeMenu}
+                      className={`font-heading text-3xl tracking-wider transition-colors ${
+                        location.pathname === link.path
+                          ? "text-warm-brown"
+                          : "text-warm-dark hover:text-warm-brown"
+                      }`}
+                    >
+                      {link.name}
+                    </Link>
+                  )}
                 </motion.div>
               ))}
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: navLinks.length * 0.04, duration: 0.2 }}
-              >
-                <a
-                  href="/0202-skin-katalog.pdf"
-                  download
-                  onClick={closeMenu}
-                  className="font-heading text-3xl tracking-wider text-warm-dark hover:text-warm-brown transition-colors inline-flex items-center gap-3"
-                >
-                  Katalog <Download size={22} strokeWidth={1.5} />
-                </a>
-              </motion.div>
             </nav>
           </motion.div>
         )}
