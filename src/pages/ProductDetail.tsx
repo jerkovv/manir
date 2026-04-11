@@ -174,7 +174,7 @@ const ProductDetail = () => {
                 {/* Price */}
                 <div className="mb-8">
                   <p className="font-heading text-3xl text-foreground">{product.price.toLocaleString("sr-RS")} <span className="text-lg text-muted-foreground">RSD</span></p>
-                  <p className="font-body text-[10px] tracking-[0.05em] text-muted-foreground mt-1">Cena sa PDV-om, bez cene transporta</p>
+                  
                 </div>
 
                 {/* Divider */}
