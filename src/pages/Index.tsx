@@ -24,17 +24,18 @@ const Index = () => {
   return (
     <main>
       {/* Hero */}
-      <section className="relative min-h-screen flex items-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center overflow-hidden bg-background">
         <div className="absolute inset-0">
-          <img src={heroImage} alt="0202 SKIN premium skincare proizvodi" className="w-full h-full object-cover" width={1920} height={1080} />
-          <div className="absolute inset-0 bg-gradient-to-r from-warm-dark/65 via-warm-dark/25 to-transparent" />
+          <img src={heroImage} alt="0202 SKIN premium skincare proizvodi" className="w-full h-full object-cover object-center" width={1920} height={1080} />
+          <div className="absolute inset-0 bg-gradient-to-r from-warm-dark/82 via-warm-dark/46 to-warm-dark/12" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_48%,hsl(var(--warm-dark)/0.22),transparent_36%)]" />
         </div>
-        <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12 pt-24">
+        <div className="relative z-10 max-w-[1400px] mx-auto w-full px-6 lg:px-12 pt-24">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.3 }}
-            className="max-w-2xl"
+            className="max-w-[720px] border border-primary-foreground/10 bg-warm-dark/18 p-8 md:p-10 lg:p-12 backdrop-blur-md"
           >
             <span className="font-body text-[11px] tracking-[0.3em] uppercase text-primary-foreground/70 block mb-6">
               Premium skincare · Srbija
@@ -44,7 +45,7 @@ const Index = () => {
               <br />
               <span className="italic">Nauka i priroda.</span>
             </h1>
-            <p className="font-body text-base md:text-lg text-primary-foreground/80 leading-relaxed max-w-lg mb-10">
+            <p className="font-body text-base md:text-lg text-primary-foreground/82 leading-relaxed max-w-lg mb-10">
               Kozmetika nastala iz ljubavi prema koži i želje da ponudi stvarna rešenja za savremene probleme i stanja kože.
             </p>
             <div className="flex flex-wrap gap-4">
