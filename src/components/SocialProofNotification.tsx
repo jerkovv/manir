@@ -86,10 +86,10 @@ const SocialProofNotification = () => {
             {/* Info */}
             <div className="min-w-0">
               <p className="font-heading text-sm text-foreground leading-tight">
-                {data.name} iz {data.city}
+                {data.name} iz {data.city.genitive}
               </p>
               <p className="font-body text-xs text-muted-foreground mt-0.5">
-                je kupio/la{" "}
+                je kupila{" "}
                 <span className="text-primary font-medium">{data.product.name}</span>
               </p>
               <p className="font-body text-[10px] text-muted-foreground/60 mt-1 flex items-center gap-1">
