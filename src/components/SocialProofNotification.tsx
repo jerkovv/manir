@@ -27,7 +27,7 @@ const getRandomMinutes = () => [3, 5, 8, 12, 15, 18, 22, 27, 33, 45][Math.floor(
 
 const SocialProofNotification = () => {
   const [visible, setVisible] = useState(false);
-  const [data, setData] = useState<{ name: string; city: string; product: typeof products[0]; minutes: number } | null>(null);
+  const [data, setData] = useState<{ name: string; city: typeof CITIES[0]; product: typeof products[0]; minutes: number } | null>(null);
 
   const showNotification = useCallback(() => {
     const product = getRandomItem(products);
