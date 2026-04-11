@@ -24,44 +24,109 @@ const Index = () => {
   return (
     <main>
       {/* Hero */}
-      <section className="relative min-h-screen flex items-center overflow-hidden bg-background">
+      <section className="relative min-h-screen flex items-end overflow-hidden bg-warm-dark">
+        {/* Background image with heavy cinematic overlay */}
         <div className="absolute inset-0">
-          <img src={heroImage} alt="0202 SKIN premium skincare proizvodi" className="w-full h-full object-cover object-center" width={1920} height={1080} />
-          <div className="absolute inset-0 bg-gradient-to-r from-warm-dark/82 via-warm-dark/46 to-warm-dark/12" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_48%,hsl(var(--warm-dark)/0.22),transparent_36%)]" />
+          <img
+            src={heroImage}
+            alt="0202 SKIN premium skincare proizvodi"
+            className="w-full h-full object-cover object-center scale-105"
+            width={1920}
+            height={1080}
+          />
+          {/* Multi-layer cinematic grade */}
+          <div className="absolute inset-0 bg-gradient-to-t from-warm-dark via-warm-dark/60 to-warm-dark/20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-warm-dark/70 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-warm-dark/15" />
         </div>
-        <div className="relative z-10 max-w-[1400px] mx-auto w-full px-6 lg:px-12 pt-24">
+
+        {/* Decorative line */}
+        <motion.div
+          initial={{ scaleY: 0 }}
+          animate={{ scaleY: 1 }}
+          transition={{ duration: 1.5, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute left-12 top-28 bottom-28 w-px bg-gradient-to-b from-transparent via-primary-foreground/20 to-transparent origin-top hidden lg:block"
+        />
+
+        {/* Content */}
+        <div className="relative z-10 max-w-[1400px] mx-auto w-full px-6 lg:px-12 pb-16 md:pb-24 lg:pb-32 pt-32">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.3 }}
-            className="max-w-2xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="max-w-3xl"
           >
-            <span className="font-body text-[11px] tracking-[0.3em] uppercase text-primary-foreground/70 block mb-6">
-              Premium skincare · Srbija
-            </span>
-            <h1 className="font-heading text-5xl md:text-7xl lg:text-8xl text-primary-foreground font-light leading-[0.95] mb-8">
+            {/* Eyebrow */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="flex items-center gap-4 mb-8"
+            >
+              <span className="w-10 h-px bg-warm-gold" />
+              <span className="font-body text-[10px] md:text-[11px] tracking-[0.35em] uppercase text-warm-gold">
+                Premium Skincare · Srbija
+              </span>
+            </motion.div>
+
+            {/* Headline */}
+            <motion.h1
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="font-heading text-[3.2rem] md:text-[5.5rem] lg:text-[7rem] xl:text-[8rem] text-white font-light leading-[0.92] mb-8 drop-shadow-[0_2px_30px_rgba(0,0,0,0.3)]"
+            >
               Ritual nege.
               <br />
-              <span className="italic">Nauka i priroda.</span>
-            </h1>
-            <p className="font-body text-base md:text-lg text-primary-foreground/82 leading-relaxed max-w-lg mb-10">
+              <span className="italic text-warm-cream">Nauka i priroda.</span>
+            </motion.h1>
+
+            {/* Subtext */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.9 }}
+              className="font-body text-[15px] md:text-lg text-white/75 leading-relaxed max-w-[520px] mb-12"
+            >
               Kozmetika nastala iz ljubavi prema koži i želje da ponudi stvarna rešenja za savremene probleme i stanja kože.
-            </p>
-            <div className="flex flex-wrap gap-4">
+            </motion.p>
+
+            {/* CTAs */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.1 }}
+              className="flex flex-wrap gap-4"
+            >
               <Link
                 to="/prodavnica"
-                className="inline-flex items-center gap-3 bg-primary-foreground text-warm-dark px-8 py-4 font-body text-xs tracking-[0.15em] uppercase hover:bg-warm-cream transition-colors duration-300"
+                className="group inline-flex items-center gap-3 bg-white text-warm-dark px-9 py-[18px] font-body text-[11px] tracking-[0.2em] uppercase hover:bg-warm-cream transition-all duration-500 shadow-[0_4px_30px_rgba(0,0,0,0.15)]"
               >
-                Poručite ovde <ArrowRight size={14} />
+                Poručite ovde
+                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform duration-300" />
               </Link>
               <Link
                 to="/o-nama"
-                className="inline-flex items-center gap-3 border border-primary-foreground/30 text-primary-foreground px-8 py-4 font-body text-xs tracking-[0.15em] uppercase hover:bg-primary-foreground/10 transition-colors duration-300"
+                className="inline-flex items-center gap-3 border border-white/25 text-white px-9 py-[18px] font-body text-[11px] tracking-[0.2em] uppercase hover:bg-white/8 hover:border-white/40 transition-all duration-500 backdrop-blur-sm"
               >
                 Naša priča
               </Link>
-            </div>
+            </motion.div>
+          </motion.div>
+
+          {/* Scroll indicator */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 2, duration: 1 }}
+            className="absolute bottom-8 right-12 hidden lg:flex flex-col items-center gap-3"
+          >
+            <span className="font-body text-[9px] tracking-[0.3em] uppercase text-white/40 [writing-mode:vertical-lr]">Scroll</span>
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+              className="w-px h-8 bg-gradient-to-b from-white/40 to-transparent"
+            />
           </motion.div>
         </div>
       </section>
