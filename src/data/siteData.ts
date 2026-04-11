@@ -364,6 +364,7 @@ export const partnerSalons = [
     city: "Zrenjanin",
     phone: "+381 62 8340 898",
     image: salonManir,
+    logo: "/images/manir-logo.png",
   },
   {
     name: "Beautique Spa",
@@ -371,6 +372,7 @@ export const partnerSalons = [
     city: "Beograd",
     phone: "+381 60 4316 363",
     image: salonBeautique,
+    logo: "/images/beautique-logo.svg",
   },
 ];
 
