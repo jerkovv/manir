@@ -20,26 +20,26 @@ const AccordionItem = ({ title, icon, children, defaultOpen = false, badge }: Ac
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="border-b border-border/60 last:border-b-0">
+    <div className="border-b border-border/40 last:border-b-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between py-6 group cursor-pointer"
+        className="w-full flex items-center justify-between py-5 group cursor-pointer"
       >
         <div className="flex items-center gap-3">
-          <span className="text-warm-brown">{icon}</span>
-          <h3 className="font-heading text-xl md:text-2xl text-foreground text-left">{title}</h3>
+          <span className="text-warm-brown/70">{icon}</span>
+          <h3 className="font-heading text-lg md:text-xl text-foreground text-left">{title}</h3>
           {badge && (
-            <span className="font-body text-[9px] tracking-[0.15em] uppercase bg-warm-cream text-warm-brown px-2.5 py-1">
+            <span className="font-body text-[9px] tracking-[0.15em] uppercase bg-warm-cream/80 text-warm-brown/80 px-2.5 py-1 rounded-sm">
               {badge}
             </span>
           )}
         </div>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="text-muted-foreground group-hover:text-warm-brown transition-colors"
+          transition={{ duration: 0.25, ease: "easeInOut" }}
+          className="text-muted-foreground/50 group-hover:text-warm-brown transition-colors"
         >
-          <ChevronDown size={20} />
+          <ChevronDown size={18} />
         </motion.div>
       </button>
       <AnimatePresence initial={false}>
@@ -48,10 +48,10 @@ const AccordionItem = ({ title, icon, children, defaultOpen = false, badge }: Ac
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
             className="overflow-hidden"
           >
-            <div className="pb-8">{children}</div>
+            <div className="pb-6">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -254,33 +254,33 @@ const ProductDetail = () => {
 
                 {/* Product Details Accordion */}
                 {hasAccordionContent && (
-                  <div className="mt-10 pt-10 border-t border-border/40">
-                    <div className="mb-8">
+                  <div className="mt-12 pt-10 border-t border-border/30">
+                    <div className="mb-10">
                       <span className="font-body text-[10px] tracking-[0.3em] uppercase text-muted-foreground block mb-3">Detalji proizvoda</span>
-                      <h2 className="font-heading text-3xl font-light text-foreground">Sve što treba da znate</h2>
+                      <h2 className="font-heading text-[1.75rem] md:text-[2rem] font-light text-foreground leading-tight">Sve što treba da znate</h2>
                     </div>
 
-                    <div className="bg-warm-cream/30 border border-border/30">
-                      <div className="px-5 md:px-8">
+                    <div className="bg-[hsl(var(--warm-cream)/0.35)] rounded-sm">
+                      <div className="px-4 md:px-7">
                         {hasBenefits && (
                           <AccordionItem
                             title="Benefiti"
-                            icon={<Sparkles size={20} strokeWidth={1.5} />}
+                            icon={<Sparkles size={18} strokeWidth={1.5} />}
                             badge={`${product.benefits.length} benefita`}
                           >
-                            <div className="space-y-3 pl-8">
+                            <div className="space-y-2.5 pl-7">
                               {product.benefits.map((b, i) => (
                                 <motion.div
                                   key={i}
-                                  initial={{ opacity: 0, x: -10 }}
+                                  initial={{ opacity: 0, x: -8 }}
                                   animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: i * 0.05 }}
-                                  className="flex items-start gap-3"
+                                  transition={{ delay: i * 0.04 }}
+                                  className="flex items-start gap-2.5"
                                 >
-                                  <div className="w-5 h-5 rounded-full bg-warm-cream flex items-center justify-center flex-shrink-0 mt-0.5">
-                                    <Check size={11} className="text-warm-brown" />
+                                  <div className="w-[18px] h-[18px] rounded-full bg-warm-cream flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <Check size={10} className="text-warm-brown" />
                                   </div>
-                                  <p className="font-body text-sm text-muted-foreground leading-relaxed">{b}</p>
+                                  <p className="font-body text-[13px] text-muted-foreground leading-relaxed">{b}</p>
                                 </motion.div>
                               ))}
                             </div>
@@ -290,10 +290,10 @@ const ProductDetail = () => {
                         {hasUsage && (
                           <AccordionItem
                             title="Način upotrebe"
-                            icon={<Droplets size={20} strokeWidth={1.5} />}
+                            icon={<Droplets size={18} strokeWidth={1.5} />}
                           >
-                            <div className="pl-8">
-                              <p className="font-body text-[15px] text-muted-foreground leading-[1.9]">{product.usage}</p>
+                            <div className="pl-7">
+                              <p className="font-body text-[13px] text-muted-foreground leading-[1.85]">{product.usage}</p>
                             </div>
                           </AccordionItem>
                         )}
@@ -301,16 +301,16 @@ const ProductDetail = () => {
                         {hasComposition && (
                           <AccordionItem
                             title="Sastav (INCI)"
-                            icon={<FlaskConical size={20} strokeWidth={1.5} />}
+                            icon={<FlaskConical size={18} strokeWidth={1.5} />}
                           >
-                            <div className="pl-8 space-y-4">
+                            <div className="pl-7 space-y-3">
                               {product.compositionNote && (
-                                <p className="font-body text-sm text-muted-foreground leading-relaxed">{product.compositionNote}</p>
+                                <p className="font-body text-[13px] text-muted-foreground leading-relaxed">{product.compositionNote}</p>
                               )}
                               {product.inci && (
-                                <div className="bg-warm-cream/60 p-5 border border-border/30">
+                                <div className="bg-warm-cream/50 p-4 border border-border/20 rounded-sm">
                                   <p className="font-body text-[9px] tracking-[0.2em] uppercase text-muted-foreground mb-2">INCI lista</p>
-                                  <p className="font-body text-xs text-muted-foreground/80 leading-relaxed">{product.inci}</p>
+                                  <p className="font-body text-[11px] text-muted-foreground/80 leading-relaxed">{product.inci}</p>
                                 </div>
                               )}
                             </div>
