@@ -36,15 +36,20 @@ const SocialProofNotification = () => {
   useEffect(() => {
     const initialDelay = setTimeout(() => {
       showNotification();
-    }, 4000 + Math.random() * 3000);
+    }, 8000 + Math.random() * 7000);
 
-    const interval = setInterval(() => {
-      showNotification();
-    }, 25000 + Math.random() * 20000);
+    const scheduleNext = () => {
+      return setTimeout(() => {
+        showNotification();
+        timeoutRef = scheduleNext();
+      }, 120000 + Math.random() * 120000); // 2-4 minuta random
+    };
+
+    let timeoutRef = scheduleNext();
 
     return () => {
       clearTimeout(initialDelay);
-      clearInterval(interval);
+      clearTimeout(timeoutRef);
     };
   }, [showNotification]);
 
