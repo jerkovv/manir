@@ -29,7 +29,11 @@ const About = () => {
                 muted
                 loop
                 playsInline
-                className="w-full h-auto block"
+                preload="auto"
+                // @ts-ignore
+                fetchpriority="high"
+                poster={selfcareImage}
+                className="w-full h-auto block bg-warm-cream"
               />
             </SectionReveal>
             <SectionReveal delay={0.2}>
