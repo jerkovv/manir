@@ -19,6 +19,7 @@ const navItems = [
 const AdminLayout = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
   const location = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center bg-[#FAFAF8] font-body text-sm text-muted-foreground">Učitavanje...</div>;
