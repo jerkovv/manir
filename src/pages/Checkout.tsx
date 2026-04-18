@@ -324,12 +324,12 @@ const Checkout = () => {
 
                       <motion.button
                         type="submit"
-                        whileHover={{ scale: 1.01 }}
-                        whileTap={{ scale: 0.99 }}
-                        onClick={handleSubmit}
-                        className="w-full mt-6 flex items-center justify-center gap-3 bg-warm-brown text-primary-foreground px-8 py-4 font-body text-[11px] tracking-[0.2em] uppercase hover:bg-warm-dark transition-colors duration-300"
+                        whileHover={{ scale: submitting ? 1 : 1.01 }}
+                        whileTap={{ scale: submitting ? 1 : 0.99 }}
+                        disabled={submitting}
+                        className="w-full mt-6 flex items-center justify-center gap-3 bg-warm-brown text-primary-foreground px-8 py-4 font-body text-[11px] tracking-[0.2em] uppercase hover:bg-warm-dark transition-colors duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
                       >
-                        Potvrdite porudžbinu
+                        {submitting ? <><Loader2 size={14} className="animate-spin" /> Slanje...</> : "Potvrdite porudžbinu"}
                       </motion.button>
 
                       <div className="mt-5 flex items-center gap-2 justify-center">
