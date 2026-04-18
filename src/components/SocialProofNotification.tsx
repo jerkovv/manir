@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle2 } from "lucide-react";
-import { products } from "@/data/siteData";
+import { fetchProducts, productImage, type Product } from "@/lib/products";
 
 const NAMES = [
   "Milica S.", "Ana M.", "Jelena D.", "Marija K.", "Ivana P.",
@@ -27,10 +27,14 @@ const getRandomMinutes = () => [3, 5, 8, 12, 15, 18, 22, 27, 33, 45][Math.floor(
 
 const SocialProofNotification = () => {
   const [visible, setVisible] = useState(false);
-  const [data, setData] = useState<{ name: string; city: typeof CITIES[0]; product: typeof products[0]; minutes: number } | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [data, setData] = useState<{ name: string; city: typeof CITIES[0]; product: Product; minutes: number } | null>(null);
   const [progress, setProgress] = useState(100);
 
+  useEffect(() => { fetchProducts().then(setProducts).catch(() => {}); }, []);
+
   const showNotification = useCallback(() => {
+    if (!products.length) return;
     const product = getRandomItem(products);
     setData({
       name: getRandomItem(NAMES),
@@ -41,7 +45,7 @@ const SocialProofNotification = () => {
     setProgress(100);
     setVisible(true);
     setTimeout(() => setVisible(false), 6000);
-  }, []);
+  }, [products]);
 
   // Progress bar countdown
   useEffect(() => {
@@ -99,7 +103,7 @@ const SocialProofNotification = () => {
               <div className="relative flex-shrink-0">
                 <div className="w-[52px] h-[52px] rounded-md overflow-hidden ring-1 ring-border/30">
                   <img
-                    src={data.product.image}
+                    src={productImage(data.product)}
                     alt={data.product.name}
                     className="w-full h-full object-cover"
                   />

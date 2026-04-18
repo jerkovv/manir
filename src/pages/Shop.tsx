@@ -1,14 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SectionReveal from "@/components/SectionReveal";
 import ProductCard from "@/components/ProductCard";
-import { products, categories } from "@/data/siteData";
+import { fetchProducts, productImage, categories, type Product } from "@/lib/products";
 
 const Shop = () => {
   const [activeCategory, setActiveCategory] = useState("all");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    fetchProducts()
+      .then(setProducts)
+      .finally(() => setLoading(false));
+  }, []);
 
   const filteredProducts = activeCategory === "all"
     ? products
-    : products.filter((p) => p.categorySlug === activeCategory);
+    : products.filter((p) => p.category_slug === activeCategory);
 
   return (
     <main className="pt-24">
@@ -23,7 +32,6 @@ const Shop = () => {
 
       <section className="py-16 lg:py-24">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
-          {/* Filters */}
           <SectionReveal>
             <div className="flex flex-wrap justify-center gap-3 mb-16">
               {categories.map((cat) => (
@@ -42,12 +50,26 @@ const Shop = () => {
             </div>
           </SectionReveal>
 
-          {/* Products Grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} {...product} />
-            ))}
-          </div>
+          {loading ? (
+            <p className="text-center font-body text-sm text-muted-foreground">Učitavanje...</p>
+          ) : filteredProducts.length === 0 ? (
+            <p className="text-center font-body text-sm text-muted-foreground">Nema proizvoda u ovoj kategoriji.</p>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+              {filteredProducts.map((p) => (
+                <ProductCard
+                  key={p.id}
+                  id={p.slug}
+                  name={p.name}
+                  price={Number(p.price)}
+                  category={p.category || ""}
+                  image={productImage(p)}
+                  featured={p.featured}
+                  size={p.size || undefined}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </main>
