@@ -3,7 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import MultiImageUpload from "@/components/admin/MultiImageUpload";
-import MultiImageUpload from "@/components/admin/MultiImageUpload";
 
 type Product = {
   id: string;
@@ -139,8 +138,8 @@ const AdminProducts = () => {
               <Field label="Opis">
                 <textarea value={editing.description || ""} onChange={(e) => setEditing({ ...editing, description: e.target.value })} rows={4} className="w-full px-3 py-2 border border-border" />
               </Field>
-              <Field label="Slike (URL po liniji)">
-                <textarea value={imagesText} onChange={(e) => setImagesText(e.target.value)} rows={3} placeholder="https://..." className="w-full px-3 py-2 border border-border" />
+              <Field label="Slike">
+                <MultiImageUpload value={editing.images || []} onChange={(images) => setEditing({ ...editing, images })} folder="products" />
               </Field>
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Stanje">
