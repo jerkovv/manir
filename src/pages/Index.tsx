@@ -182,29 +182,23 @@ const Index = () => {
         <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
           <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             <SectionReveal>
-              <span className="font-body text-[11px] tracking-[0.3em] uppercase text-muted-foreground block mb-6">O brendu</span>
+              <span className="font-body text-[11px] tracking-[0.3em] uppercase text-muted-foreground block mb-6">{brand_intro.eyebrow}</span>
               <h2 className="font-heading text-4xl md:text-5xl lg:text-6xl text-foreground font-light leading-[1.1] mb-8">
-                Spoj nauke i <span className="italic">prirode</span> u službi vaše kože
+                {brand_intro.title}
               </h2>
               <div className="space-y-5 font-body text-base leading-relaxed text-muted-foreground">
-                <p>
-                  <strong className="text-foreground">0202 SKIN je kozmetika nastala iz ljubavi prema koži</strong> i želje da ponudi stvarna rešenja za savremene probleme i stanja kože.
-                </p>
-                <p>
-                  Kombinujući znanje farmacije i iskustvo profesionalnih kozmetičara, razvijamo formule koje ciljano deluju na uzrok, a ne samo na posledice.
-                </p>
-                <p>
-                  Ali 0202 SKIN je više od kozmetike. To je ritual nege, trenutak koji posvećujete sebi. Self care koji nije luksuz, već potreba.
-                </p>
+                <p>{brand_intro.paragraph1}</p>
+                <p>{brand_intro.paragraph2}</p>
+                <p>{brand_intro.paragraph3}</p>
                 <p className="text-foreground font-medium italic font-heading text-lg">
-                  „Negovana koža nije slučajnost. Ona je rezultat pažnje, znanja i ljubavi prema sebi."
+                  „{brand_intro.quote}"
                 </p>
               </div>
             </SectionReveal>
             <SectionReveal delay={0.2}>
               <div className="relative">
                 <img
-                  src={scienceImage}
+                  src={brand_intro.image || scienceImage}
                   alt="0202 SKIN spoj nauke i prirode"
                   loading="lazy"
                   className="w-full aspect-[4/5] object-cover"
@@ -212,8 +206,8 @@ const Index = () => {
                   height={1024}
                 />
                 <div className="absolute -bottom-6 -left-6 bg-warm-brown text-primary-foreground p-8 max-w-[240px]">
-                  <p className="font-heading text-3xl font-light">15+</p>
-                  <p className="font-body text-xs tracking-[0.1em] uppercase mt-1 opacity-80">Godina iskustva u kozmetičkoj praksi</p>
+                  <p className="font-heading text-3xl font-light">{brand_intro.badgeNumber}</p>
+                  <p className="font-body text-xs tracking-[0.1em] uppercase mt-1 opacity-80">{brand_intro.badgeLabel}</p>
                 </div>
               </div>
             </SectionReveal>
@@ -275,23 +269,23 @@ const Index = () => {
       {/* Self-care Section */}
       <section className="relative py-24 lg:py-36 overflow-hidden">
         <div className="absolute inset-0">
-          <img src={selfcareImage} alt="Self-care ritual" loading="lazy" className="w-full h-full object-cover" width={1280} height={960} />
+          <img src={selfcare.image || selfcareImage} alt="Self-care ritual" loading="lazy" className="w-full h-full object-cover" width={1280} height={960} />
           <div className="absolute inset-0 bg-warm-dark/50" />
         </div>
         <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12 text-center">
           <SectionReveal>
-            <span className="font-body text-[11px] tracking-[0.3em] uppercase text-primary-foreground/60 block mb-6">Ritual</span>
+            <span className="font-body text-[11px] tracking-[0.3em] uppercase text-primary-foreground/60 block mb-6">{selfcare.eyebrow}</span>
             <h2 className="font-heading text-4xl md:text-6xl lg:text-7xl text-primary-foreground font-light leading-[1.1] mb-8 max-w-3xl mx-auto">
-              Kada usporite, počinje <span className="italic">prava promena</span>
+              {selfcare.title}
             </h2>
             <p className="font-body text-base md:text-lg text-primary-foreground/80 max-w-xl mx-auto leading-relaxed mb-10">
-              Kada birate šta stavljate na svoju kožu i kako se odnosite prema sebi — to je trenutak u kome se rađa lepota. 0202 SKIN je vaš svakodnevni ritual nege.
+              {selfcare.subtitle}
             </p>
             <Link
-              to="/prodavnica"
+              to={selfcare.ctaLink}
               className="inline-flex items-center gap-3 bg-primary-foreground text-warm-dark px-8 py-4 font-body text-xs tracking-[0.15em] uppercase hover:bg-warm-cream transition-colors"
             >
-              Otkrijte kolekciju <ArrowRight size={14} />
+              {selfcare.ctaLabel} <ArrowRight size={14} />
             </Link>
           </SectionReveal>
         </div>
