@@ -1,5 +1,4 @@
-import { ReactNode } from "react";
-import { Navigate, Link, useLocation } from "react-router-dom";
+import { Navigate, Link, useLocation, Outlet } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { LayoutDashboard, Package, ShoppingBag, Users, FileText, Star, Layers, FilePlus, LogOut } from "lucide-react";
 
@@ -14,7 +13,7 @@ const navItems = [
   { to: "/admin/landing", label: "Landing editor", icon: Layers },
 ];
 
-const AdminLayout = ({ children }: { children: ReactNode }) => {
+const AdminLayout = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
   const location = useLocation();
 
@@ -39,7 +38,6 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <div className="min-h-screen flex bg-[#FAFAF8]">
-      {/* Sidebar */}
       <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-border">
         <div className="p-6 border-b border-border">
           <Link to="/admin" className="font-heading text-xl">0202 admin</Link>
@@ -70,7 +68,6 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
         </div>
       </aside>
 
-      {/* Mobile top bar */}
       <div className="lg:hidden fixed top-0 inset-x-0 bg-white border-b border-border z-40">
         <div className="flex items-center justify-between px-4 py-3">
           <Link to="/admin" className="font-heading text-lg">0202 admin</Link>
@@ -95,7 +92,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
       </div>
 
       <main className="flex-1 lg:ml-0 mt-[88px] lg:mt-0 p-6 lg:p-10 max-w-full overflow-x-hidden">
-        {children}
+        <Outlet />
       </main>
     </div>
   );
