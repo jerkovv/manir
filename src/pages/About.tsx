@@ -1,6 +1,7 @@
 import SectionReveal from "@/components/SectionReveal";
 import scienceImage from "@/assets/brand-science.jpg";
 import selfcareImage from "@/assets/selfcare-ritual.jpg";
+import introVideo from "@/assets/0202-intro.mp4";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 
@@ -17,6 +18,21 @@ const About = () => {
         </div>
       </section>
 
+      {/* Intro Video */}
+      <section className="pb-8 lg:pb-12 bg-warm-cream">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+          <SectionReveal>
+            <video
+              src={introVideo}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="w-full aspect-video object-cover"
+            />
+          </SectionReveal>
+        </div>
+      </section>
       {/* Story */}
       <section className="py-24 lg:py-36">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
