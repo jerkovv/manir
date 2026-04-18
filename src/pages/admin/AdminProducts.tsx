@@ -66,14 +66,28 @@ const AdminProducts = () => {
       slug: editing.slug,
       name: editing.name,
       description: editing.description || null,
+      short_description: editing.short_description || null,
       price: Number(editing.price),
+      size: editing.size || null,
+      category: editing.category || null,
+      category_slug: editing.category_slug || null,
       images: editing.images || [],
       stock_status: editing.stock_status || "in_stock",
       visible: editing.visible ?? true,
+      featured: editing.featured ?? false,
+      position: Number(editing.position) || 0,
+      target_audience: editing.target_audience || null,
+      benefits: editing.benefits || [],
+      free_from: editing.free_from || [],
+      ingredients_benefits: editing.ingredients_benefits || [],
+      active_ingredients_count: editing.active_ingredients_count ?? null,
+      usage: editing.usage || null,
+      inci: editing.inci || null,
+      composition_note: editing.composition_note || null,
     };
     const { error } = editing.id
-      ? await supabase.from("products").update(payload).eq("id", editing.id)
-      : await supabase.from("products").insert(payload);
+      ? await supabase.from("products").update(payload as any).eq("id", editing.id)
+      : await supabase.from("products").insert(payload as any);
     if (error) return toast.error("Greška: " + error.message);
     toast.success("Sačuvano");
     setEditing(null);
