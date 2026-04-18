@@ -139,10 +139,22 @@ const CartDrawer = () => {
 
             {/* Footer */}
             {items.length > 0 && (
-              <div className="border-t border-border/60 px-6 py-5 space-y-4 bg-background">
+              <div className="border-t border-border/60 px-6 py-5 space-y-3 bg-background">
+                {autoDiscount && (
+                  <div className="bg-warm-cream/60 border border-warm-brown/20 px-3 py-2 flex items-center justify-between">
+                    <span className="font-body text-[11px] tracking-[0.1em] uppercase text-warm-brown">{autoDiscount.label}</span>
+                    <span className="font-body text-sm text-warm-brown">−{autoDiscount.amount.toLocaleString("sr-RS")} RSD</span>
+                  </div>
+                )}
+                {autoDiscount && (
+                  <div className="flex items-center justify-between">
+                    <span className="font-body text-xs text-muted-foreground">Međuzbir</span>
+                    <span className="font-body text-sm text-muted-foreground line-through">{totalPrice.toLocaleString("sr-RS")} RSD</span>
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <span className="font-body text-[10px] tracking-[0.2em] uppercase text-muted-foreground">Ukupno</span>
-                  <span className="font-heading text-2xl text-foreground">{totalPrice.toLocaleString("sr-RS")} <span className="text-base text-muted-foreground">RSD</span></span>
+                  <span className="font-heading text-2xl text-foreground">{finalTotal.toLocaleString("sr-RS")} <span className="text-base text-muted-foreground">RSD</span></span>
                 </div>
                 <p className="font-body text-[10px] text-muted-foreground text-right">Cena dostave se obračunava na checkout-u</p>
                 <Link
