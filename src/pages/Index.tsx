@@ -6,6 +6,7 @@ import SectionReveal from "@/components/SectionReveal";
 import ProductCard from "@/components/ProductCard";
 import { brandValues, blogPosts, educations } from "@/data/siteData";
 import { fetchProducts, productImage, type Product } from "@/lib/products";
+import { useLandingContent } from "@/lib/landingContent";
 import heroImage from "@/assets/hero-blurred.jpg";
 import heroOfferImage from "@/assets/hero-0202.jpg";
 import selfcareImage from "@/assets/selfcare-ritual.jpg";
@@ -22,6 +23,9 @@ const valueIcons = [Droplets, Shield, Heart, Sparkles, FlaskConical, Leaf];
 
 const Index = () => {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const { content } = useLandingContent();
+  const { hero, offer, brand_intro, selfcare, final_cta } = content;
+
   useEffect(() => {
     fetchProducts().then((all) => {
       const featured = all.filter((p) => p.featured);
