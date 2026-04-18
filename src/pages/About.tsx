@@ -18,11 +18,11 @@ const About = () => {
         </div>
       </section>
 
-      {/* Intro Video */}
-      <section className="pb-16 lg:pb-24 bg-warm-cream">
+      {/* Story */}
+      <section className="py-24 lg:py-36">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
-          <SectionReveal>
-            <div className="max-w-md mx-auto">
+          <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+            <SectionReveal>
               <video
                 src={introVideo}
                 autoPlay
@@ -31,23 +31,16 @@ const About = () => {
                 playsInline
                 className="w-full h-auto block"
               />
-            </div>
-          </SectionReveal>
-        </div>
-      </section>
-      {/* Story */}
-      <section className="py-24 lg:py-36">
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
-          <SectionReveal>
-            <div className="max-w-3xl mx-auto">
+            </SectionReveal>
+            <SectionReveal delay={0.2}>
               <h2 className="font-heading text-4xl md:text-5xl font-light text-foreground mb-8">Naša priča</h2>
               <div className="space-y-5 font-body text-base leading-relaxed text-muted-foreground">
                 <p><strong className="text-foreground">0202 SKIN</strong> je nastao iz ljubavi prema koži i želje da spojimo najbolje iz nauke i prirode. Nakon više od 15 godina iskustva u kozmetičkoj praksi, udružili smo snage sa magistrom farmacije i fitoterapeutom kako bismo kreirali prirodne kozmetičke proizvode koji daju vidljive rezultate, a pritom neguju, regenerišu i štite kožu.</p>
                 <p>Ime brenda 0202 ima ličnu i emotivnu dimenziju – i u tom smislu simbolizuje ljubav, nežnost i povezanost. Broj 0202 evocira ciklus harmonije i regeneracije, baš kao naši proizvodi koji balansiraju nauku i prirodu.</p>
                 <p>Ovi brojevi označavaju stabilnost i čvrstu osnovu – upravo je to ono što stoji iza naših prirodnih, stručno formulisanih sastojaka. Estetski, simetričnost broja 0202 prenosi osećaj sklada i elegancije.</p>
               </div>
-            </div>
-          </SectionReveal>
+            </SectionReveal>
+          </div>
         </div>
       </section>
 
