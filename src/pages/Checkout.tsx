@@ -1,14 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Check, ShoppingBag, Truck, CreditCard, ShieldCheck, Loader2 } from "lucide-react";
+import { ArrowLeft, Check, ShoppingBag, Truck, CreditCard, ShieldCheck, Loader2, Tag } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import SectionReveal from "@/components/SectionReveal";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  fetchQuantityDiscount, computeQuantityDiscount, validateCoupon, computeCouponDiscount,
+  type AppliedDiscount, type QuantityDiscount,
+} from "@/lib/discount";
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
+  const totalQty = items.reduce((s, i) => s + i.quantity, 0);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [orderNumber, setOrderNumber] = useState<number | null>(null);
@@ -17,7 +22,20 @@ const Checkout = () => {
     address: "", city: "", zip: "", note: "",
   });
 
-  const shippingCost = totalPrice >= 5000 ? 0 : 350;
+  // Discounts (kupon ima prioritet — kupon i auto se ne kombinuju)
+  const [qdConfig, setQdConfig] = useState<QuantityDiscount>({ enabled: false, min_quantity: 3, percent: 20 });
+  const [couponInput, setCouponInput] = useState("");
+  const [couponDiscount, setCouponDiscount] = useState<AppliedDiscount | null>(null);
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
+
+  useEffect(() => { fetchQuantityDiscount().then(setQdConfig); }, []);
+
+  const autoDiscount = computeQuantityDiscount(totalPrice, totalQty, qdConfig);
+  const appliedDiscount: AppliedDiscount | null = couponDiscount || autoDiscount;
+  const discountAmount = appliedDiscount?.amount || 0;
+  const subtotalAfterDiscount = totalPrice - discountAmount;
+
+  const shippingCost = subtotalAfterDiscount >= 5000 ? 0 : 350;
   const grandTotal = totalPrice + shippingCost;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
