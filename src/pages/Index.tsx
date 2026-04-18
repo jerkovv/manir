@@ -358,19 +358,19 @@ const Index = () => {
       <section className="py-24 lg:py-36 bg-warm-dark text-primary-foreground text-center">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
           <SectionReveal>
-            <span className="font-body text-[11px] tracking-[0.3em] uppercase opacity-50 block mb-6">0202 SKIN</span>
+            <span className="font-body text-[11px] tracking-[0.3em] uppercase opacity-50 block mb-6">{final_cta.eyebrow}</span>
             <h2 className="font-heading text-4xl md:text-6xl lg:text-7xl font-light leading-[1.1] mb-8 max-w-3xl mx-auto">
-              Vaša koža zaslužuje <span className="italic">najbolje</span>
+              {final_cta.title}
             </h2>
             <p className="font-body text-base opacity-70 max-w-lg mx-auto mb-10">
-              Otkrijte premium skincare kolekciju zasnovanu na nauci, stručnosti i ljubavi prema koži.
+              {final_cta.subtitle}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/prodavnica" className="inline-flex items-center gap-3 bg-primary-foreground text-warm-dark px-8 py-4 font-body text-xs tracking-[0.15em] uppercase hover:bg-warm-cream transition-colors">
-                Prodavnica <ArrowRight size={14} />
+              <Link to={final_cta.ctaPrimaryLink} className="inline-flex items-center gap-3 bg-primary-foreground text-warm-dark px-8 py-4 font-body text-xs tracking-[0.15em] uppercase hover:bg-warm-cream transition-colors">
+                {final_cta.ctaPrimaryLabel} <ArrowRight size={14} />
               </Link>
-              <Link to="/kontakt" className="inline-flex items-center gap-3 border border-primary-foreground/30 px-8 py-4 font-body text-xs tracking-[0.15em] uppercase hover:bg-primary-foreground/10 transition-colors">
-                Kontaktirajte nas
+              <Link to={final_cta.ctaSecondaryLink} className="inline-flex items-center gap-3 border border-primary-foreground/30 px-8 py-4 font-body text-xs tracking-[0.15em] uppercase hover:bg-primary-foreground/10 transition-colors">
+                {final_cta.ctaSecondaryLabel}
               </Link>
             </div>
           </SectionReveal>
