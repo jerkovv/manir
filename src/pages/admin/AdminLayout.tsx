@@ -1,12 +1,13 @@
 import { Navigate, Link, useLocation, Outlet } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { LayoutDashboard, Package, ShoppingBag, Users, FileText, Star, Layers, FilePlus, LogOut } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingBag, Users, FileText, Star, Layers, FilePlus, Tag, LogOut } from "lucide-react";
 
 const navItems = [
   { to: "/admin", label: "Pregled", icon: LayoutDashboard, end: true },
   { to: "/admin/orders", label: "Porudžbine", icon: ShoppingBag },
   { to: "/admin/customers", label: "Kupci", icon: Users },
   { to: "/admin/products", label: "Proizvodi", icon: Package },
+  { to: "/admin/discounts", label: "Popusti i kuponi", icon: Tag },
   { to: "/admin/reviews", label: "Recenzije", icon: Star },
   { to: "/admin/blog", label: "Blog", icon: FileText },
   { to: "/admin/pages", label: "Stranice", icon: FilePlus },
