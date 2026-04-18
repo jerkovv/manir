@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
+import ImageUpload from "@/components/admin/ImageUpload";
 
 type Post = {
   id: string;
@@ -142,9 +143,12 @@ const AdminBlog = () => {
               <Field label="Sadržaj (Markdown / HTML)">
                 <textarea value={editing.body || ""} onChange={(e) => setEditing({ ...editing, body: e.target.value })} rows={10} className="w-full px-3 py-2 border border-border font-mono text-xs" />
               </Field>
-              <Field label="URL naslovne slike">
-                <input value={editing.featured_image || ""} onChange={(e) => setEditing({ ...editing, featured_image: e.target.value })} className="w-full px-3 py-2 border border-border" />
-              </Field>
+              <ImageUpload
+                label="Naslovna slika"
+                value={editing.featured_image || ""}
+                onChange={(url) => setEditing({ ...editing, featured_image: url })}
+                folder="blog"
+              />
               <Field label="Tagovi (zarezom razdvojeni)">
                 <input value={tagsText} onChange={(e) => setTagsText(e.target.value)} placeholder="nega, koža, saveti" className="w-full px-3 py-2 border border-border" />
               </Field>
