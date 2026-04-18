@@ -40,7 +40,7 @@ const Index = () => {
         {/* Background image with heavy cinematic overlay */}
         <div className="absolute inset-0">
           <img
-            src={heroImage}
+            src={hero.image || heroImage}
             alt="0202 SKIN premium skincare proizvodi"
             className="w-full h-full object-cover object-center scale-105"
             width={1920}
@@ -77,7 +77,7 @@ const Index = () => {
             >
               <span className="w-10 h-px bg-warm-gold" />
               <span className="font-body text-[10px] md:text-[11px] tracking-[0.35em] uppercase text-warm-gold">
-                Premium Skincare
+                {hero.eyebrow}
               </span>
             </motion.div>
 
@@ -88,9 +88,9 @@ const Index = () => {
               transition={{ duration: 1, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
               className="font-heading text-[3.2rem] md:text-[5.5rem] lg:text-[7rem] xl:text-[8rem] text-white font-light leading-[0.92] mb-8 drop-shadow-[0_2px_30px_rgba(0,0,0,0.3)]"
             >
-              Ritual nege.
+              {hero.titleLine1}
               <br />
-              <span className="italic text-warm-cream">Nauka i priroda.</span>
+              <span className="italic text-warm-cream">{hero.titleLine2}</span>
             </motion.h1>
 
             {/* Subtext */}
@@ -100,7 +100,7 @@ const Index = () => {
               transition={{ duration: 0.8, delay: 0.9 }}
               className="font-body text-[15px] md:text-lg text-white/75 leading-relaxed max-w-[520px] mb-12"
             >
-              Kozmetika nastala iz ljubavi prema koži i želje da ponudi stvarna rešenja za savremene probleme i stanja kože.
+              {hero.subtitle}
             </motion.p>
 
             {/* CTAs */}
@@ -111,17 +111,17 @@ const Index = () => {
               className="flex flex-wrap gap-4"
             >
               <Link
-                to="/prodavnica"
+                to={hero.ctaPrimaryLink}
                 className="group inline-flex items-center gap-3 bg-white text-warm-dark px-9 py-[18px] font-body text-[11px] tracking-[0.2em] uppercase hover:bg-warm-cream transition-all duration-500 shadow-[0_4px_30px_rgba(0,0,0,0.15)]"
               >
-                Poručite ovde
+                {hero.ctaPrimaryLabel}
                 <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform duration-300" />
               </Link>
               <Link
-                to="/o-nama"
+                to={hero.ctaSecondaryLink}
                 className="inline-flex items-center gap-3 border border-white/25 text-white px-9 py-[18px] font-body text-[11px] tracking-[0.2em] uppercase hover:bg-white/8 hover:border-white/40 transition-all duration-500 backdrop-blur-sm"
               >
-                Naša priča
+                {hero.ctaSecondaryLabel}
               </Link>
             </motion.div>
           </motion.div>
@@ -155,25 +155,27 @@ const Index = () => {
       </div>
 
       {/* Trenutna ponuda */}
-      <section className="py-16 lg:py-24">
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
-          <SectionReveal>
-            <div className="max-w-[540px] mx-auto">
-              <span className="font-body text-[10px] tracking-[0.3em] uppercase text-muted-foreground block mb-6 text-center">Trenutna ponuda</span>
-              <Link to="/prodavnica" className="group block overflow-hidden border border-border/60 shadow-[0_30px_80px_-30px_hsl(var(--foreground)/0.18)]">
-                <img
-                  src={heroOfferImage}
-                  alt="0202 SKIN trenutna ponuda"
-                  loading="lazy"
-                  className="w-full h-auto transition-transform duration-700 group-hover:scale-[1.02]"
-                  width={1080}
-                  height={1350}
-                />
-              </Link>
-            </div>
-          </SectionReveal>
-        </div>
-      </section>
+      {offer.enabled && (
+        <section className="py-16 lg:py-24">
+          <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+            <SectionReveal>
+              <div className="max-w-[540px] mx-auto">
+                <span className="font-body text-[10px] tracking-[0.3em] uppercase text-muted-foreground block mb-6 text-center">{offer.eyebrow}</span>
+                <Link to={offer.link || "/prodavnica"} className="group block overflow-hidden border border-border/60 shadow-[0_30px_80px_-30px_hsl(var(--foreground)/0.18)]">
+                  <img
+                    src={offer.image || heroOfferImage}
+                    alt="0202 SKIN trenutna ponuda"
+                    loading="lazy"
+                    className="w-full h-auto transition-transform duration-700 group-hover:scale-[1.02]"
+                    width={1080}
+                    height={1350}
+                  />
+                </Link>
+              </div>
+            </SectionReveal>
+          </div>
+        </section>
+      )}
 
       {/* Brand Intro */}
       <section className="py-24 lg:py-36">
