@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import MultiImageUpload from "@/components/admin/MultiImageUpload";
+import MultiImageUpload from "@/components/admin/MultiImageUpload";
 
 type Product = {
   id: string;
@@ -21,7 +22,7 @@ const AdminProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Partial<Product> | null>(null);
-  const [imagesText, setImagesText] = useState("");
+  // images now managed directly on editing.images via MultiImageUpload
 
   const load = async () => {
     setLoading(true);
@@ -32,8 +33,8 @@ const AdminProducts = () => {
 
   useEffect(() => { load(); }, []);
 
-  const openNew = () => { setEditing({ ...empty }); setImagesText(""); };
-  const openEdit = (p: Product) => { setEditing(p); setImagesText((p.images || []).join("\n")); };
+  const openNew = () => { setEditing({ ...empty }); };
+  const openEdit = (p: Product) => { setEditing(p); };
 
   const save = async () => {
     if (!editing) return;
@@ -45,7 +46,7 @@ const AdminProducts = () => {
       name: editing.name,
       description: editing.description || null,
       price: Number(editing.price),
-      images: imagesText.split("\n").map((s) => s.trim()).filter(Boolean),
+      images: editing.images || [],
       stock_status: editing.stock_status || "in_stock",
       visible: editing.visible ?? true,
     };
