@@ -139,6 +139,11 @@ const Checkout = () => {
             <Check size={36} className="text-warm-brown" />
           </motion.div>
           <h1 className="font-heading text-4xl md:text-5xl text-foreground mb-4">Hvala na porudžbini!</h1>
+          {orderNumber && (
+            <p className="font-body text-xs tracking-[0.2em] uppercase text-warm-brown mb-4">
+              Broj porudžbine: #{orderNumber}
+            </p>
+          )}
           <p className="font-body text-sm text-muted-foreground leading-relaxed mb-3">
             Vaša porudžbina je primljena. Kontaktiraćemo vas uskoro radi potvrde i detalja isporuke.
           </p>
