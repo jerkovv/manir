@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Navigate, Link, useLocation, Outlet } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { LayoutDashboard, Package, ShoppingBag, Users, FileText, Star, Layers, FilePlus, Tag, LogOut } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingBag, Users, FileText, Star, Layers, FilePlus, Tag, LogOut, Menu, X } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const navItems = [
   { to: "/admin", label: "Pregled", icon: LayoutDashboard, end: true },
