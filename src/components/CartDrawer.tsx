@@ -2,9 +2,23 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Minus, Plus, ShoppingBag, ArrowRight, Trash2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { fetchQuantityDiscount, computeQuantityDiscount, type AppliedDiscount } from "@/lib/discount";
 
 const CartDrawer = () => {
   const { items, isCartOpen, setIsCartOpen, removeItem, updateQuantity, totalPrice, totalItems } = useCart();
+  const [autoDiscount, setAutoDiscount] = useState<AppliedDiscount | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    fetchQuantityDiscount().then(cfg => {
+      if (!active) return;
+      setAutoDiscount(computeQuantityDiscount(totalPrice, totalItems, cfg));
+    });
+    return () => { active = false; };
+  }, [totalPrice, totalItems]);
+
+  const finalTotal = totalPrice - (autoDiscount?.amount || 0);
 
   return (
     <AnimatePresence>
