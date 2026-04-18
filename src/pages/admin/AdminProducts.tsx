@@ -4,18 +4,40 @@ import { Plus, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import MultiImageUpload from "@/components/admin/MultiImageUpload";
 
+type IngredientBenefit = { name: string; benefit: string };
+
 type Product = {
   id: string;
   slug: string;
   name: string;
   description: string | null;
+  short_description: string | null;
   price: number;
+  size: string | null;
+  category: string | null;
+  category_slug: string | null;
   images: string[];
   stock_status: string;
   visible: boolean;
+  featured: boolean;
+  position: number;
+  target_audience: string | null;
+  benefits: string[];
+  free_from: string[];
+  ingredients_benefits: IngredientBenefit[];
+  active_ingredients_count: number | null;
+  usage: string | null;
+  inci: string | null;
+  composition_note: string | null;
 };
 
-const empty: Partial<Product> = { slug: "", name: "", description: "", price: 0, images: [], stock_status: "in_stock", visible: true };
+const empty: Partial<Product> = {
+  slug: "", name: "", description: "", short_description: "",
+  price: 0, size: "", category: "", category_slug: "",
+  images: [], stock_status: "in_stock", visible: true, featured: false, position: 0,
+  target_audience: "", benefits: [], free_from: [], ingredients_benefits: [],
+  active_ingredients_count: null, usage: "", inci: "", composition_note: "",
+};
 
 const AdminProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
