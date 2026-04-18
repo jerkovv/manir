@@ -1,9 +1,11 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Droplets, Shield, Heart, Sparkles, FlaskConical, Leaf } from "lucide-react";
 import SectionReveal from "@/components/SectionReveal";
 import ProductCard from "@/components/ProductCard";
-import { products, brandValues, blogPosts, educations } from "@/data/siteData";
+import { brandValues, blogPosts, educations } from "@/data/siteData";
+import { fetchProducts, productImage, type Product } from "@/lib/products";
 import heroImage from "@/assets/hero-blurred.jpg";
 import heroOfferImage from "@/assets/hero-0202.jpg";
 import selfcareImage from "@/assets/selfcare-ritual.jpg";
@@ -19,7 +21,13 @@ const marqueeItems = [
 const valueIcons = [Droplets, Shield, Heart, Sparkles, FlaskConical, Leaf];
 
 const Index = () => {
-  const featuredProducts = products.slice(0, 4);
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  useEffect(() => {
+    fetchProducts().then((all) => {
+      const featured = all.filter((p) => p.featured);
+      setFeaturedProducts((featured.length ? featured : all).slice(0, 4));
+    });
+  }, []);
 
   return (
     <main>
@@ -251,8 +259,8 @@ const Index = () => {
             </div>
           </SectionReveal>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} {...product} />
+            {featuredProducts.map((p) => (
+              <ProductCard key={p.id} id={p.slug} name={p.name} price={Number(p.price)} category={p.category || ""} image={productImage(p)} featured={p.featured} size={p.size || undefined} />
             ))}
           </div>
         </div>

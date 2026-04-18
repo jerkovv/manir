@@ -99,7 +99,7 @@ const SocialProofNotification = () => {
               <div className="relative flex-shrink-0">
                 <div className="w-[52px] h-[52px] rounded-md overflow-hidden ring-1 ring-border/30">
                   <img
-                    src={data.product.image}
+                    src={productImage(data.product)}
                     alt={data.product.name}
                     className="w-full h-full object-cover"
                   />
