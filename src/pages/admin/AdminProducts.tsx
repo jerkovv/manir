@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
+import MultiImageUpload from "@/components/admin/MultiImageUpload";
 
 type Product = {
   id: string;
