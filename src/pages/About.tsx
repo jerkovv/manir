@@ -19,17 +19,19 @@ const About = () => {
       </section>
 
       {/* Intro Video */}
-      <section className="pb-8 lg:pb-12 bg-warm-cream">
+      <section className="pb-16 lg:pb-24 bg-warm-cream">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
           <SectionReveal>
-            <video
-              src={introVideo}
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="w-full aspect-video object-cover"
-            />
+            <div className="max-w-md mx-auto">
+              <video
+                src={introVideo}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-auto block"
+              />
+            </div>
           </SectionReveal>
         </div>
       </section>
