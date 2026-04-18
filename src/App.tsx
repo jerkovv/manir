@@ -27,6 +27,9 @@ import AdminOverview from "./pages/admin/AdminOverview";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminCustomers from "./pages/admin/AdminCustomers";
 import AdminProducts from "./pages/admin/AdminProducts";
+import AdminReviews from "./pages/admin/AdminReviews";
+import AdminBlog from "./pages/admin/AdminBlog";
+import AdminPages from "./pages/admin/AdminPages";
 import { useEffect } from "react";
 
 const ScrollToTop = () => {
