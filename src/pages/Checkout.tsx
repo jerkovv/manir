@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Check, ShoppingBag, Truck, CreditCard, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Check, ShoppingBag, Truck, CreditCard, ShieldCheck, Loader2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import SectionReveal from "@/components/SectionReveal";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [orderNumber, setOrderNumber] = useState<number | null>(null);
   const [form, setForm] = useState({
     firstName: "", lastName: "", email: "", phone: "",
     address: "", city: "", zip: "", note: "",
@@ -21,14 +24,82 @@ const Checkout = () => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.firstName || !form.email || !form.phone || !form.address || !form.city || !form.zip) {
       toast.error("Molimo popunite sva obavezna polja");
       return;
     }
-    setIsSubmitted(true);
-    clearCart();
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      // 1. Upsert customer by email
+      const email = form.email.trim().toLowerCase();
+      const { data: existing } = await supabase
+        .from("customers")
+        .select("id")
+        .eq("email", email)
+        .maybeSingle();
+
+      let customerId = existing?.id as string | undefined;
+      if (!customerId) {
+        const { data: newCustomer, error: cErr } = await supabase
+          .from("customers")
+          .insert({
+            email,
+            first_name: form.firstName,
+            last_name: form.lastName || null,
+            phone: form.phone,
+            address: form.address,
+            city: form.city,
+            postal_code: form.zip,
+          })
+          .select("id")
+          .single();
+        if (cErr) throw cErr;
+        customerId = newCustomer.id;
+      }
+
+      // 2. Create order
+      const { data: order, error: oErr } = await supabase
+        .from("orders")
+        .insert({
+          customer_id: customerId,
+          customer_email: email,
+          customer_name: `${form.firstName} ${form.lastName}`.trim(),
+          customer_phone: form.phone,
+          shipping_address: form.address,
+          shipping_city: form.city,
+          shipping_postal_code: form.zip,
+          total: grandTotal,
+          notes: form.note || null,
+        })
+        .select("id, order_number")
+        .single();
+      if (oErr) throw oErr;
+
+      // 3. Insert order items
+      const orderItems = items.map(item => ({
+        order_id: order.id,
+        product_id: item.id,
+        product_name: item.name,
+        product_image: item.image,
+        quantity: item.quantity,
+        unit_price: item.price,
+        subtotal: item.price * item.quantity,
+      }));
+      const { error: iErr } = await supabase.from("order_items").insert(orderItems);
+      if (iErr) throw iErr;
+
+      setOrderNumber(order.order_number);
+      setIsSubmitted(true);
+      clearCart();
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Greška: " + (err.message || "Pokušajte ponovo"));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (items.length === 0 && !isSubmitted) {
@@ -68,6 +139,11 @@ const Checkout = () => {
             <Check size={36} className="text-warm-brown" />
           </motion.div>
           <h1 className="font-heading text-4xl md:text-5xl text-foreground mb-4">Hvala na porudžbini!</h1>
+          {orderNumber && (
+            <p className="font-body text-xs tracking-[0.2em] uppercase text-warm-brown mb-4">
+              Broj porudžbine: #{orderNumber}
+            </p>
+          )}
           <p className="font-body text-sm text-muted-foreground leading-relaxed mb-3">
             Vaša porudžbina je primljena. Kontaktiraćemo vas uskoro radi potvrde i detalja isporuke.
           </p>
@@ -248,12 +324,12 @@ const Checkout = () => {
 
                       <motion.button
                         type="submit"
-                        whileHover={{ scale: 1.01 }}
-                        whileTap={{ scale: 0.99 }}
-                        onClick={handleSubmit}
-                        className="w-full mt-6 flex items-center justify-center gap-3 bg-warm-brown text-primary-foreground px-8 py-4 font-body text-[11px] tracking-[0.2em] uppercase hover:bg-warm-dark transition-colors duration-300"
+                        whileHover={{ scale: submitting ? 1 : 1.01 }}
+                        whileTap={{ scale: submitting ? 1 : 0.99 }}
+                        disabled={submitting}
+                        className="w-full mt-6 flex items-center justify-center gap-3 bg-warm-brown text-primary-foreground px-8 py-4 font-body text-[11px] tracking-[0.2em] uppercase hover:bg-warm-dark transition-colors duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
                       >
-                        Potvrdite porudžbinu
+                        {submitting ? <><Loader2 size={14} className="animate-spin" /> Slanje...</> : "Potvrdite porudžbinu"}
                       </motion.button>
 
                       <div className="mt-5 flex items-center gap-2 justify-center">
