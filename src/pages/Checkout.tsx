@@ -350,15 +350,59 @@ const Checkout = () => {
                           <span>Proizvodi</span>
                           <span>{totalPrice.toLocaleString("sr-RS")} RSD</span>
                         </div>
+                        {appliedDiscount && (
+                          <div className="flex justify-between font-body text-xs text-warm-brown">
+                            <span className="flex items-center gap-1.5"><Tag size={12} /> {appliedDiscount.label}</span>
+                            <span>−{appliedDiscount.amount.toLocaleString("sr-RS")} RSD</span>
+                          </div>
+                        )}
                         <div className="flex justify-between font-body text-xs text-muted-foreground">
                           <span className="flex items-center gap-1.5"><Truck size={12} /> Dostava</span>
                           <span>{shippingCost === 0 ? "Besplatno" : `${shippingCost} RSD`}</span>
                         </div>
-                        {totalPrice < 5000 && (
+                        {subtotalAfterDiscount < 5000 && (
                           <p className="font-body text-[10px] text-warm-brown">
-                            Još {(5000 - totalPrice).toLocaleString("sr-RS")} RSD do besplatne dostave
+                            Još {(5000 - subtotalAfterDiscount).toLocaleString("sr-RS")} RSD do besplatne dostave
                           </p>
                         )}
+
+                        {/* Coupon input */}
+                        <div className="border-t border-border/40 pt-3">
+                          {couponDiscount ? (
+                            <div className="flex items-center justify-between bg-warm-cream/60 px-3 py-2">
+                              <span className="font-body text-xs text-warm-brown">
+                                Kupon <strong>{couponDiscount.couponCode}</strong> primenjen
+                              </span>
+                              <button type="button" onClick={removeCoupon} className="font-body text-[10px] tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground">
+                                Ukloni
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={couponInput}
+                                onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                                placeholder="Kupon kod"
+                                className="flex-1 bg-transparent border border-border/60 px-3 py-2 font-body text-xs tracking-[0.1em] uppercase text-foreground placeholder:text-muted-foreground/40 focus:border-warm-brown focus:outline-none"
+                              />
+                              <button
+                                type="button"
+                                onClick={applyCoupon}
+                                disabled={validatingCoupon || !couponInput.trim()}
+                                className="border border-warm-brown text-warm-brown px-4 font-body text-[10px] tracking-[0.15em] uppercase hover:bg-warm-brown hover:text-primary-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                              >
+                                {validatingCoupon ? "..." : "Primeni"}
+                              </button>
+                            </div>
+                          )}
+                          {autoDiscount && !couponDiscount && (
+                            <p className="font-body text-[10px] text-muted-foreground mt-2">
+                              Već imate auto-popust. Kupon kod će ga zameniti ako je povoljniji.
+                            </p>
+                          )}
+                        </div>
+
                         <div className="border-t border-border/40 pt-3 flex justify-between items-baseline">
                           <span className="font-body text-[10px] tracking-[0.2em] uppercase text-muted-foreground">Ukupno</span>
                           <span className="font-heading text-2xl text-foreground">{grandTotal.toLocaleString("sr-RS")} <span className="text-sm text-muted-foreground">RSD</span></span>
