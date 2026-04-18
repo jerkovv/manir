@@ -1,6 +1,7 @@
 import SectionReveal from "@/components/SectionReveal";
 import scienceImage from "@/assets/brand-science.jpg";
 import selfcareImage from "@/assets/selfcare-ritual.jpg";
+import introVideo from "@/assets/0202-intro.mp4";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 
