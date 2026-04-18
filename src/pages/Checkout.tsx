@@ -36,7 +36,28 @@ const Checkout = () => {
   const subtotalAfterDiscount = totalPrice - discountAmount;
 
   const shippingCost = subtotalAfterDiscount >= 5000 ? 0 : 350;
-  const grandTotal = totalPrice + shippingCost;
+  const grandTotal = subtotalAfterDiscount + shippingCost;
+
+  const applyCoupon = async () => {
+    const code = couponInput.trim();
+    if (!code) return;
+    setValidatingCoupon(true);
+    try {
+      const c = await validateCoupon(code);
+      if (!c) {
+        toast.error("Nepoznat ili neaktivan kupon");
+        setCouponDiscount(null);
+        return;
+      }
+      const d = computeCouponDiscount(totalPrice, c);
+      setCouponDiscount(d);
+      toast.success(`Kupon ${c.code} primenjen`);
+    } finally {
+      setValidatingCoupon(false);
+    }
+  };
+
+  const removeCoupon = () => { setCouponDiscount(null); setCouponInput(""); };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -89,6 +110,10 @@ const Checkout = () => {
           shipping_address: form.address,
           shipping_city: form.city,
           shipping_postal_code: form.zip,
+          subtotal: totalPrice,
+          discount_amount: discountAmount,
+          discount_label: appliedDiscount?.label || null,
+          coupon_code: appliedDiscount?.couponCode || null,
           total: grandTotal,
           notes: form.note || null,
         })
