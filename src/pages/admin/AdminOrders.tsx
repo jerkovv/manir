@@ -14,6 +14,10 @@ type Order = {
   shipping_address: string | null;
   shipping_city: string | null;
   shipping_postal_code: string | null;
+  subtotal: number | null;
+  discount_amount: number | null;
+  discount_label: string | null;
+  coupon_code: string | null;
   total: number;
   status: string;
   notes: string | null;
@@ -72,6 +76,10 @@ const AdminOrders = () => {
       email: o.customer_email,
       telefon: o.customer_phone || "",
       adresa: `${o.shipping_address || ""}, ${o.shipping_postal_code || ""} ${o.shipping_city || ""}`.trim(),
+      medjuzbir: o.subtotal ?? "",
+      popust: o.discount_amount ?? 0,
+      popust_opis: o.discount_label ?? "",
+      kupon: o.coupon_code ?? "",
       iznos: o.total,
       status: o.status,
     }));
@@ -117,6 +125,8 @@ const AdminOrders = () => {
                 <th className="text-left p-4">Datum</th>
                 <th className="text-left p-4">Kupac</th>
                 <th className="text-left p-4">Email</th>
+                <th className="text-left p-4">Popust</th>
+                <th className="text-left p-4">Kupon</th>
                 <th className="text-left p-4">Iznos</th>
                 <th className="text-left p-4">Status</th>
               </tr>
@@ -128,6 +138,14 @@ const AdminOrders = () => {
                   <td className="p-4 text-muted-foreground">{new Date(o.created_at).toLocaleDateString("sr-RS")}</td>
                   <td className="p-4">{o.customer_name}</td>
                   <td className="p-4 text-muted-foreground">{o.customer_email}</td>
+                  <td className="p-4 text-muted-foreground">
+                    {o.discount_amount && Number(o.discount_amount) > 0
+                      ? `−${Number(o.discount_amount).toLocaleString("sr-RS")} RSD`
+                      : "—"}
+                  </td>
+                  <td className="p-4 text-muted-foreground">
+                    {o.coupon_code ? <span className="font-mono text-xs uppercase">{o.coupon_code}</span> : "—"}
+                  </td>
                   <td className="p-4">{Number(o.total).toLocaleString("sr-RS")} RSD</td>
                   <td className="p-4"><StatusBadge status={o.status} /></td>
                 </tr>
@@ -178,6 +196,21 @@ const AdminOrders = () => {
                         <td className="p-3 text-right">{Number(it.subtotal).toLocaleString("sr-RS")}</td>
                       </tr>
                     ))}
+                    {selected.subtotal != null && (
+                      <tr className="border-t border-border">
+                        <td colSpan={3} className="p-3 text-right text-muted-foreground">Međuzbir</td>
+                        <td className="p-3 text-right text-muted-foreground">{Number(selected.subtotal).toLocaleString("sr-RS")} RSD</td>
+                      </tr>
+                    )}
+                    {selected.discount_amount != null && Number(selected.discount_amount) > 0 && (
+                      <tr className="border-t border-border">
+                        <td colSpan={3} className="p-3 text-right text-muted-foreground">
+                          Popust{selected.discount_label ? ` (${selected.discount_label})` : ""}
+                          {selected.coupon_code ? ` · kupon ${selected.coupon_code}` : ""}
+                        </td>
+                        <td className="p-3 text-right text-muted-foreground">−{Number(selected.discount_amount).toLocaleString("sr-RS")} RSD</td>
+                      </tr>
+                    )}
                     <tr className="border-t border-border bg-[#FAFAF8]">
                       <td colSpan={3} className="p-3 text-right font-medium">Ukupno</td>
                       <td className="p-3 text-right font-medium">{Number(selected.total).toLocaleString("sr-RS")} RSD</td>
