@@ -1,14 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Check, ShoppingBag, Truck, CreditCard, ShieldCheck, Loader2 } from "lucide-react";
+import { ArrowLeft, Check, ShoppingBag, Truck, CreditCard, ShieldCheck, Loader2, Tag } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import SectionReveal from "@/components/SectionReveal";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  fetchQuantityDiscount, computeQuantityDiscount, validateCoupon, computeCouponDiscount,
+  type AppliedDiscount, type QuantityDiscount,
+} from "@/lib/discount";
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
+  const totalQty = items.reduce((s, i) => s + i.quantity, 0);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [orderNumber, setOrderNumber] = useState<number | null>(null);
@@ -17,8 +22,42 @@ const Checkout = () => {
     address: "", city: "", zip: "", note: "",
   });
 
-  const shippingCost = totalPrice >= 5000 ? 0 : 350;
-  const grandTotal = totalPrice + shippingCost;
+  // Discounts (kupon ima prioritet — kupon i auto se ne kombinuju)
+  const [qdConfig, setQdConfig] = useState<QuantityDiscount>({ enabled: false, min_quantity: 3, percent: 20 });
+  const [couponInput, setCouponInput] = useState("");
+  const [couponDiscount, setCouponDiscount] = useState<AppliedDiscount | null>(null);
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
+
+  useEffect(() => { fetchQuantityDiscount().then(setQdConfig); }, []);
+
+  const autoDiscount = computeQuantityDiscount(totalPrice, totalQty, qdConfig);
+  const appliedDiscount: AppliedDiscount | null = couponDiscount || autoDiscount;
+  const discountAmount = appliedDiscount?.amount || 0;
+  const subtotalAfterDiscount = totalPrice - discountAmount;
+
+  const shippingCost = subtotalAfterDiscount >= 5000 ? 0 : 350;
+  const grandTotal = subtotalAfterDiscount + shippingCost;
+
+  const applyCoupon = async () => {
+    const code = couponInput.trim();
+    if (!code) return;
+    setValidatingCoupon(true);
+    try {
+      const c = await validateCoupon(code);
+      if (!c) {
+        toast.error("Nepoznat ili neaktivan kupon");
+        setCouponDiscount(null);
+        return;
+      }
+      const d = computeCouponDiscount(totalPrice, c);
+      setCouponDiscount(d);
+      toast.success(`Kupon ${c.code} primenjen`);
+    } finally {
+      setValidatingCoupon(false);
+    }
+  };
+
+  const removeCoupon = () => { setCouponDiscount(null); setCouponInput(""); };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -71,6 +110,10 @@ const Checkout = () => {
           shipping_address: form.address,
           shipping_city: form.city,
           shipping_postal_code: form.zip,
+          subtotal: totalPrice,
+          discount_amount: discountAmount,
+          discount_label: appliedDiscount?.label || null,
+          coupon_code: appliedDiscount?.couponCode || null,
           total: grandTotal,
           notes: form.note || null,
         })
@@ -307,15 +350,59 @@ const Checkout = () => {
                           <span>Proizvodi</span>
                           <span>{totalPrice.toLocaleString("sr-RS")} RSD</span>
                         </div>
+                        {appliedDiscount && (
+                          <div className="flex justify-between font-body text-xs text-warm-brown">
+                            <span className="flex items-center gap-1.5"><Tag size={12} /> {appliedDiscount.label}</span>
+                            <span>−{appliedDiscount.amount.toLocaleString("sr-RS")} RSD</span>
+                          </div>
+                        )}
                         <div className="flex justify-between font-body text-xs text-muted-foreground">
                           <span className="flex items-center gap-1.5"><Truck size={12} /> Dostava</span>
                           <span>{shippingCost === 0 ? "Besplatno" : `${shippingCost} RSD`}</span>
                         </div>
-                        {totalPrice < 5000 && (
+                        {subtotalAfterDiscount < 5000 && (
                           <p className="font-body text-[10px] text-warm-brown">
-                            Još {(5000 - totalPrice).toLocaleString("sr-RS")} RSD do besplatne dostave
+                            Još {(5000 - subtotalAfterDiscount).toLocaleString("sr-RS")} RSD do besplatne dostave
                           </p>
                         )}
+
+                        {/* Coupon input */}
+                        <div className="border-t border-border/40 pt-3">
+                          {couponDiscount ? (
+                            <div className="flex items-center justify-between bg-warm-cream/60 px-3 py-2">
+                              <span className="font-body text-xs text-warm-brown">
+                                Kupon <strong>{couponDiscount.couponCode}</strong> primenjen
+                              </span>
+                              <button type="button" onClick={removeCoupon} className="font-body text-[10px] tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground">
+                                Ukloni
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={couponInput}
+                                onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                                placeholder="Kupon kod"
+                                className="flex-1 bg-transparent border border-border/60 px-3 py-2 font-body text-xs tracking-[0.1em] uppercase text-foreground placeholder:text-muted-foreground/40 focus:border-warm-brown focus:outline-none"
+                              />
+                              <button
+                                type="button"
+                                onClick={applyCoupon}
+                                disabled={validatingCoupon || !couponInput.trim()}
+                                className="border border-warm-brown text-warm-brown px-4 font-body text-[10px] tracking-[0.15em] uppercase hover:bg-warm-brown hover:text-primary-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                              >
+                                {validatingCoupon ? "..." : "Primeni"}
+                              </button>
+                            </div>
+                          )}
+                          {autoDiscount && !couponDiscount && (
+                            <p className="font-body text-[10px] text-muted-foreground mt-2">
+                              Već imate auto-popust. Kupon kod će ga zameniti ako je povoljniji.
+                            </p>
+                          )}
+                        </div>
+
                         <div className="border-t border-border/40 pt-3 flex justify-between items-baseline">
                           <span className="font-body text-[10px] tracking-[0.2em] uppercase text-muted-foreground">Ukupno</span>
                           <span className="font-heading text-2xl text-foreground">{grandTotal.toLocaleString("sr-RS")} <span className="text-sm text-muted-foreground">RSD</span></span>

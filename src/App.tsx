@@ -30,6 +30,7 @@ import AdminProducts from "./pages/admin/AdminProducts";
 import AdminReviews from "./pages/admin/AdminReviews";
 import AdminBlog from "./pages/admin/AdminBlog";
 import AdminPages from "./pages/admin/AdminPages";
+import AdminDiscounts from "./pages/admin/AdminDiscounts";
 import { useEffect } from "react";
 
 const ScrollToTop = () => {
@@ -85,6 +86,7 @@ const App = () => (
                 <Route path="reviews" element={<AdminReviews />} />
                 <Route path="blog" element={<AdminBlog />} />
                 <Route path="pages" element={<AdminPages />} />
+                <Route path="discounts" element={<AdminDiscounts />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
