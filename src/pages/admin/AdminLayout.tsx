@@ -61,11 +61,24 @@ const AdminLayout = () => {
             );
           })}
         </nav>
-        <div className="p-4 border-t border-border space-y-2">
+        <div className="p-4 border-t border-border space-y-3">
           <div className="font-body text-xs text-muted-foreground truncate">{user.email}</div>
           <button onClick={signOut} className="flex items-center gap-2 font-body text-xs tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground">
             <LogOut size={14} /> Odjava
           </button>
+          <a
+            href="https://luno.rs"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block pt-3 border-t border-border"
+          >
+            <div className="font-body text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">
+              Platformu izradio
+            </div>
+            <div className="font-heading text-sm tracking-wider text-foreground hover:text-primary transition-colors mt-0.5">
+              LUNO<span className="text-primary">.rs</span>
+            </div>
+          </a>
         </div>
       </aside>
 

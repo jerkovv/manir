@@ -93,6 +93,23 @@ const Footer = () => {
             Premium skincare · Srbija
           </p>
         </div>
+
+        {/* Credit badge */}
+        <div className="pb-8 flex justify-center">
+          <a
+            href="https://luno.rs"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-primary-foreground/15 bg-primary/20 hover:bg-primary/40 transition-colors"
+          >
+            <span className="font-body text-[11px] tracking-wide text-primary-foreground/50 group-hover:text-primary-foreground/70 transition-colors">
+              Sajt izradio
+            </span>
+            <span className="font-body text-[11px] font-bold tracking-wide text-primary-foreground group-hover:text-primary-foreground transition-colors">
+              luno.rs
+            </span>
+          </a>
+        </div>
       </div>
     </footer>
   );
