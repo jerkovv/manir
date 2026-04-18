@@ -31,6 +31,7 @@ import AdminReviews from "./pages/admin/AdminReviews";
 import AdminBlog from "./pages/admin/AdminBlog";
 import AdminPages from "./pages/admin/AdminPages";
 import AdminDiscounts from "./pages/admin/AdminDiscounts";
+import AdminLanding from "./pages/admin/AdminLanding";
 import { useEffect } from "react";
 
 const ScrollToTop = () => {
@@ -87,6 +88,7 @@ const App = () => (
                 <Route path="blog" element={<AdminBlog />} />
                 <Route path="pages" element={<AdminPages />} />
                 <Route path="discounts" element={<AdminDiscounts />} />
+                <Route path="landing" element={<AdminLanding />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
