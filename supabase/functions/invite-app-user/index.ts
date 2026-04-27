@@ -1,3 +1,5 @@
+// Edge function: invite-app-user
+// Generates a Supabase invite link for a new system user and emails it via Loopia SMTP.
 import { corsHeaders } from "../_shared/cors.ts";
 import { requirePermission } from "../_shared/require-permission.ts";
 import { sendSystemEmail, inviteEmailHtml } from "../_shared/smtp-sender.ts";
