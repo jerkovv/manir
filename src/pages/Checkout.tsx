@@ -6,6 +6,7 @@ import { useCart } from "@/contexts/CartContext";
 import SectionReveal from "@/components/SectionReveal";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { displayOrderNumber } from "@/lib/orderNumber";
 import {
   fetchQuantityDiscount, computeQuantityDiscount, validateCoupon, computeCouponDiscount,
   type AppliedDiscount, type QuantityDiscount,
@@ -134,7 +135,8 @@ const Checkout = () => {
       const { error: iErr } = await supabase.from("order_items").insert(orderItems);
       if (iErr) throw iErr;
 
-      setOrderNumber(order.order_number);
+      const publicOrderNumber = displayOrderNumber(order.order_number);
+      setOrderNumber(Number(publicOrderNumber));
       setIsSubmitted(true);
       clearCart();
 
@@ -144,7 +146,7 @@ const Checkout = () => {
           body: {
             customerEmail: email,
             customerName: `${form.firstName} ${form.lastName}`.trim(),
-            orderId: order.order_number,
+            orderId: publicOrderNumber,
             items: items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price })),
             total: grandTotal,
           },
