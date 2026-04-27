@@ -41,10 +41,10 @@ type LogRow = {
 
 const DEFAULT: Settings = {
   smtp_host: "mailcluster.loopia.se",
-  smtp_port: 587,
+  smtp_port: 465,
   smtp_user: "",
   smtp_password: "",
-  smtp_secure: false,
+  smtp_secure: true,
   from_name: "0202skin",
   from_email: "",
   admin_email: "",
@@ -114,7 +114,7 @@ const AdminEmailSettings = () => {
       } else if (data) {
         setS({
           smtp_host: data.smtp_host || DEFAULT.smtp_host,
-          smtp_port: data.smtp_port ?? 587,
+          smtp_port: data.smtp_port ?? 465,
           smtp_user: data.smtp_user || "",
           smtp_password: "",
           smtp_secure: !!data.smtp_secure,
@@ -256,8 +256,8 @@ const AdminEmailSettings = () => {
               </div>
               <div>
                 <Label className="text-xs">SMTP port</Label>
-                <Input type="number" value={s.smtp_port} onChange={(e) => setS({ ...s, smtp_port: Number(e.target.value) })} placeholder="587" />
-                <p className="text-[11px] text-muted-foreground mt-1">587 za STARTTLS (preporučeno) ili 465 za SSL/TLS.</p>
+                <Input type="number" value={s.smtp_port} onChange={(e) => setS({ ...s, smtp_port: Number(e.target.value) })} placeholder="465" />
+                <p className="text-[11px] text-muted-foreground mt-1">465 za SSL/TLS (preporučeno) ili 587 za STARTTLS.</p>
               </div>
               <div>
                 <Label className="text-xs">SMTP user (full email)</Label>
@@ -279,7 +279,7 @@ const AdminEmailSettings = () => {
               </div>
               <div className="flex items-center gap-3 sm:col-span-2 pt-1">
                 <Switch checked={s.smtp_secure} onCheckedChange={(v) => setS({ ...s, smtp_secure: v })} />
-                <Label className="text-xs">SSL/TLS direktno (isključeno = STARTTLS na 587)</Label>
+                <Label className="text-xs">SSL/TLS direktno (uključeno za port 465, isključeno za 587)</Label>
               </div>
             </div>
 
