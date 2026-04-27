@@ -23,6 +23,7 @@ interface Payload {
   subtotal?: number;
   discountAmount?: number;
   discountLabel?: string;
+  orderDate?: string;
 }
 
 Deno.serve(async (req) => {
@@ -92,6 +93,7 @@ Deno.serve(async (req) => {
     subtotal: subtotalStr,
     discountAmount: discountStr,
     discountLabel: payload.discountLabel || "",
+    orderDate: payload.orderDate || formatOrderDate(new Date()),
   };
 
   const customerSubject = applyTemplate(settings.customer_subject, { ...data, itemsTable: "" });
@@ -198,6 +200,14 @@ function json(body: unknown, status: number) {
 
 function isUuid(v: unknown): boolean {
   return typeof v === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
+}
+
+function formatOrderDate(d: Date): string {
+  // Format: 27.04.2026.
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const yyyy = d.getFullYear();
+  return `${dd}.${mm}.${yyyy}.`;
 }
 
 // redeploy: simple-smtp v2 (1777309864)
