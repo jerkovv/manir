@@ -10,6 +10,8 @@ type Stats = {
   pendingCount: number;
   customersCount: number;
   productsCount: number;
+  newCustomersCount: number;
+  avgOrderValue: number;
 };
 
 type RecentOrder = {
@@ -21,24 +23,60 @@ type RecentOrder = {
   created_at: string;
 };
 
+type Period = "7d" | "30d" | "90d" | "all";
+
+const PERIOD_OPTIONS: { value: Period; label: string }[] = [
+  { value: "7d", label: "Poslednjih 7 dana" },
+  { value: "30d", label: "Poslednjih 30 dana" },
+  { value: "90d", label: "Poslednjih 90 dana" },
+  { value: "all", label: "Sve vreme" },
+];
+
+const periodStartIso = (period: Period): string | null => {
+  if (period === "all") return null;
+  const days = period === "7d" ? 7 : period === "30d" ? 30 : 90;
+  const d = new Date();
+  d.setDate(d.getDate() - days);
+  return d.toISOString();
+};
+
 const AdminOverview = () => {
+  const [period, setPeriod] = useState<Period>("30d");
   const [stats, setStats] = useState<Stats | null>(null);
   const [recent, setRecent] = useState<RecentOrder[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     (async () => {
       try {
-        const [{ data: orders }, { count: customersCount }, { count: productsCount }, { data: recentOrders }] = await Promise.all([
-          supabase.from("orders").select("total, status"),
+        const startIso = periodStartIso(period);
+
+        let ordersQuery = supabase.from("orders").select("total, status, created_at");
+        if (startIso) ordersQuery = ordersQuery.gte("created_at", startIso);
+
+        let newCustomersQuery = supabase.from("customers").select("*", { count: "exact", head: true });
+        if (startIso) newCustomersQuery = newCustomersQuery.gte("created_at", startIso);
+
+        const [
+          { data: orders },
+          { count: customersCount },
+          { count: productsCount },
+          { count: newCustomersCount },
+          { data: recentOrders },
+        ] = await Promise.all([
+          ordersQuery,
           supabase.from("customers").select("*", { count: "exact", head: true }),
           supabase.from("products").select("*", { count: "exact", head: true }),
+          newCustomersQuery,
           supabase.from("orders").select("id, order_number, customer_name, total, status, created_at").order("created_at", { ascending: false }).limit(5),
         ]);
 
         const ordersList = orders || [];
-        const revenue = ordersList.filter((o: any) => o.status !== "cancelled").reduce((s: number, o: any) => s + Number(o.total || 0), 0);
+        const paidOrders = ordersList.filter((o: any) => o.status !== "cancelled");
+        const revenue = paidOrders.reduce((s: number, o: any) => s + Number(o.total || 0), 0);
         const pendingCount = ordersList.filter((o: any) => o.status === "pending").length;
+        const avgOrderValue = paidOrders.length ? revenue / paidOrders.length : 0;
 
         setStats({
           revenue,
@@ -46,25 +84,66 @@ const AdminOverview = () => {
           pendingCount,
           customersCount: customersCount || 0,
           productsCount: productsCount || 0,
+          newCustomersCount: newCustomersCount || 0,
+          avgOrderValue,
         });
         setRecent((recentOrders as RecentOrder[]) || []);
       } finally {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [period]);
+
+  const periodLabel = PERIOD_OPTIONS.find((p) => p.value === period)?.label.toLowerCase() ?? "";
+  const isAll = period === "all";
 
   const cards = stats ? [
-    { label: "Prihod", value: `${stats.revenue.toLocaleString("sr-RS")} RSD`, icon: TrendingUp },
-    { label: "Porudžbine", value: stats.ordersCount, icon: ShoppingBag, sub: `${stats.pendingCount} na čekanju` },
-    { label: "Kupci", value: stats.customersCount, icon: Users },
-    { label: "Proizvodi", value: stats.productsCount, icon: Package },
+    {
+      label: "Prihod",
+      value: `${Math.round(stats.revenue).toLocaleString("sr-RS")} RSD`,
+      icon: TrendingUp,
+      sub: isAll ? "ukupno" : periodLabel,
+    },
+    {
+      label: "Porudžbine",
+      value: stats.ordersCount,
+      icon: ShoppingBag,
+      sub: `${stats.pendingCount} na čekanju${isAll ? "" : ` · ${periodLabel}`}`,
+    },
+    {
+      label: isAll ? "Kupci" : "Novi kupci",
+      value: isAll ? stats.customersCount : stats.newCustomersCount,
+      icon: Users,
+      sub: isAll ? "ukupno" : periodLabel,
+    },
+    {
+      label: "Prosečna porudžbina",
+      value: `${Math.round(stats.avgOrderValue).toLocaleString("sr-RS")} RSD`,
+      icon: Package,
+      sub: isAll ? "sve vreme" : periodLabel,
+    },
   ] : [];
 
   return (
     <div>
       <h1 className="font-heading text-4xl text-foreground mb-2">Pregled</h1>
-      <p className="font-body text-sm text-muted-foreground mb-10">Pregled poslovanja u realnom vremenu.</p>
+      <p className="font-body text-sm text-muted-foreground mb-6">Pregled poslovanja u realnom vremenu.</p>
+
+      <div className="flex flex-wrap gap-2 mb-8">
+        {PERIOD_OPTIONS.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => setPeriod(opt.value)}
+            className={`font-body text-[11px] tracking-[0.15em] uppercase px-4 py-2 border transition-colors ${
+              period === opt.value
+                ? "bg-foreground text-background border-foreground"
+                : "bg-white text-foreground border-border hover:border-foreground"
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
 
       {loading ? (
         <p className="font-body text-sm text-muted-foreground">Učitavanje...</p>
