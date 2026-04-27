@@ -5,8 +5,8 @@
 // Zahteva da pozivalac bude ulogovan kao admin.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 import { corsHeaders } from "../_shared/cors.ts";
+import { sendSmtpEmail } from "../_shared/simple-smtp.ts";
 
 interface TestPayload {
   smtp_host: string;
@@ -68,26 +68,22 @@ Deno.serve(async (req) => {
 
   const fromAddr = `${p.from_name || "0202skin"} <${p.from_email}>`;
 
-  let client: SMTPClient | null = null;
   try {
     const port = Number(p.smtp_port);
     // Port 465 = implicit TLS; 587/25 = STARTTLS (TLS pregovor nakon konekcije)
     const useImplicitTls = port === 465 || (!!p.smtp_secure && port === 465);
 
-    client = new SMTPClient({
-      connection: {
-        hostname: p.smtp_host,
-        port,
-        tls: useImplicitTls,
-        auth: { username: p.smtp_user, password: p.smtp_password },
-      },
-    });
-
-    await client.send({
+    await sendSmtpEmail({
+      hostname: p.smtp_host,
+      port,
+      tls: useImplicitTls,
+      username: p.smtp_user,
+      password: p.smtp_password,
+    }, {
       from: fromAddr,
       to: p.test_recipient,
       subject: "Test poruka iz 0202skin admin panela",
-      content: "Ovo je test poruka. Ako je vidite, SMTP konekcija radi ispravno.",
+      text: "Ovo je test poruka. Ako je vidite, SMTP konekcija radi ispravno.",
       html: `<p>Ovo je <strong>test poruka</strong> iz 0202skin admin panela.</p>
              <p>Ako je vidite, SMTP konekcija radi ispravno.</p>`,
     });
@@ -96,8 +92,6 @@ Deno.serve(async (req) => {
   } catch (e) {
     const msg = (e as Error).message || String(e);
     return json({ success: false, error: msg }, 200);
-  } finally {
-    try { await client?.close(); } catch { /* ignore */ }
   }
 });
 
