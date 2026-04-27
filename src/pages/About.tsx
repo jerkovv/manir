@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import scienceImage from "@/assets/brand-science.jpg";
 import selfcareImage from "@/assets/selfcare-ritual.jpg";
 import introVideo from "@/assets/0202-intro.mp4";
+import introPoster from "@/assets/0202-intro-poster.jpg";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 
@@ -47,6 +48,7 @@ const About = () => {
               <video
                 ref={videoRef}
                 src={introVideo}
+                poster={introPoster}
                 autoPlay
                 muted
                 loop
