@@ -11,40 +11,64 @@ const About = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
+    const preloadLink = document.createElement("link");
+    preloadLink.rel = "preload";
+    preloadLink.as = "video";
+    preloadLink.href = introVideo;
+    preloadLink.type = "video/mp4";
+    preloadLink.setAttribute("fetchpriority", "high");
+    document.head.appendChild(preloadLink);
+
     const v = videoRef.current;
-    if (!v) return;
+    if (!v) {
+      return () => document.head.removeChild(preloadLink);
+    }
     v.muted = true;
+    v.preload = "auto";
+    v.load();
     const tryPlay = () => {
       const p = v.play();
       if (p && typeof p.catch === "function") p.catch(() => {});
     };
     tryPlay();
+    requestAnimationFrame(tryPlay);
     const onLoaded = () => tryPlay();
+    const onVisible = () => {
+      if (!document.hidden) tryPlay();
+    };
     v.addEventListener("loadedmetadata", onLoaded);
+    v.addEventListener("loadeddata", onLoaded);
     v.addEventListener("canplay", onLoaded);
+    v.addEventListener("playing", onLoaded);
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
       v.removeEventListener("loadedmetadata", onLoaded);
+      v.removeEventListener("loadeddata", onLoaded);
       v.removeEventListener("canplay", onLoaded);
+      v.removeEventListener("playing", onLoaded);
+      document.removeEventListener("visibilitychange", onVisible);
+      document.head.removeChild(preloadLink);
     };
   }, []);
 
   return (
     <main className="pt-24">
       {/* Page Hero */}
-      <section className="py-20 lg:py-28 bg-warm-cream">
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-12 text-center">
-          <SectionReveal>
-            <span className="font-body text-[11px] tracking-[0.3em] uppercase text-muted-foreground block mb-4">O nama</span>
-            <h1 className="font-heading text-5xl md:text-7xl font-light text-foreground">Naša priča</h1>
-          </SectionReveal>
-        </div>
-      </section>
-
-      {/* Story */}
-      <section className="py-24 lg:py-36">
+      <section className="py-8 lg:py-12 bg-warm-cream">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
-          <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-            <div>
+          <div className="grid lg:grid-cols-[0.9fr_1.1fr] gap-10 lg:gap-16 items-center">
+            <SectionReveal>
+              <span className="font-body text-[11px] tracking-[0.3em] uppercase text-muted-foreground block mb-4">O nama</span>
+              <h1 className="font-heading text-5xl md:text-7xl font-light text-foreground">Naša priča</h1>
+            </SectionReveal>
+            <div className="relative w-full aspect-[9/16] max-h-[calc(100vh-8rem)] overflow-hidden bg-warm-cream lg:justify-self-end lg:max-w-[460px]">
+              <img
+                src={introPoster}
+                alt="0202 Skin video uvod"
+                loading="eager"
+                fetchPriority="high"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
               <video
                 ref={videoRef}
                 src={introVideo}
@@ -60,10 +84,18 @@ const About = () => {
                 fetchpriority="high"
                 disableRemotePlayback
                 controls={false}
-                className="w-full h-auto block bg-warm-cream"
+                className="relative h-full w-full object-cover block bg-warm-cream"
               />
             </div>
-            <SectionReveal delay={0.2}>
+          </div>
+        </div>
+      </section>
+
+      {/* Story */}
+      <section className="py-24 lg:py-36">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+          <div className="max-w-3xl mx-auto">
+            <SectionReveal>
               <h2 className="font-heading text-4xl md:text-5xl font-light text-foreground mb-8">Naša priča</h2>
               <div className="space-y-5 font-body text-base leading-relaxed text-muted-foreground">
                 <p><strong className="text-foreground">0202 SKIN</strong> je nastao iz ljubavi prema koži i želje da spojimo najbolje iz nauke i prirode. Nakon više od 15 godina iskustva u kozmetičkoj praksi, udružili smo snage sa magistrom farmacije i fitoterapeutom kako bismo kreirali prirodne kozmetičke proizvode koji daju vidljive rezultate, a pritom neguju, regenerišu i štite kožu.</p>
