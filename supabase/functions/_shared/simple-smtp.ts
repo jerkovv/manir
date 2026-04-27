@@ -48,10 +48,7 @@ class SimpleSmtpClient {
         throw new Error("SMTP server ne podržava STARTTLS na ovom portu");
       }
       await client.command("STARTTLS", [220]);
-      if (!(client.conn instanceof Deno.TcpConn)) {
-        throw new Error("STARTTLS zahtijeva TCP konekciju");
-      }
-      client.conn = await Deno.startTls(client.conn, { hostname: settings.hostname });
+      client.conn = await Deno.startTls(client.conn as Deno.TcpConn, { hostname: settings.hostname });
       client.readBuffer = "";
       client.secure = true;
       secure = true;
