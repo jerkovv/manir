@@ -75,7 +75,9 @@ const DEMO = {
 
 function applyDemo(tpl: string): string {
   let out = tpl;
-  for (const [k, v] of Object.entries(DEMO)) out = out.replaceAll(`{${k}}`, v);
+  for (const [k, v] of Object.entries(DEMO)) {
+    out = out.split(`{${k}}`).join(v);
+  }
   return out;
 }
 
