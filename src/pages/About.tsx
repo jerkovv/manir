@@ -54,8 +54,6 @@ const About = () => {
                 playsInline
                 // @ts-ignore
                 webkit-playsinline="true"
-                // @ts-ignore
-                "x5-playsinline"="true"
                 preload="auto"
                 // @ts-ignore
                 fetchpriority="high"
