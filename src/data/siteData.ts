@@ -33,7 +33,7 @@ export const products = [
     featured: false,
     shortDescription: "Nežno prirodno ulje za bebe formulisano isključivo od hladno ceđenih biljnih ulja i biljnih macerata pruža dubinsku hidrataciju, regeneraciju kože i zaštitu osetljive kože od prvih dana života. Namenjeno je bebama, deci, trudnicama i osetljivoj koži odraslih, posebno kada je koža suva, reaktivna ili sklona crvenilu. Idealno za svakodnevnu negu i masažu beba.",
     description: "Nežno prirodno ulje za bebe formulisano isključivo od hladno ceđenih biljnih ulja i biljnih macerata pruža dubinsku hidrataciju, regeneraciju kože i zaštitu osetljive kože od prvih dana života. Namenjeno je bebama, deci, trudnicama i osetljivoj koži odraslih, posebno kada je koža suva, reaktivna ili sklona crvenilu. Idealno za svakodnevnu negu i masažu beba.",
-    targetAudience: "Bebama, deci, trudnicama i osetljivoj koži odraslih – posebno kada je koža suva, reaktivna ili sklona crvenilu.",
+    targetAudience: "Bebama, deci, trudnicama i osetljivoj koži odraslih posebno kada je koža suva, reaktivna ili sklona crvenilu.",
     benefits: [
       "Intenzivno hrani i omekšava kožu",
       "Obnavlja prirodnu lipidnu barijeru kože",
@@ -82,7 +82,7 @@ export const products = [
     featured: false,
     shortDescription: "Nežna prirodna krema za bebe razvijena sa 16 pažljivo odabranih aktivnih sastojaka pruža dubinsku hidrataciju kože, regeneraciju kože i obnovu zaštitne barijere kože od prvih dana života. Namenjena je bebama, deci, trudnicama i osetljivoj koži odraslih, posebno kada je koža suva, reaktivna ili sklona crvenilu. Idealna kao krema za osetljivu kožu beba i hidratantna krema za lice i telo cele porodice.",
     description: "Nežna prirodna krema za bebe razvijena sa 16 pažljivo odabranih aktivnih sastojaka pruža dubinsku hidrataciju kože, regeneraciju kože i obnovu zaštitne barijere kože od prvih dana života. Namenjena je bebama, deci, trudnicama i osetljivoj koži odraslih, posebno kada je koža suva, reaktivna ili sklona crvenilu. Idealna kao krema za osetljivu kožu beba i hidratantna krema za lice i telo cele porodice.",
-    targetAudience: "Bebama, deci, trudnicama i osetljivoj koži odraslih – posebno kada je koža suva, reaktivna ili sklona crvenilu.",
+    targetAudience: "Bebama, deci, trudnicama i osetljivoj koži odraslih posebno kada je koža suva, reaktivna ili sklona crvenilu.",
     benefits: [
       "Intenzivna hidratacija kože",
       "Obnova zaštitne barijere kože",
@@ -125,7 +125,7 @@ export const products = [
   },
   {
     id: "hug-me-krema",
-    name: "Hug Me – Lagana umirujuća 24h krema za lice",
+    name: "Hug Me Lagana umirujuća 24h krema za lice",
     size: "50 ml",
     price: 3900,
     category: "Nega lica",
@@ -135,14 +135,14 @@ export const products = [
     ],
     image: hugMe,
     featured: false,
-    shortDescription: "Duboko hidrantna i umirujuća krema za lice. HUG ME – 11 aktivnih sastojaka, za sve tipove kože, uključujući osetljivu, mešovitu i masnu. Brzo se upija i ostavlja kožu glatkom, umirenom i nahranjenom, bez osećaja težine. Ne zatvara pore, ima antioksidativno dejstvo, obnavlja zaštitnu barijeru i ujednačava ten.",
-    description: "Duboko hidrantna i umirujuća krema za lice. HUG ME – 11 aktivnih sastojaka, za sve tipove kože, uključujući osetljivu, mešovitu i masnu. Brzo se upija i ostavlja kožu glatkom, umirenom i nahranjenom, bez osećaja težine. Ne zatvara pore, ima antioksidativno dejstvo, obnavlja zaštitnu barijeru i ujednačava ten.",
+    shortDescription: "Duboko hidrantna i umirujuća krema za lice. HUG ME 11 aktivnih sastojaka, za sve tipove kože, uključujući osetljivu, mešovitu i masnu. Brzo se upija i ostavlja kožu glatkom, umirenom i nahranjenom, bez osećaja težine. Ne zatvara pore, ima antioksidativno dejstvo, obnavlja zaštitnu barijeru i ujednačava ten.",
+    description: "Duboko hidrantna i umirujuća krema za lice. HUG ME 11 aktivnih sastojaka, za sve tipove kože, uključujući osetljivu, mešovitu i masnu. Brzo se upija i ostavlja kožu glatkom, umirenom i nahranjenom, bez osećaja težine. Ne zatvara pore, ima antioksidativno dejstvo, obnavlja zaštitnu barijeru i ujednačava ten.",
     targetAudience: "Za sve tipove kože, uključujući osetljivu, mešovitu i masnu kožu.",
     benefits: [
       "Umiruje crvenilo, iritacije i osećaj zatezanja zahvaljujući aloe veri, pantenolu, alantoinu, bisabololu i ulju kamilice, koji deluju protivupalno, regenerativno i umirujuće čak i na veoma osetljivoj i reaktivnoj koži.",
-      "Antiinflamatorno i antioksidativno dejstvo obezbeđuju ekstrakt sladića, vitamin E i beta-sitosterol – smanjuju upale, štite ćelije kože od spoljašnjih uticaja i usporavaju pojavu prvih znakova starenja.",
+      "Antiinflamatorno i antioksidativno dejstvo obezbeđuju ekstrakt sladića, vitamin E i beta-sitosterol smanjuju upale, štite ćelije kože od spoljašnjih uticaja i usporavaju pojavu prvih znakova starenja.",
       "Posvetljuje kožu i ujednačava ten zahvaljujući ekstraktu korena sladića, koji doprinosi smanjenju hiperpigmentacija i vraća koži svež, zdrav izgled.",
-      "Reguliše lučenje sebuma i doprinosi uravnoteženom tenu – ulje jojobe i pažljivo odabrani emolijensi pomažu koži da sama pronađe balans između hidratacije i masnoće, bez zapušavanja pora.",
+      "Reguliše lučenje sebuma i doprinosi uravnoteženom tenu ulje jojobe i pažljivo odabrani emolijensi pomažu koži da sama pronađe balans između hidratacije i masnoće, bez zapušavanja pora.",
       "Poboljšava mikrocirkulaciju i vraća prirodan sjaj, čineći kožu vitalnijom i odmornijom. Obnavlja prirodnu zaštitnu barijeru kože i jača njenu otpornost.",
       "Dubinski hidrira tokom 24h zahvaljujući glicerinu, urei i propilen glikolu, koji vezuju vlagu u koži i sprečavaju njen gubitak, ostavljajući kožu dugotrajno mekom, elastičnom i zaštićenom.",
     ],
@@ -198,7 +198,7 @@ export const products = [
       "Hidrolat čajevca je prirodni tonik koji pročišćava, umiruje i dovodi kožu u savršen balans. Nastao blagom destilacijom listova čajevca, zadržava sva njegova dragocena antibakterijska i umirujuća svojstva, ali u nežnoj formi pogodnoj za svakodnevnu upotrebu.",
       "Deluje antiseptično i antibakterijski, pomaže u borbi protiv akni, mitisera i upalnih procesa, dok istovremeno smanjuje crvenilo i iritacije. Balansira lučenje sebuma, čisti pore bez isušivanja i doprinosi zdravijem, ujednačenijem tenu.",
       "Može se koristiti kao tonik posle čišćenja lica, za osvežavanje tokom dana, nakon depilacije ili brijanja, kao i za smirivanje kože posle sunčanja i tretmana.",
-      "Hidrolat čajevca pruža koži osećaj čistoće, svežine i smirenosti – nežno, prirodno i efikasno.",
+      "Hidrolat čajevca pruža koži osećaj čistoće, svežine i smirenosti nežno, prirodno i efikasno.",
     ],
     freeFrom: [],
     ingredientsBenefits: [],
@@ -223,10 +223,10 @@ export const products = [
     description: "Idealan je za osetljivu, suvu, dehidriranu i problematičnu kožu, jer deluje umirujuće, osvežavajuće i balansirajuće. Dobijen parnom destilacijom cveta lavande, zadržava sva dragocena svojstva biljke u nežnoj, koži prijatnoj formi. 100% PRIRODAN.",
     targetAudience: "Za osetljivu, suvu, dehidriranu i problematičnu kožu.",
     benefits: [
-      "Za osetljivu i iritiranu kožu – umiruje, smanjuje crvenilo i osećaj zatezanja.",
-      "Za suvu i dehidriranu kožu – vraća vlagu, mekoću i prirodan sjaj.",
-      "Za problematičnu kožu – blago antiseptično dejstvo pomaže kod osipa i upalnih procesa.",
-      "Za umornu i sivu kožu – osvežava i vraća zdrav, prirodan ten.",
+      "Za osetljivu i iritiranu kožu umiruje, smanjuje crvenilo i osećaj zatezanja.",
+      "Za suvu i dehidriranu kožu vraća vlagu, mekoću i prirodan sjaj.",
+      "Za problematičnu kožu blago antiseptično dejstvo pomaže kod osipa i upalnih procesa.",
+      "Za umornu i sivu kožu osvežava i vraća zdrav, prirodan ten.",
       "Hidrolat lavande je savršen kao prirodni tonik za lice, ali i kao osvežavajući sprej za telo, posebno tokom toplih dana, nakon sunčanja ili posle depilacije.",
     ],
     freeFrom: [],
@@ -261,7 +261,7 @@ export const products = [
     freeFrom: [],
     ingredientsBenefits: [],
     activeIngredientsCount: null,
-    usage: "Naneti piling na vlažnu kožu, umasirati kružnim pokretima i isprati mlakom vodom. Preporučuje se 1–2 puta nedeljno.",
+    usage: "Naneti piling na vlažnu kožu, umasirati kružnim pokretima i isprati mlakom vodom. Preporučuje se 12 puta nedeljno.",
     inci: null,
     compositionNote: "Prepustite se luksuznom iskustvu nege kože sa našim 0202 SKIN THE SCENT pilingom. Spoj morske soli bogate sa preko 80 minerala i kokosovog ulja sa vitaminima E i K pruža vašoj koži dubinsko čišćenje i intenzivnu negu. Rezultat je svilenkasta, glatka i nahranjena koža već nakon prve upotrebe zahvaljujući ricinusovom ulju. Ovaj piling uklanja mrtve ćelije, podstiče regeneraciju i vraća koži prirodan sjaj, dok je ulja štite od isušivanja i ostavljaju nežan miris.",
   },
@@ -278,22 +278,22 @@ export const blogPosts = [
   {
     id: "bez-kortikosteroida",
     title: "Bez kortikosteroida: Iva otkriva serum koji menja kožu",
-    excerpt: "Ivina priča otkriva kako je K1 serum sa uljem kanabisa pomogao njenoj suvoj koži – bez kortikosteroida, bez hemije.",
+    excerpt: "Ivina priča otkriva kako je K1 serum sa uljem kanabisa pomogao njenoj suvoj koži bez kortikosteroida, bez hemije.",
     date: "17. septembar 2025.",
     author: "Marina",
     category: "Nega tela",
     image: serumK1,
-    content: `Okej, moram da podelim ovo. Suva koža me prati još od detinjstva. Probala sam sve – kreme sa kortikosteroidima, razne losione, meleme… i svaki put čim prestanem da mažem, tretiram kožu – sve se vraća. Doslovno sam mislila da tako treba da živim i to je to.
+    content: `Okej, moram da podelim ovo. Suva koža me prati još od detinjstva. Probala sam sve kreme sa kortikosteroidima, razne losione, meleme… i svaki put čim prestanem da mažem, tretiram kožu sve se vraća. Doslovno sam mislila da tako treba da živim i to je to.
 
-Ali onda mi se u rukama našao K1 serum za lice, sa ekstra devičanskim uljem kanabisa. Bila sam kod mame i tate u Nemačkoj, ostala bez kreme, a koža je počela da svrbi. Pomislila sam – ajde da probam serum za lice da namažem na članak.
+Ali onda mi se u rukama našao K1 serum za lice, sa ekstra devičanskim uljem kanabisa. Bila sam kod mame i tate u Nemačkoj, ostala bez kreme, a koža je počela da svrbi. Pomislila sam ajde da probam serum za lice da namažem na članak.
 
 Tri večeri zaredom sam ga nanosila na suvi deo kože… i stvarno nisam očekivala ništa posebno. Samo da prestane svrab koji se javljao i inače, s vremena na vreme.
 
-Ipak, sledeći dan sam primetila prvu razliku – koža je bila hidrirana, mekša, svrab je nestao. Nakon trećeg nanošenja – vratila sam se u Srbiju. Nisam imala ni kremu ni serum – zaboravila sam ga, a zaboravila sam i da imam suvu kožu.
+Ipak, sledeći dan sam primetila prvu razliku koža je bila hidrirana, mekša, svrab je nestao. Nakon trećeg nanošenja vratila sam se u Srbiju. Nisam imala ni kremu ni serum zaboravila sam ga, a zaboravila sam i da imam suvu kožu.
 
 Danas, tri meseca kasnije, nisam mazala više to mesto ni sa čim. Koža i dalje izgleda super: hidrirano, regenerisano, bez iritacija.
 
-Za mene, K1 serum nije samo serum za lice – to je prirodna nega kože koja funkcioniše. Sad bih ovaj serum nanela na svaku jednu tačku na telu kom mislim da nešto fali. I eto, bez kortikosteroida, bez hemije, a efekat stvarno traje.
+Za mene, K1 serum nije samo serum za lice to je prirodna nega kože koja funkcioniše. Sad bih ovaj serum nanela na svaku jednu tačku na telu kom mislim da nešto fali. I eto, bez kortikosteroida, bez hemije, a efekat stvarno traje.
 
 Ako tražiš prirodnu kozmetiku, rešenje za suvu kožu, ili jednostavno želiš glatku i negovanu kožu, K1 serum za lice sa ekstra devičanskim uljem kanabisa je definitivno nešto što treba da probaš.`,
   },
@@ -303,9 +303,9 @@ export const educations = [
   {
     id: "lash-brow-lift",
     title: "Lash & Brow Lift",
-    subtitle: "Postani lash & brow artist – bez prethodnog iskustva!",
+    subtitle: "Postani lash & brow artist bez prethodnog iskustva!",
     price: "270€",
-    location: "Beograd, Tošin Bunar 141 – BEAUTIQUE SPA",
+    location: "Beograd, Tošin Bunar 141 BEAUTIQUE SPA",
     date: "22. novembar",
     description: "Pridruži se ekskluzivnoj edukaciji i nauči sve što ti je potrebno da odmah započneš posao u beauty industriji. Obuka koja donosi brzu zaradu uz minimalna ulaganja.",
     features: [
@@ -379,16 +379,16 @@ export const partnerSalons = [
 export const contactInfo = {
   email: "0202skin@gmail.com",
   phones: ["+381 62 8340898", "+381 65 2990226"],
-  workingHours: "Ponedeljak – Petak: 09:00 – 16:00h",
+  workingHours: "Ponedeljak Petak: 09:00 16:00h",
   instagram: "https://www.instagram.com/0202skin/",
   facebook: "https://www.facebook.com/0202skin",
 };
 
 export const brandValues = [
-  { title: "Čista formula", description: "Bez parabena, bez štetnih aditiva – samo najkvalitetniji prirodni sastojci" },
-  { title: "Balans kože", description: "Vraćamo koži ono što joj je najpotrebnije – prirodan ekvilibrijum" },
+  { title: "Čista formula", description: "Bez parabena, bez štetnih aditiva samo najkvalitetniji prirodni sastojci" },
+  { title: "Balans kože", description: "Vraćamo koži ono što joj je najpotrebnije prirodan ekvilibrijum" },
   { title: "Obnova barijere", description: "Ciljano delujemo na obnovu i jačanje zaštitne barijere kože" },
-  { title: "Self care", description: "Ritual nege koji nije luksuz, već potreba – trenutak posvećen sebi" },
+  { title: "Self care", description: "Ritual nege koji nije luksuz, već potreba trenutak posvećen sebi" },
   { title: "Stručna nega", description: "Spoj farmaceutskog znanja i iskustva profesionalnih kozmetičara" },
   { title: "Nauka i praksa", description: "Formule zasnovane na nauci, potvrđene u profesionalnoj praksi" },
 ];

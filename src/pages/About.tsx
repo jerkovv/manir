@@ -99,8 +99,8 @@ const About = () => {
               <h2 className="font-heading text-4xl md:text-5xl font-light text-foreground mb-8">Naša priča</h2>
               <div className="space-y-5 font-body text-base leading-relaxed text-muted-foreground">
                 <p><strong className="text-foreground">0202 SKIN</strong> je nastao iz ljubavi prema koži i želje da spojimo najbolje iz nauke i prirode. Nakon više od 15 godina iskustva u kozmetičkoj praksi, udružili smo snage sa magistrom farmacije i fitoterapeutom kako bismo kreirali prirodne kozmetičke proizvode koji daju vidljive rezultate, a pritom neguju, regenerišu i štite kožu.</p>
-                <p>Ime brenda 0202 ima ličnu i emotivnu dimenziju – i u tom smislu simbolizuje ljubav, nežnost i povezanost. Broj 0202 evocira ciklus harmonije i regeneracije, baš kao naši proizvodi koji balansiraju nauku i prirodu.</p>
-                <p>Ovi brojevi označavaju stabilnost i čvrstu osnovu – upravo je to ono što stoji iza naših prirodnih, stručno formulisanih sastojaka. Estetski, simetričnost broja 0202 prenosi osećaj sklada i elegancije.</p>
+                <p>Ime brenda 0202 ima ličnu i emotivnu dimenziju i u tom smislu simbolizuje ljubav, nežnost i povezanost. Broj 0202 evocira ciklus harmonije i regeneracije, baš kao naši proizvodi koji balansiraju nauku i prirodu.</p>
+                <p>Ovi brojevi označavaju stabilnost i čvrstu osnovu upravo je to ono što stoji iza naših prirodnih, stručno formulisanih sastojaka. Estetski, simetričnost broja 0202 prenosi osećaj sklada i elegancije.</p>
               </div>
             </SectionReveal>
           </div>
@@ -113,10 +113,10 @@ const About = () => {
           <div className="max-w-3xl mx-auto text-center">
             <SectionReveal>
               <h2 className="font-heading text-3xl md:text-5xl font-light text-foreground italic mb-8 leading-tight">
-                Dobrodošli u 0202 SKIN – spoj nauke i prirode u službi vaše kože
+                Dobrodošli u 0202 SKIN spoj nauke i prirode u službi vaše kože
               </h2>
               <p className="font-body text-base text-muted-foreground leading-relaxed">
-                Naša misija je da negujemo, obnavljamo i inspirišemo – i vašu kožu i vaša čula.
+                Naša misija je da negujemo, obnavljamo i inspirišemo i vašu kožu i vaša čula.
               </p>
             </SectionReveal>
           </div>
@@ -133,7 +133,7 @@ const About = () => {
               <div className="space-y-5 font-body text-base leading-relaxed text-muted-foreground">
                 <p>Verujemo u to da lepota dolazi iznutra i da je najblistavija kada je prirodna. Upravo to podržavaju naši proizvodi. U njima kombinujemo aktivne biljne sastojke i stručnu formulaciju, pružajući nežnu, ali efikasnu negu.</p>
                 <p>Pored toga što hranimo kožu lica i tela, podržavamo i negujemo osećaj kompletnog blagostanja. Tretiranje kože 0202 SKIN proizvodima je deo celokupnog self-care rituala.</p>
-                <p>Želimo da svaka osoba koja redovno koristi kombinacije prirodnih 0202 SKIN proizvoda veoma brzo oseti razliku – kožu koja diše, regeneriše se i zrači zdravljem.</p>
+                <p>Želimo da svaka osoba koja redovno koristi kombinacije prirodnih 0202 SKIN proizvoda veoma brzo oseti razliku kožu koja diše, regeneriše se i zrači zdravljem.</p>
               </div>
             </SectionReveal>
             <SectionReveal delay={0.2}>
