@@ -1,7 +1,7 @@
 // Šalje sistemski email (invite, notifikacije) preko istog SMTP-a kao send-order-email.
 // Vraća { sent: true } ili baca grešku.
 import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
+import { sendSmtpEmail } from "./simple-smtp.ts";
 
 export async function sendSystemEmail(opts: {
   admin: SupabaseClient;
@@ -24,31 +24,26 @@ export async function sendSystemEmail(opts: {
   if (pErr) return { sent: false, error: `Decrypt failed: ${pErr.message}` };
   const smtpPassword = pwdRow as string;
 
-  const port = Number(settings.smtp_port);
-  const client = new SMTPClient({
-    connection: {
+  const fromAddr = `${settings.from_name} <${settings.from_email}>`;
+
+  try {
+    const port = Number(settings.smtp_port);
+    await sendSmtpEmail({
       hostname: settings.smtp_host,
       port,
       // Port 465 = implicit TLS; 587/25 = STARTTLS (tls: false)
       tls: port === 465,
-      auth: { username: settings.smtp_user, password: smtpPassword },
-    },
-  });
-
-  const fromAddr = `${settings.from_name} <${settings.from_email}>`;
-
-  try {
-    await client.send({
+      username: settings.smtp_user,
+      password: smtpPassword,
+    }, {
       from: fromAddr,
       to,
       replyTo: replyTo || settings.admin_email || undefined,
       subject,
       html,
     });
-    try { await client.close(); } catch { /* ignore */ }
     return { sent: true };
   } catch (e) {
-    try { await client.close(); } catch { /* ignore */ }
     return { sent: false, error: (e as Error).message };
   }
 }
