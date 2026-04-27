@@ -35,7 +35,7 @@ class SimpleSmtpClient {
   static async connect(settings: SmtpSettings) {
     const port = Number(settings.port);
     let secure = settings.tls || port === 465;
-    let conn: Deno.Conn = secure
+    let conn: Deno.TcpConn | Deno.TlsConn = secure
       ? await Deno.connectTls({ hostname: settings.hostname, port })
       : await Deno.connect({ hostname: settings.hostname, port });
 
@@ -48,6 +48,9 @@ class SimpleSmtpClient {
         throw new Error("SMTP server ne podržava STARTTLS na ovom portu");
       }
       await client.command("STARTTLS", [220]);
+      if (!(client.conn instanceof Deno.TcpConn)) {
+        throw new Error("STARTTLS zahtijeva TCP konekciju");
+      }
       client.conn = await Deno.startTls(client.conn, { hostname: settings.hostname });
       client.readBuffer = "";
       client.secure = true;
