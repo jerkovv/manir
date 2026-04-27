@@ -288,6 +288,39 @@ const AdminEmailSettings = () => {
 
         {/* ============ TAB 1: SMTP ============ */}
         <TabsContent value="smtp" className="space-y-6">
+          {!smtpUnlocked && (
+            <div className="bg-red-50 border-2 border-red-300 rounded-md p-5 flex items-start gap-4">
+              <Lock className="text-red-600 shrink-0 mt-0.5" size={28} />
+              <div className="flex-1">
+                <div className="font-heading text-lg text-red-900 mb-1">SMTP konekcija je zaključana</div>
+                <p className="font-body text-sm text-red-800/90 mb-3">
+                  Ova podešavanja kontrolišu slanje SVIH email-ova sa sajta (porudžbine, obaveštenja).
+                  Pogrešna izmena može potpuno onemogućiti slanje. Ne menjaj ništa osim ako tačno znaš šta radiš.
+                </p>
+                <button
+                  onClick={() => setWarnOpen(true)}
+                  className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 font-body text-xs tracking-[0.15em] uppercase hover:bg-red-700 transition-colors"
+                >
+                  <ShieldAlert size={14} /> Otključaj izmene
+                </button>
+              </div>
+            </div>
+          )}
+          {smtpUnlocked && (
+            <div className="bg-amber-50 border border-amber-300 rounded-md px-4 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm text-amber-900">
+                <AlertTriangle size={16} className="text-amber-600" />
+                <span className="font-body">SMTP polja su otključana. Budi pažljiv — ne čuvaj izmene osim ako si siguran.</span>
+              </div>
+              <button
+                onClick={() => setSmtpUnlocked(false)}
+                className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-900 hover:text-amber-950 border border-amber-400 px-3 py-1.5"
+              >
+                <Lock size={12} /> Zaključaj nazad
+              </button>
+            </div>
+          )}
+          <fieldset disabled={!smtpUnlocked} className={!smtpUnlocked ? "opacity-60 pointer-events-none select-none" : ""}>
           <div className="bg-white border border-border rounded-md p-6 space-y-5">
             <div className="flex items-center justify-between">
               <div>
@@ -367,6 +400,7 @@ const AdminEmailSettings = () => {
               </button>
             </div>
           </div>
+          </fieldset>
         </TabsContent>
 
         {/* ============ TAB 2: Customer template ============ */}
