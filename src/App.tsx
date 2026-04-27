@@ -22,6 +22,7 @@ import Checkout from "./pages/Checkout";
 import PartnerSalons from "./pages/PartnerSalons";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/admin/AdminLogin";
+import AdminSetPassword from "./pages/admin/AdminSetPassword";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminOverview from "./pages/admin/AdminOverview";
 import AdminOrders from "./pages/admin/AdminOrders";
