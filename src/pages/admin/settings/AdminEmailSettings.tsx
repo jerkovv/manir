@@ -11,6 +11,12 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Eye, EyeOff, Loader2, Send, Save, FlaskConical } from "lucide-react";
+import {
+  PREMIUM_CUSTOMER_TEMPLATE,
+  PREMIUM_ADMIN_TEMPLATE,
+  PREMIUM_CUSTOMER_SUBJECT,
+  PREMIUM_ADMIN_SUBJECT,
+} from "@/lib/premiumEmailTemplates";
 
 type Settings = {
   smtp_host: string;
@@ -332,6 +338,11 @@ const AdminEmailSettings = () => {
             onPreview={() => setPreviewOpen("customer")}
             onSave={save}
             saving={saving}
+            onLoadPremium={() => setS({
+              ...s,
+              customer_subject: PREMIUM_CUSTOMER_SUBJECT,
+              customer_template: PREMIUM_CUSTOMER_TEMPLATE,
+            })}
           />
         </TabsContent>
 
@@ -347,6 +358,11 @@ const AdminEmailSettings = () => {
             onPreview={() => setPreviewOpen("admin")}
             onSave={save}
             saving={saving}
+            onLoadPremium={() => setS({
+              ...s,
+              admin_subject: PREMIUM_ADMIN_SUBJECT,
+              admin_template: PREMIUM_ADMIN_TEMPLATE,
+            })}
           />
         </TabsContent>
 
@@ -467,7 +483,7 @@ const AdminEmailSettings = () => {
 
 const TemplateEditor = ({
   subject, template, placeholders,
-  onSubjectChange, onTemplateChange, onInsert, onPreview, onSave, saving,
+  onSubjectChange, onTemplateChange, onInsert, onPreview, onSave, saving, onLoadPremium,
 }: {
   subject: string;
   template: string;
@@ -478,6 +494,7 @@ const TemplateEditor = ({
   onPreview: () => void;
   onSave: () => void;
   saving: boolean;
+  onLoadPremium: () => void;
 }) => (
   <div className="grid lg:grid-cols-[1fr_220px] gap-6">
     <div className="bg-white border border-border rounded-md p-6 space-y-4">
@@ -493,12 +510,21 @@ const TemplateEditor = ({
           className="font-mono text-xs min-h-[400px]"
         />
       </div>
-      <div className="flex gap-3 pt-2 border-t">
+      <div className="flex flex-wrap gap-3 pt-2 border-t">
         <button onClick={onSave} disabled={saving} className="inline-flex items-center gap-2 bg-warm-brown text-primary-foreground px-5 py-2.5 text-xs uppercase tracking-[0.15em] hover:bg-warm-dark disabled:opacity-60">
           {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />} Sačuvaj
         </button>
         <button onClick={onPreview} className="inline-flex items-center gap-2 border border-border px-5 py-2.5 text-xs uppercase tracking-[0.15em] hover:bg-[#F5F0E8]">
           <Eye size={14} /> Pregled
+        </button>
+        <button
+          onClick={() => {
+            if (template && !confirm("Ovo će zameniti trenutni HTML šablon premium dizajnom. Nastaviti?")) return;
+            onLoadPremium();
+          }}
+          className="inline-flex items-center gap-2 border border-warm-brown text-warm-brown px-5 py-2.5 text-xs uppercase tracking-[0.15em] hover:bg-warm-brown hover:text-primary-foreground transition-colors"
+        >
+          ✦ Učitaj premium dizajn
         </button>
       </div>
     </div>
