@@ -132,6 +132,21 @@ const AdminEmailSettings = () => {
   const [logsLoading, setLogsLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [errorRow, setErrorRow] = useState<LogRow | null>(null);
+
+  // SMTP zaključavanje
+  const [smtpUnlocked, setSmtpUnlocked] = useState(false);
+  const [warnOpen, setWarnOpen] = useState(false);
+  const [countdown, setCountdown] = useState(15);
+
+  // Odbrojavanje kad je dialog otvoren
+  useEffect(() => {
+    if (!warnOpen) return;
+    setCountdown(15);
+    const t = setInterval(() => {
+      setCountdown((c) => (c <= 1 ? 0 : c - 1));
+    }, 1000);
+    return () => clearInterval(t);
+  }, [warnOpen]);
   const PAGE_SIZE = 25;
 
   // Učitaj
