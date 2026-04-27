@@ -62,8 +62,36 @@ const DEFAULT: Settings = {
   enabled: false,
 };
 
-const PLACEHOLDERS_CUSTOMER = ["customerName", "orderId", "itemsTable", "total"];
-const PLACEHOLDERS_ADMIN = ["customerName", "customerEmail", "orderId", "itemsTable", "total"];
+const PLACEHOLDERS_CUSTOMER = [
+  "customerName",
+  "customerEmail",
+  "customerPhone",
+  "orderId",
+  "itemsTable",
+  "subtotal",
+  "discountAmount",
+  "discountLabel",
+  "total",
+  "shippingAddress",
+  "shippingCity",
+  "shippingZip",
+  "note",
+];
+const PLACEHOLDERS_ADMIN = [
+  "customerName",
+  "customerEmail",
+  "customerPhone",
+  "orderId",
+  "itemsTable",
+  "subtotal",
+  "discountAmount",
+  "discountLabel",
+  "total",
+  "shippingAddress",
+  "shippingCity",
+  "shippingZip",
+  "note",
+];
 
 const DEMO = {
   customerName: "Petar Petrović",
