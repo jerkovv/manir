@@ -86,14 +86,16 @@ const AdminLayout = () => {
           })}
         </nav>
         <div className="p-4 border-t border-border space-y-3">
-          <div className="font-body text-xs text-muted-foreground truncate">
-            {appUser?.full_name || user.email}
-          </div>
-          {appUser && (
-            <div className="font-body text-[10px] tracking-[0.15em] uppercase text-muted-foreground/70">
-              {appUser.role}
+          <Link to="/admin/profile" className="block hover:bg-[#F5F0E8] -mx-2 px-2 py-1.5 rounded transition-colors">
+            <div className="font-body text-xs text-foreground truncate">
+              {appUser?.full_name || user.email}
             </div>
-          )}
+            {appUser && (
+              <div className="font-body text-[10px] tracking-[0.15em] uppercase text-muted-foreground/70 mt-0.5">
+                {appUser.role}
+              </div>
+            )}
+          </Link>
           <button onClick={signOut} className="flex items-center gap-2 font-body text-xs tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground">
             <LogOut size={14} /> Odjava
           </button>
