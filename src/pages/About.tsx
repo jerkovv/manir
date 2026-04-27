@@ -32,7 +32,6 @@ const About = () => {
                 preload="auto"
                 // @ts-ignore
                 fetchpriority="high"
-                poster={selfcareImage}
                 className="w-full h-auto block bg-warm-cream"
               />
             </SectionReveal>
