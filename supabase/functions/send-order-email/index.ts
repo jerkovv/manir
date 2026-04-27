@@ -56,6 +56,7 @@ Deno.serve(async (req) => {
   // Dekriptuj lozinku
   const { data: pwdRow, error: pErr } = await admin.rpc("decrypt_smtp_password", {
     p_cipher: settings.smtp_password,
+    p_key: Deno.env.get("EMAIL_ENC_KEY") ?? "",
   });
   if (pErr) {
     return json({ error: `Decrypt failed: ${pErr.message}` }, 200);

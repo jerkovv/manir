@@ -63,47 +63,43 @@ from public.email_settings;
 grant select on public.email_settings_safe to authenticated;
 
 -- ------------------------------------------------------------
--- Enkripcija lozinke (pgcrypto). Ključ se čita iz GUC-a
--- `app.settings.email_enc_key`. Postavi:
---   ALTER DATABASE postgres SET app.settings.email_enc_key = 'tvoj-tajni-string';
+-- Enkripcija lozinke (pgcrypto). Ključ se PROSLEĐUJE kao parametar
+-- iz edge funkcija (Edge Function secret EMAIL_ENC_KEY).
+-- Hostovani Supabase ne dozvoljava ALTER DATABASE SET, pa GUC nije opcija.
 -- ------------------------------------------------------------
-create or replace function public.encrypt_smtp_password(p_password text)
+create or replace function public.encrypt_smtp_password(p_password text, p_key text)
 returns text
 language plpgsql
 security definer
 set search_path = public, pg_temp
 as $func$
-declare k text;
 begin
   if p_password is null or length(p_password) = 0 then
     return '';
   end if;
-  k := current_setting('app.settings.email_enc_key', true);
-  if k is null or length(k) = 0 then
-    raise exception 'app.settings.email_enc_key nije postavljen na bazi';
+  if p_key is null or length(p_key) = 0 then
+    raise exception 'encryption key nije prosleđen';
   end if;
-  return encode(pgp_sym_encrypt(p_password, k), 'base64');
+  return encode(pgp_sym_encrypt(p_password, p_key), 'base64');
 end $func$;
 
-create or replace function public.decrypt_smtp_password(p_cipher text)
+create or replace function public.decrypt_smtp_password(p_cipher text, p_key text)
 returns text
 language plpgsql
 security definer
 set search_path = public, pg_temp
 as $func$
-declare k text;
 begin
   if p_cipher is null or length(p_cipher) = 0 then
     return '';
   end if;
-  k := current_setting('app.settings.email_enc_key', true);
-  if k is null or length(k) = 0 then
-    raise exception 'app.settings.email_enc_key nije postavljen na bazi';
+  if p_key is null or length(p_key) = 0 then
+    raise exception 'encryption key nije prosleđen';
   end if;
-  return pgp_sym_decrypt(decode(p_cipher, 'base64'), k);
+  return pgp_sym_decrypt(decode(p_cipher, 'base64'), p_key);
 end $func$;
 
-revoke all on function public.decrypt_smtp_password(text) from public, anon, authenticated;
+revoke all on function public.decrypt_smtp_password(text, text) from public, anon, authenticated;
 
 -- Admin RPC: upsert sa enkripcijom lozinke. Ako je p_password prazan,
 -- postojeća lozinka ostaje netaknuta.
@@ -121,7 +117,8 @@ create or replace function public.upsert_email_settings(
   p_customer_template text,
   p_admin_subject text,
   p_admin_template text,
-  p_enabled boolean
+  p_enabled boolean,
+  p_enc_key text
 ) returns void
 language plpgsql
 security definer
@@ -137,7 +134,7 @@ begin
     select smtp_password into new_pwd from public.email_settings where id = 1;
     if new_pwd is null then new_pwd := ''; end if;
   else
-    new_pwd := public.encrypt_smtp_password(p_password);
+    new_pwd := public.encrypt_smtp_password(p_password, p_enc_key);
   end if;
 
   insert into public.email_settings (
@@ -167,10 +164,10 @@ begin
 end $func$;
 
 revoke all on function public.upsert_email_settings(
-  text,integer,text,text,boolean,text,text,text,text,text,text,text,text,boolean
+  text,integer,text,text,boolean,text,text,text,text,text,text,text,text,boolean,text
 ) from public, anon;
 grant execute on function public.upsert_email_settings(
-  text,integer,text,text,boolean,text,text,text,text,text,text,text,text,boolean
+  text,integer,text,text,boolean,text,text,text,text,text,text,text,text,boolean,text
 ) to authenticated;
 
 -- ------------------------------------------------------------
