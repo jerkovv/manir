@@ -24,11 +24,13 @@ export async function sendSystemEmail(opts: {
   if (pErr) return { sent: false, error: `Decrypt failed: ${pErr.message}` };
   const smtpPassword = pwdRow as string;
 
+  const port = Number(settings.smtp_port);
   const client = new SMTPClient({
     connection: {
       hostname: settings.smtp_host,
-      port: settings.smtp_port,
-      tls: settings.smtp_secure,
+      port,
+      // Port 465 = implicit TLS; 587/25 = STARTTLS (tls: false)
+      tls: port === 465,
       auth: { username: settings.smtp_user, password: smtpPassword },
     },
   });
