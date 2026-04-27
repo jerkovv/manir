@@ -31,6 +31,14 @@ const Checkout = () => {
 
   useEffect(() => { fetchQuantityDiscount().then(setQdConfig); }, []);
 
+  useEffect(() => {
+    if (isSubmitted) {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }
+  }, [isSubmitted]);
+
   const autoDiscount = computeQuantityDiscount(totalPrice, totalQty, qdConfig);
   const appliedDiscount: AppliedDiscount | null = couponDiscount || autoDiscount;
   const discountAmount = appliedDiscount?.amount || 0;
