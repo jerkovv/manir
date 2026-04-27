@@ -141,11 +141,27 @@ Deno.serve(async (req) => {
   }
 
   // 4b. Adminu
-  if (settings.admin_email) {
+  // Skupi sve admin primaoce: app_users sa rolom admin/owner + settings.admin_email
+  const adminRecipients = new Set<string>();
+  if (settings.admin_email) adminRecipients.add(settings.admin_email.toLowerCase().trim());
+
+  try {
+    const { data: appAdmins } = await admin
+      .from("app_users")
+      .select("email, role")
+      .in("role", ["admin", "owner"]);
+    for (const u of appAdmins ?? []) {
+      if (u?.email) adminRecipients.add(String(u.email).toLowerCase().trim());
+    }
+  } catch (_) {
+    // ako ne uspe, pokušaj barem sa settings.admin_email
+  }
+
+  for (const recipient of adminRecipients) {
     try {
       await sendSmtpEmail(smtp, {
         from: fromAddr,
-        to: settings.admin_email,
+        to: recipient,
         replyTo: payload.customerEmail,
         subject: adminSubject,
         html: adminHtml,
@@ -153,7 +169,7 @@ Deno.serve(async (req) => {
       results.push({ type: "admin", status: "sent" });
       await admin.from("email_logs").insert({
         order_id: isUuid(payload.orderId) ? payload.orderId : null,
-        recipient: settings.admin_email,
+        recipient,
         type: "admin",
         status: "sent",
       });
@@ -162,7 +178,7 @@ Deno.serve(async (req) => {
       results.push({ type: "admin", status: "failed", error: msg });
       await admin.from("email_logs").insert({
         order_id: isUuid(payload.orderId) ? payload.orderId : null,
-        recipient: settings.admin_email,
+        recipient,
         type: "admin",
         status: "failed",
         error_message: msg,
