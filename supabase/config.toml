@@ -1,4 +1,4 @@
-project_id = "9e73fd55-29d4-49a2-8d41-93b4b72157b8"
+project_id = "caqjobwfcuwvxojengky"
 
 [functions.invite-app-user]
 verify_jwt = true
