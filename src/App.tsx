@@ -22,6 +22,7 @@ import Checkout from "./pages/Checkout";
 import PartnerSalons from "./pages/PartnerSalons";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/admin/AdminLogin";
+import AdminSetPassword from "./pages/admin/AdminSetPassword";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminOverview from "./pages/admin/AdminOverview";
 import AdminOrders from "./pages/admin/AdminOrders";
@@ -81,6 +82,7 @@ const App = () => (
               <Route path="/partner-saloni" element={<PartnerSalons />} />
               <Route path="/naruci" element={<Checkout />} />
               <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin/set-password" element={<AdminSetPassword />} />
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminOverview />} />
                 <Route path="orders" element={<AdminOrders />} />
