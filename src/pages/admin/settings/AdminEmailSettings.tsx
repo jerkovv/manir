@@ -120,6 +120,16 @@ const DEMO = {
 
 function applyDemo(tpl: string): string {
   let out = tpl;
+  // Uslovni blokovi: {#if field}...{/if}
+  out = out.replace(
+    /\{#if\s+([a-zA-Z0-9_]+)\}([\s\S]*?)\{\/if\}/g,
+    (_m, key: string, inner: string) => {
+      const v = (DEMO as Record<string, string>)[key];
+      const truthy =
+        v !== undefined && v !== null && String(v).trim() !== "" && String(v).trim() !== "0";
+      return truthy ? inner : "";
+    },
+  );
   for (const [k, v] of Object.entries(DEMO)) {
     out = out.split(`{${k}}`).join(v);
   }
