@@ -89,12 +89,12 @@ const AdminOrders = () => {
   const deleteOrder = async (o: Order, e?: React.MouseEvent) => {
     e?.stopPropagation();
     if (!confirm(`Obrisati porudžbinu #${o.order_number}? Ova akcija se ne može poništiti.`)) return;
-    await supabase.from("order_items").delete().eq("order_id", o.id);
-    const { error } = await supabase.from("orders").delete().eq("id", o.id);
-    if (error) return toast.error("Greška: " + error.message);
+    const { data, error } = await supabase.functions.invoke("delete-order", { body: { order_id: o.id } });
+    const message = error?.message || (data as any)?.error;
+    if (message || !(data as any)?.ok) return toast.error("Greška: " + (message || "Porudžbina nije obrisana"));
     toast.success("Porudžbina obrisana");
     if (selected?.id === o.id) setSelected(null);
-    load();
+    setOrders((current) => current.filter((order) => order.id !== o.id));
   };
 
   const filtered = filter === "all" ? orders : orders.filter((o) => o.status === filter);
