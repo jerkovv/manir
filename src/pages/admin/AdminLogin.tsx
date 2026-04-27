@@ -5,14 +5,26 @@ import { toast } from "sonner";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-  const { signIn, user, isAdmin, loading } = useAuth();
+  const { signIn, signOut, user, isAdmin, accessDeniedReason, loading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!loading && user && isAdmin) navigate("/admin", { replace: true });
-  }, [user, isAdmin, loading, navigate]);
+    if (loading) return;
+    if (user && isAdmin) {
+      navigate("/admin", { replace: true });
+      return;
+    }
+    if (user && accessDeniedReason) {
+      const msg =
+        accessDeniedReason === "suspended"
+          ? "Vaš nalog je suspendovan."
+          : "Nemate pristup admin panelu.";
+      toast.error(msg);
+      signOut();
+    }
+  }, [user, isAdmin, accessDeniedReason, loading, navigate, signOut]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
