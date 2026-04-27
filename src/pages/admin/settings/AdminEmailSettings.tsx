@@ -10,7 +10,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Eye, EyeOff, Loader2, Send, Save, FlaskConical } from "lucide-react";
+import { Eye, EyeOff, Loader2, Send, Save, FlaskConical, Lock, AlertTriangle, ShieldAlert } from "lucide-react";
 import {
   PREMIUM_CUSTOMER_TEMPLATE,
   PREMIUM_ADMIN_TEMPLATE,
@@ -132,6 +132,21 @@ const AdminEmailSettings = () => {
   const [logsLoading, setLogsLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [errorRow, setErrorRow] = useState<LogRow | null>(null);
+
+  // SMTP zaključavanje
+  const [smtpUnlocked, setSmtpUnlocked] = useState(false);
+  const [warnOpen, setWarnOpen] = useState(false);
+  const [countdown, setCountdown] = useState(15);
+
+  // Odbrojavanje kad je dialog otvoren
+  useEffect(() => {
+    if (!warnOpen) return;
+    setCountdown(15);
+    const t = setInterval(() => {
+      setCountdown((c) => (c <= 1 ? 0 : c - 1));
+    }, 1000);
+    return () => clearInterval(t);
+  }, [warnOpen]);
   const PAGE_SIZE = 25;
 
   // Učitaj
@@ -273,6 +288,39 @@ const AdminEmailSettings = () => {
 
         {/* ============ TAB 1: SMTP ============ */}
         <TabsContent value="smtp" className="space-y-6">
+          {!smtpUnlocked && (
+            <div className="bg-red-50 border-2 border-red-300 rounded-md p-5 flex items-start gap-4">
+              <Lock className="text-red-600 shrink-0 mt-0.5" size={28} />
+              <div className="flex-1">
+                <div className="font-heading text-lg text-red-900 mb-1">SMTP konekcija je zaključana</div>
+                <p className="font-body text-sm text-red-800/90 mb-3">
+                  Ova podešavanja kontrolišu slanje SVIH email-ova sa sajta (porudžbine, obaveštenja).
+                  Pogrešna izmena može potpuno onemogućiti slanje. Ne menjaj ništa osim ako tačno znaš šta radiš.
+                </p>
+                <button
+                  onClick={() => setWarnOpen(true)}
+                  className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 font-body text-xs tracking-[0.15em] uppercase hover:bg-red-700 transition-colors"
+                >
+                  <ShieldAlert size={14} /> Otključaj izmene
+                </button>
+              </div>
+            </div>
+          )}
+          {smtpUnlocked && (
+            <div className="bg-amber-50 border border-amber-300 rounded-md px-4 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm text-amber-900">
+                <AlertTriangle size={16} className="text-amber-600" />
+                <span className="font-body">SMTP polja su otključana. Budi pažljiv — ne čuvaj izmene osim ako si siguran.</span>
+              </div>
+              <button
+                onClick={() => setSmtpUnlocked(false)}
+                className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-amber-900 hover:text-amber-950 border border-amber-400 px-3 py-1.5"
+              >
+                <Lock size={12} /> Zaključaj nazad
+              </button>
+            </div>
+          )}
+          <fieldset disabled={!smtpUnlocked} className={!smtpUnlocked ? "opacity-60 pointer-events-none select-none" : ""}>
           <div className="bg-white border border-border rounded-md p-6 space-y-5">
             <div className="flex items-center justify-between">
               <div>
@@ -352,6 +400,7 @@ const AdminEmailSettings = () => {
               </button>
             </div>
           </div>
+          </fieldset>
         </TabsContent>
 
         {/* ============ TAB 2: Customer template ============ */}
@@ -445,6 +494,55 @@ const AdminEmailSettings = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* ===== SMTP unlock warning dialog ===== */}
+      <Dialog open={warnOpen} onOpenChange={setWarnOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-700">
+              <AlertTriangle className="text-red-600" size={22} />
+              UPOZORENJE — kritična podešavanja
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="bg-red-50 border-l-4 border-red-500 p-4 space-y-2">
+              <p className="font-body text-sm text-red-900 font-semibold">
+                Ova podešavanja drže ceo email sistem na životu.
+              </p>
+              <p className="font-body text-sm text-red-900/90">
+                Ako promeniš host, port, korisnika ili lozinku — porudžbine NEĆE STIZATI ni kupcima
+                ni adminu. Test email-ovi će padati. Sajt će izgledati kao da radi, ali nijedan
+                email neće biti poslat.
+              </p>
+            </div>
+            <ul className="text-sm text-foreground/80 space-y-1.5 list-disc pl-5">
+              <li>Ne menjaj ništa osim ako ti je SMTP server JAVIO da nešto treba da se menja.</li>
+              <li>Pre čuvanja, OBAVEZNO klikni „Testiraj konekciju" — ako test ne prođe, ne čuvaj.</li>
+              <li>Lozinku unosi samo ako je hosting promenio kredencijale.</li>
+              <li>Ako nisi siguran — zatvori ovaj prozor i ne diraj ništa.</li>
+            </ul>
+            <div className="bg-amber-50 border border-amber-300 rounded p-3 text-xs text-amber-900 font-body">
+              Sačekaj odbrojavanje ({countdown}s) pre nego što možeš da potvrdiš.
+              Ovo je namerno — da imaš vreme da se predomisliš.
+            </div>
+          </div>
+          <DialogFooter>
+            <button
+              onClick={() => setWarnOpen(false)}
+              className="px-4 py-2 text-xs uppercase tracking-wider border border-border hover:bg-muted"
+            >
+              Otkaži (preporučeno)
+            </button>
+            <button
+              onClick={() => { setSmtpUnlocked(true); setWarnOpen(false); }}
+              disabled={countdown > 0}
+              className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 text-xs uppercase tracking-wider hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {countdown > 0 ? `Sačekaj ${countdown}s` : "Razumem rizik, otključaj"}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* ===== Test dialog ===== */}
       <Dialog open={testOpen} onOpenChange={setTestOpen}>
