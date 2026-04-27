@@ -5,9 +5,9 @@
 // koji bi srušio checkout - uvek vraća 200 sa { sent, failed } summary-jem.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { applyTemplate, renderItemsTable, type Item } from "../_shared/email-template.ts";
+import { sendSmtpEmail } from "../_shared/simple-smtp.ts";
 
 interface Payload {
   customerEmail: string;
@@ -79,24 +79,22 @@ Deno.serve(async (req) => {
   const adminSubject = applyTemplate(settings.admin_subject, { ...data, itemsTable: "" });
   const adminHtml = applyTemplate(settings.admin_template, data);
 
-  // 3. SMTP klijent
-  const client = new SMTPClient({
-    connection: {
-      hostname: settings.smtp_host,
-      port: settings.smtp_port,
-      // Port 465 = implicit TLS; 587/25 = STARTTLS (tls: false)
-      tls: settings.smtp_port === 465,
-      auth: { username: settings.smtp_user, password: smtpPassword },
-    },
-  });
-
+  // 3. SMTP podešavanja
+  const smtp = {
+    hostname: settings.smtp_host,
+    port: Number(settings.smtp_port),
+    // Port 465 = implicit TLS; 587/25 = STARTTLS (tls: false)
+    tls: Number(settings.smtp_port) === 465,
+    username: settings.smtp_user,
+    password: smtpPassword,
+  };
   const fromAddr = `${settings.from_name} <${settings.from_email}>`;
 
   const results: Array<{ type: "customer" | "admin"; status: "sent" | "failed"; error?: string }> = [];
 
   // 4a. Kupcu
   try {
-    await client.send({
+    await sendSmtpEmail(smtp, {
       from: fromAddr,
       to: payload.customerEmail,
       replyTo: settings.admin_email || undefined,
@@ -125,7 +123,7 @@ Deno.serve(async (req) => {
   // 4b. Adminu
   if (settings.admin_email) {
     try {
-      await client.send({
+      await sendSmtpEmail(smtp, {
         from: fromAddr,
         to: settings.admin_email,
         replyTo: payload.customerEmail,
@@ -151,8 +149,6 @@ Deno.serve(async (req) => {
       });
     }
   }
-
-  try { await client.close(); } catch { /* ignore */ }
 
   return json({ ok: true, results }, 200);
 });
