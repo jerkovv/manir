@@ -38,8 +38,21 @@ import AdminUsers from "./pages/admin/settings/AdminUsers";
 import { useEffect } from "react";
 
 const ScrollToTop = () => {
-  const { pathname } = useLocation();
-  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  const { pathname, search, hash } = useLocation();
+  useEffect(() => {
+    if (hash) return;
+    const scroll = () => {
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      } catch {
+        window.scrollTo(0, 0);
+      }
+      if (document.documentElement) document.documentElement.scrollTop = 0;
+      if (document.body) document.body.scrollTop = 0;
+    };
+    scroll();
+    requestAnimationFrame(scroll);
+  }, [pathname, search, hash]);
   return null;
 };
 
