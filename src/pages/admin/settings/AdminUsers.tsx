@@ -392,9 +392,17 @@ const InviteModal = ({ onClose, onDone }: { onClose: () => void; onDone: () => v
       return;
     }
     if ((data as any)?.email_sent === false) {
-      toast.warning("Korisnik dodat, ali email nije poslat: " + ((data as any)?.email_error || "nepoznato"));
+      const fb = (data as any)?.fallback_credentials;
+      if (fb) {
+        toast.warning(
+          `Korisnik kreiran, ali email nije poslat. Lozinka: ${fb.password}`,
+          { duration: 30000 }
+        );
+      } else {
+        toast.warning("Korisnik dodat, ali email nije poslat: " + ((data as any)?.email_error || "nepoznato"));
+      }
     } else {
-      toast.success("Pozivnica poslata");
+      toast.success("Korisnik kreiran — pristupni podaci su poslati na email");
     }
     onDone();
   };

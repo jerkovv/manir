@@ -85,6 +85,80 @@ export function inviteEmailHtml(opts: {
 </body></html>`;
 }
 
+export function credentialsEmailHtml(opts: {
+  inviterName: string;
+  recipientName: string;
+  role: string;
+  email: string;
+  password: string;
+  loginUrl: string;
+  siteName?: string;
+}): string {
+  const { inviterName, recipientName, role, email, password, loginUrl, siteName = "0202 SKIN" } = opts;
+  return `<!DOCTYPE html>
+<html lang="sr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#ffffff;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1a1a1a;-webkit-font-smoothing:antialiased;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;"><tr><td align="center">
+    <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+
+      <tr><td style="padding:48px 48px 0;text-align:center;">
+        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:32px;font-weight:400;letter-spacing:0.18em;color:#1a1a1a;text-transform:uppercase;">${escape(siteName)}</div>
+        <div style="margin-top:14px;height:1px;background:#1a1a1a;width:32px;display:inline-block;"></div>
+      </td></tr>
+
+      <tr><td style="padding:56px 48px 8px;">
+        <div style="font-family:'Courier New',Courier,monospace;font-size:11px;color:#8a8580;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:20px;">
+          Pristupni podaci · Admin panel
+        </div>
+        <h1 style="font-family:'Cormorant Garamond',Georgia,serif;font-size:42px;font-weight:400;line-height:1.15;color:#1a1a1a;margin:0 0 18px;letter-spacing:-0.01em;">
+          Dobrodošli${recipientName ? ", " + escape(recipientName.split(" ")[0]) : ""}.
+        </h1>
+        <p style="font-size:15px;line-height:1.7;color:#8a8580;margin:0 0 8px;font-weight:300;">
+          ${escape(inviterName)} vam je kreirao/la nalog u ${escape(siteName)} admin panelu sa ulogom
+          <span style="color:#1a1a1a;font-family:'Courier New',Courier,monospace;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;">${escape(role)}</span>.
+        </p>
+      </td></tr>
+
+      <tr><td style="padding:32px 48px 0;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#F5F0E8;border-collapse:collapse;">
+          <tr><td style="padding:28px 32px;">
+            <div style="font-family:'Courier New',Courier,monospace;font-size:10px;color:#8a8580;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:8px;">Email</div>
+            <div style="font-family:'Courier New',Courier,monospace;font-size:15px;color:#1a1a1a;font-weight:500;word-break:break-all;">${escape(email)}</div>
+          </td></tr>
+          <tr><td style="padding:0 32px 28px;border-top:1px solid #e3dcd0;">
+            <div style="font-family:'Courier New',Courier,monospace;font-size:10px;color:#8a8580;letter-spacing:0.2em;text-transform:uppercase;margin:24px 0 8px;">Privremena lozinka</div>
+            <div style="font-family:'Courier New',Courier,monospace;font-size:18px;color:#1a1a1a;font-weight:700;letter-spacing:0.05em;background:#ffffff;padding:14px 18px;border:1px dashed #1a1a1a;display:inline-block;">${escape(password)}</div>
+          </td></tr>
+        </table>
+      </td></tr>
+
+      <tr><td style="padding:40px 48px 0;text-align:center;">
+        <a href="${loginUrl}" style="display:inline-block;background:#1a1a1a;color:#ffffff;padding:18px 48px;text-decoration:none;font-size:11px;letter-spacing:0.25em;text-transform:uppercase;font-weight:500;">Uloguj se</a>
+      </td></tr>
+
+      <tr><td style="padding:32px 48px 0;">
+        <div style="background:#ffffff;border:1px solid #e3dcd0;padding:20px 24px;">
+          <div style="font-family:'Courier New',Courier,monospace;font-size:10px;color:#8a8580;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:8px;">⚠ Bezbednost</div>
+          <div style="font-size:13px;color:#1a1a1a;line-height:1.6;font-weight:300;">
+            Promenite lozinku odmah nakon prvog logovanja. Nemojte deliti ove podatke ni sa kim.
+          </div>
+        </div>
+      </td></tr>
+
+      <tr><td style="padding:48px 48px 48px;text-align:center;">
+        <div style="height:1px;background:#e3dcd0;width:100%;margin-bottom:32px;"></div>
+        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:16px;color:#1a1a1a;letter-spacing:0.18em;text-transform:uppercase;">${escape(siteName)}</div>
+        <div style="font-family:'Courier New',Courier,monospace;font-size:10px;color:#8a8580;letter-spacing:0.2em;text-transform:uppercase;margin-top:18px;word-break:break-all;">
+          ${escape(loginUrl)}
+        </div>
+      </td></tr>
+
+    </table>
+  </td></tr></table>
+</body></html>`;
+}
+
 function escape(s: string): string {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
