@@ -157,6 +157,14 @@ const Checkout = () => {
             orderId: publicOrderNumber,
             items: items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price })),
             total: grandTotal,
+            customerPhone: form.phone,
+            shippingAddress: form.address,
+            shippingCity: form.city,
+            shippingZip: form.zip,
+            note: form.note || "",
+            subtotal: totalPrice,
+            discountAmount: discountAmount,
+            discountLabel: appliedDiscount?.label || "",
           },
         });
         if (emailError) console.error("Email greška:", emailError);
