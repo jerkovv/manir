@@ -97,7 +97,7 @@ export const DEFAULT_LANDING: LandingContent = {
     eyebrow: "Ritual",
     title: "Kada usporite, počinje prava promena",
     subtitle:
-      "Kada birate šta stavljate na svoju kožu i kako se odnosite prema sebi to je trenutak u kome se rađa lepota. 0202 SKIN je vaš svakodnevni ritual nege.",
+      "Kada birate šta stavljate na svoju kožu i kako se odnosite prema sebi — to je trenutak u kome se rađa lepota. 0202 SKIN je vaš svakodnevni ritual nege.",
     ctaLabel: "Otkrijte kolekciju",
     ctaLink: "/prodavnica",
     image: "",
