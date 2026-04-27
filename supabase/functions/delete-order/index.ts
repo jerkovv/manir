@@ -1,10 +1,12 @@
 import { corsHeaders } from "../_shared/cors.ts";
 import { requirePermission } from "../_shared/require-permission.ts";
 
-// redeploy bump v3 — direct fetch from client
+// redeploy bump v4 — verify_jwt off, auth done in code
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: corsHeaders });
+  }
 
   const auth = await requirePermission(req, "manage_orders", corsHeaders);
   if (auth instanceof Response) return auth;
