@@ -12,6 +12,9 @@ verify_jwt = true
 [functions.delete-order]
 verify_jwt = false
 
+[functions.delete-customer]
+verify_jwt = false
+
 [functions.resend-invite]
 verify_jwt = true
 
