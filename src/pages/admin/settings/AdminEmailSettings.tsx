@@ -98,6 +98,14 @@ const DEMO = {
   customerEmail: "petar@primer.rs",
   orderId: "1234",
   total: "8.500",
+  customerPhone: "+381 60 123 4567",
+  shippingAddress: "Knez Mihailova 12",
+  shippingCity: "Beograd",
+  shippingZip: "11000",
+  note: "Molim vas zvonite na interfon, stan 4.",
+  subtotal: "9.000",
+  discountAmount: "500",
+  discountLabel: "WELCOME10",
   itemsTable: `<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #eee;font-size:14px;">
     <thead><tr style="background:#F5F0E8;"><th style="padding:10px;text-align:left;">Proizvod</th><th style="padding:10px;">Kol.</th><th style="padding:10px;text-align:right;">Cena</th></tr></thead>
     <tbody>
