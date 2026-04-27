@@ -45,19 +45,16 @@ export function applyTemplate(
   template: string,
   data: Record<string, string | number>,
 ): string {
-  // Subject linija (kratka, bez HTML) — samo zameni placeholdere i vrati.
-  const looksLikeSubject = !template || (template.length < 200 && !/[<{]itemsTable[}>]?|<table|<div|<html/i.test(template));
-  if (looksLikeSubject) {
-    let s = template?.trim() || "";
-    for (const [k, v] of Object.entries(data)) {
-      s = s.replaceAll(`{${k}}`, String(v));
-    }
-    return s;
+  // Ako je template prazan, koristi premium fallback (admin može da editiuje u panelu).
+  if (!template || !template.trim()) {
+    return wrapPremium(data);
   }
-
-  // Body: UVEK koristi premium wrapper (ignoriši stari HTML iz baze).
-  // Ovako garantujemo dosledan brutalno premium izgled.
-  return wrapPremium(data);
+  // Inače poštuj šablon iz baze — samo zameni {placeholder}-e.
+  let s = template;
+  for (const [k, v] of Object.entries(data)) {
+    s = s.replaceAll(`{${k}}`, String(v));
+  }
+  return s;
 }
 
 function wrapPremium(data: Record<string, string | number>): string {
