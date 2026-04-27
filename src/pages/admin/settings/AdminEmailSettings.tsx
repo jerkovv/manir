@@ -155,24 +155,29 @@ const AdminEmailSettings = () => {
       return toast.error("Host, SMTP user i From email su obavezni");
     }
     setSaving(true);
-    const { error } = await supabase.rpc("upsert_email_settings", {
-      p_smtp_host: s.smtp_host,
-      p_smtp_port: s.smtp_port,
-      p_smtp_user: s.smtp_user,
-      p_password: s.smtp_password || "",
-      p_smtp_secure: s.smtp_secure,
-      p_from_name: s.from_name,
-      p_from_email: s.from_email,
-      p_admin_email: s.admin_email,
-      p_reply_to: s.reply_to || null,
-      p_customer_subject: s.customer_subject,
-      p_customer_template: s.customer_template,
-      p_admin_subject: s.admin_subject,
-      p_admin_template: s.admin_template,
-      p_enabled: s.enabled,
+    const { data, error } = await supabase.functions.invoke("save-email-settings", {
+      body: {
+        smtp_host: s.smtp_host,
+        smtp_port: Number(s.smtp_port),
+        smtp_user: s.smtp_user,
+        smtp_password: s.smtp_password || "",
+        smtp_secure: s.smtp_secure,
+        from_name: s.from_name,
+        from_email: s.from_email,
+        admin_email: s.admin_email,
+        reply_to: s.reply_to || null,
+        customer_subject: s.customer_subject,
+        customer_template: s.customer_template,
+        admin_subject: s.admin_subject,
+        admin_template: s.admin_template,
+        enabled: s.enabled,
+      },
     });
     setSaving(false);
     if (error) return toast.error("Greška: " + error.message);
+    if (data && (data as any).success === false) {
+      return toast.error("Greška: " + (data as any).error);
+    }
     toast.success("Podešavanja sačuvana");
     if (s.smtp_password) setHasPassword(true);
     setS({ ...s, smtp_password: "" });
