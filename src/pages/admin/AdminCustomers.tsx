@@ -32,8 +32,8 @@ const AdminCustomers = () => {
   const deleteCustomer = async (c: Customer) => {
     const name = `${c.first_name || ""} ${c.last_name || ""}`.trim() || c.email;
     if (!confirm(`Obrisati kupca "${name}"? Ova akcija se ne može poništiti.`)) return;
-    const { data, error } = await supabase.functions.invoke("delete-customer", { body: { customer_id: c.id } });
-    if (error || (data as any)?.error) return toast.error("Greška: " + (error?.message || (data as any)?.error));
+    const { error } = await supabase.rpc("admin_delete_customer" as any, { _customer_id: c.id });
+    if (error) return toast.error("Greška: " + error.message);
     toast.success("Kupac obrisan");
     setCustomers((current) => current.filter((customer) => customer.id !== c.id));
   };
