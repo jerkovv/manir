@@ -45,16 +45,18 @@ export function applyTemplate(
   template: string,
   data: Record<string, string | number>,
 ): string {
-  // Ako je template prazan, koristi premium fallback (admin može da editiuje u panelu).
-  if (!template || !template.trim()) {
-    return wrapPremium(data);
+  // Premium dizajn je default. Šablon iz baze se poštuje SAMO ako sadrži pun HTML
+  // dokument (<html>) — tako admin može potpuno custom dizajn da postavi.
+  // Inače uvek koristimo premium wrapper da bi sve podatke (adresa, telefon...)
+  // korektno renderovali.
+  if (template && template.toLowerCase().includes("<html")) {
+    let s = template;
+    for (const [k, v] of Object.entries(data)) {
+      s = s.replaceAll(`{${k}}`, String(v));
+    }
+    return s;
   }
-  // Inače poštuj šablon iz baze — samo zameni {placeholder}-e.
-  let s = template;
-  for (const [k, v] of Object.entries(data)) {
-    s = s.replaceAll(`{${k}}`, String(v));
-  }
-  return s;
+  return wrapPremium(data);
 }
 
 function wrapPremium(data: Record<string, string | number>): string {
@@ -64,6 +66,14 @@ function wrapPremium(data: Record<string, string | number>): string {
   const total = String(data.total ?? "");
   const itemsTable = String(data.itemsTable ?? "");
   const isAdmin = !!data.__isAdmin;
+  const customerPhone = String(data.customerPhone ?? "");
+  const shippingAddress = String(data.shippingAddress ?? "");
+  const shippingCity = String(data.shippingCity ?? "");
+  const shippingZip = String(data.shippingZip ?? "");
+  const note = String(data.note ?? "");
+  const subtotal = String(data.subtotal ?? "");
+  const discountAmount = String(data.discountAmount ?? "");
+  const discountLabel = String(data.discountLabel ?? "");
 
   const firstName = customerName.split(" ")[0] || "";
   const eyebrow = isAdmin ? "Nova porudžbina" : "Potvrda porudžbine";
@@ -74,6 +84,16 @@ function wrapPremium(data: Record<string, string | number>): string {
     ? `Stigla je nova porudžbina. Pregledaj detalje ispod i pripremi paket.`
     : `Tvoja porudžbina je zabeležena. Spremamo je pažljivo, ručno, pre slanja.`;
 
+  const fullAddress = [shippingAddress, [shippingZip, shippingCity].filter(Boolean).join(" ")]
+    .filter((s) => s && s.trim())
+    .join(", ");
+
+  const detailRow = (label: string, value: string) => value ? `
+    <tr>
+      <td style="padding:10px 0;font-family:${MONO};font-size:10px;color:${BRAND_MUTED};letter-spacing:0.28em;text-transform:uppercase;width:42%;vertical-align:top;line-height:1.5;">${escapeHtml(label)}</td>
+      <td style="padding:10px 0;font-family:${SANS};font-size:14px;color:${BRAND_DARK};line-height:1.5;vertical-align:top;font-weight:500;letter-spacing:0.005em;">${escapeHtml(value)}</td>
+    </tr>` : "";
+
   return `<!DOCTYPE html>
 <html lang="sr">
 <head>
@@ -82,6 +102,17 @@ function wrapPremium(data: Record<string, string | number>): string {
 <meta name="color-scheme" content="light only">
 <meta name="supported-color-schemes" content="light">
 <title>${BRAND_NAME}</title>
+<style>
+  @media only screen and (max-width:600px) {
+    .px-pad { padding-left:24px !important; padding-right:24px !important; }
+    .hero-title { font-size:32px !important; }
+    .order-no { font-size:28px !important; }
+    .total-amount { font-size:28px !important; }
+    .stack-table td { display:block !important; width:100% !important; padding:6px 0 !important; }
+    .stack-table td.label { padding-top:14px !important; }
+    .summary-row td { padding:8px 0 !important; }
+  }
+</style>
 </head>
 <body style="margin:0;padding:0;background:${BRAND_CREAM};font-family:${SANS};color:${BRAND_INK};-webkit-font-smoothing:antialiased;">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
@@ -89,12 +120,12 @@ function wrapPremium(data: Record<string, string | number>): string {
   </div>
   <table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};">
     <tr>
-      <td align="center" style="padding:32px 16px;">
+      <td align="center" style="padding:32px 12px;">
         <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:${BRAND_PAPER};border:1px solid ${BRAND_LINE};">
 
           <!-- Brand header — replicira logo sa sajta -->
           <tr>
-            <td style="padding:36px 48px 8px;text-align:center;background:${BRAND_PAPER};border-bottom:1px solid ${BRAND_LINE};">
+            <td class="px-pad" style="padding:36px 48px 8px;text-align:center;background:${BRAND_PAPER};border-bottom:1px solid ${BRAND_LINE};">
               <div style="font-family:${SERIF};font-weight:300;color:${BRAND_DARK};letter-spacing:0.15em;font-size:30px;line-height:1;">
                 0202 <span style="font-family:${SANS};font-size:13px;letter-spacing:0.32em;text-transform:uppercase;font-weight:400;vertical-align:3px;">skin</span>
               </div>
@@ -103,7 +134,7 @@ function wrapPremium(data: Record<string, string | number>): string {
 
           <!-- Eyebrow -->
           <tr>
-            <td style="padding:48px 48px 0;text-align:center;">
+            <td class="px-pad" style="padding:48px 48px 0;text-align:center;">
               <div style="font-family:${MONO};font-size:10px;color:${BRAND_MUTED};letter-spacing:0.32em;text-transform:uppercase;">
                 ${eyebrow}
               </div>
@@ -113,8 +144,8 @@ function wrapPremium(data: Record<string, string | number>): string {
 
           <!-- Hero -->
           <tr>
-            <td style="padding:28px 48px 8px;text-align:center;">
-              <h1 style="font-family:${SERIF};font-size:42px;font-weight:400;line-height:1.15;color:${BRAND_DARK};margin:0 0 18px;letter-spacing:-0.015em;">
+            <td class="px-pad" style="padding:28px 48px 8px;text-align:center;">
+              <h1 class="hero-title" style="font-family:${SERIF};font-size:42px;font-weight:400;line-height:1.15;color:${BRAND_DARK};margin:0 0 18px;letter-spacing:-0.015em;">
                 ${escapeHtml(greeting)}.
               </h1>
               <p style="font-family:${SANS};font-size:14px;line-height:1.75;color:${BRAND_MUTED};margin:0 auto 8px;font-weight:400;max-width:420px;">
@@ -125,30 +156,71 @@ function wrapPremium(data: Record<string, string | number>): string {
 
           <!-- Order number — minimal -->
           <tr>
-            <td style="padding:36px 48px 0;text-align:center;">
+            <td class="px-pad" style="padding:36px 48px 0;text-align:center;">
               <div style="font-family:${MONO};font-size:10px;color:${BRAND_MUTED};letter-spacing:0.32em;text-transform:uppercase;margin-bottom:10px;">
                 Broj porudžbine
               </div>
-              <div style="font-family:${SERIF};font-size:34px;color:${BRAND_DARK};font-weight:500;letter-spacing:0.02em;line-height:1;">
+              <div class="order-no" style="font-family:${SERIF};font-size:34px;color:${BRAND_DARK};font-weight:500;letter-spacing:0.02em;line-height:1;">
                 ${escapeHtml(orderId)}
               </div>
             </td>
           </tr>
 
-          <!-- Customer block -->
-          ${customerName || customerEmail ? `
+          <!-- Customer details block -->
+          ${(customerName || customerEmail || customerPhone) ? `
           <tr>
-            <td style="padding:36px 48px 0;">
+            <td class="px-pad" style="padding:40px 48px 0;">
               <table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};border:1px solid ${BRAND_LINE};">
                 <tr>
-                  <td style="padding:22px 26px;">
-                    <div style="font-family:${MONO};font-size:9px;color:${BRAND_MUTED};letter-spacing:0.32em;text-transform:uppercase;margin-bottom:8px;">
+                  <td style="padding:24px 26px;">
+                    <div style="font-family:${MONO};font-size:10px;color:${BRAND_DARK};letter-spacing:0.32em;text-transform:uppercase;margin-bottom:14px;font-weight:600;">
                       ${isAdmin ? 'Kupac' : 'Naručilac'}
                     </div>
-                    <div style="font-family:${SERIF};font-size:22px;color:${BRAND_DARK};font-weight:500;line-height:1.3;">
-                      ${escapeHtml(customerName) || '—'}
+                    <table width="100%" cellpadding="0" cellspacing="0" class="stack-table">
+                      ${detailRow('Ime i prezime', customerName)}
+                      ${customerEmail ? detailRow('Email', customerEmail) : ''}
+                      ${customerPhone ? detailRow('Telefon', customerPhone) : ''}
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>` : ''}
+
+          <!-- Shipping address block -->
+          ${fullAddress ? `
+          <tr>
+            <td class="px-pad" style="padding:20px 48px 0;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};border:1px solid ${BRAND_LINE};">
+                <tr>
+                  <td style="padding:24px 26px;">
+                    <div style="font-family:${MONO};font-size:10px;color:${BRAND_DARK};letter-spacing:0.32em;text-transform:uppercase;margin-bottom:14px;font-weight:600;">
+                      Adresa za isporuku
                     </div>
-                    ${isAdmin && customerEmail ? `<div style="font-family:${MONO};font-size:11px;color:${BRAND_ACCENT};letter-spacing:0.05em;margin-top:8px;">${escapeHtml(customerEmail)}</div>` : ''}
+                    <table width="100%" cellpadding="0" cellspacing="0" class="stack-table">
+                      ${detailRow('Ulica i broj', shippingAddress)}
+                      ${detailRow('Grad', shippingCity)}
+                      ${detailRow('Poštanski broj', shippingZip)}
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>` : ''}
+
+          <!-- Note block -->
+          ${note ? `
+          <tr>
+            <td class="px-pad" style="padding:20px 48px 0;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};border:1px solid ${BRAND_LINE};">
+                <tr>
+                  <td style="padding:24px 26px;">
+                    <div style="font-family:${MONO};font-size:10px;color:${BRAND_DARK};letter-spacing:0.32em;text-transform:uppercase;margin-bottom:12px;font-weight:600;">
+                      Napomena
+                    </div>
+                    <div style="font-family:${SERIF};font-size:16px;color:${BRAND_INK};line-height:1.6;font-style:italic;font-weight:400;">
+                      ${escapeHtml(note)}
+                    </div>
                   </td>
                 </tr>
               </table>
@@ -157,7 +229,7 @@ function wrapPremium(data: Record<string, string | number>): string {
 
           <!-- Items header -->
           <tr>
-            <td style="padding:48px 48px 0;">
+            <td class="px-pad" style="padding:48px 48px 0;">
               <table width="100%" cellpadding="0" cellspacing="0" style="border-bottom:2px solid ${BRAND_DARK};padding-bottom:0;">
                 <tr>
                   <td style="padding:0 0 12px;font-family:${MONO};font-size:10px;color:${BRAND_DARK};letter-spacing:0.32em;text-transform:uppercase;font-weight:600;">
@@ -173,20 +245,39 @@ function wrapPremium(data: Record<string, string | number>): string {
 
           <!-- Items -->
           <tr>
-            <td style="padding:0 48px;">
+            <td class="px-pad" style="padding:0 48px;">
               ${itemsTable}
             </td>
           </tr>
 
+          <!-- Subtotal / Discount -->
+          ${(subtotal || discountAmount) ? `
+          <tr>
+            <td class="px-pad" style="padding:0 48px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                ${subtotal ? `
+                <tr class="summary-row">
+                  <td style="padding:18px 0 0;font-family:${MONO};font-size:10px;color:${BRAND_MUTED};letter-spacing:0.28em;text-transform:uppercase;">Podzbir</td>
+                  <td style="padding:18px 0 0;font-family:${SANS};font-size:14px;color:${BRAND_INK};text-align:right;font-weight:500;">${escapeHtml(subtotal)} <span style="font-family:${MONO};font-size:10px;color:${BRAND_MUTED};letter-spacing:0.2em;">RSD</span></td>
+                </tr>` : ''}
+                ${discountAmount ? `
+                <tr class="summary-row">
+                  <td style="padding:10px 0 0;font-family:${MONO};font-size:10px;color:${BRAND_ACCENT};letter-spacing:0.28em;text-transform:uppercase;">Popust${discountLabel ? ` · ${escapeHtml(discountLabel)}` : ''}</td>
+                  <td style="padding:10px 0 0;font-family:${SANS};font-size:14px;color:${BRAND_ACCENT};text-align:right;font-weight:500;">− ${escapeHtml(discountAmount)} <span style="font-family:${MONO};font-size:10px;letter-spacing:0.2em;">RSD</span></td>
+                </tr>` : ''}
+              </table>
+            </td>
+          </tr>` : ''}
+
           <!-- Total -->
           <tr>
-            <td style="padding:8px 48px 0;">
-              <table width="100%" cellpadding="0" cellspacing="0">
+            <td class="px-pad" style="padding:8px 48px 0;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="border-top:2px solid ${BRAND_DARK};">
                 <tr>
-                  <td style="padding:28px 0 0;font-family:${MONO};font-size:11px;color:${BRAND_MUTED};letter-spacing:0.32em;text-transform:uppercase;">
-                    Ukupno
+                  <td style="padding:22px 0 0;font-family:${MONO};font-size:11px;color:${BRAND_DARK};letter-spacing:0.32em;text-transform:uppercase;font-weight:600;">
+                    Ukupno za uplatu
                   </td>
-                  <td style="padding:28px 0 0;font-family:${SERIF};font-size:34px;color:${BRAND_DARK};text-align:right;font-weight:500;letter-spacing:-0.015em;line-height:1;">
+                  <td class="total-amount" style="padding:22px 0 0;font-family:${SERIF};font-size:34px;color:${BRAND_DARK};text-align:right;font-weight:500;letter-spacing:-0.015em;line-height:1;">
                     ${escapeHtml(total)} <span style="font-family:${MONO};font-size:12px;color:${BRAND_MUTED};letter-spacing:0.2em;vertical-align:6px;">RSD</span>
                   </td>
                 </tr>
@@ -197,7 +288,7 @@ function wrapPremium(data: Record<string, string | number>): string {
           ${isAdmin ? `` : `
           <!-- Care note -->
           <tr>
-            <td style="padding:56px 48px 0;">
+            <td class="px-pad" style="padding:56px 48px 0;">
               <div style="border-top:1px solid ${BRAND_LINE};border-bottom:1px solid ${BRAND_LINE};padding:36px 24px;text-align:center;">
                 <div style="font-family:${SERIF};font-size:20px;font-style:italic;color:${BRAND_DARK};line-height:1.55;font-weight:400;">
                   „Negujemo kožu kao što negujemo veze —<br>nežno, iskreno, sa pažnjom."
@@ -208,7 +299,7 @@ function wrapPremium(data: Record<string, string | number>): string {
 
           <!-- Footer -->
           <tr>
-            <td style="padding:56px 48px 56px;text-align:center;">
+            <td class="px-pad" style="padding:56px 48px 56px;text-align:center;">
               <div style="font-family:${SERIF};font-weight:300;color:${BRAND_DARK};letter-spacing:0.15em;font-size:18px;line-height:1;">
                 0202 <span style="font-family:${SANS};font-size:9px;letter-spacing:0.32em;text-transform:uppercase;font-weight:400;vertical-align:2px;">skin</span>
               </div>

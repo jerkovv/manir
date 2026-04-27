@@ -15,6 +15,14 @@ interface Payload {
   orderId: string | number;
   items: Item[];
   total: number;
+  customerPhone?: string;
+  shippingAddress?: string;
+  shippingCity?: string;
+  shippingZip?: string;
+  note?: string;
+  subtotal?: number;
+  discountAmount?: number;
+  discountLabel?: string;
 }
 
 Deno.serve(async (req) => {
@@ -66,12 +74,24 @@ Deno.serve(async (req) => {
   // 2. Pripremi template podatke
   const itemsTable = renderItemsTable(payload.items);
   const totalStr = Number(payload.total).toLocaleString("sr-RS");
+  const subtotalStr = payload.subtotal != null ? Number(payload.subtotal).toLocaleString("sr-RS") : "";
+  const discountStr = payload.discountAmount && payload.discountAmount > 0
+    ? Number(payload.discountAmount).toLocaleString("sr-RS")
+    : "";
   const data = {
     customerName: payload.customerName || "",
     customerEmail: payload.customerEmail,
     orderId: String(payload.orderId),
     itemsTable,
     total: totalStr,
+    customerPhone: payload.customerPhone || "",
+    shippingAddress: payload.shippingAddress || "",
+    shippingCity: payload.shippingCity || "",
+    shippingZip: payload.shippingZip || "",
+    note: payload.note || "",
+    subtotal: subtotalStr,
+    discountAmount: discountStr,
+    discountLabel: payload.discountLabel || "",
   };
 
   const customerSubject = applyTemplate(settings.customer_subject, { ...data, itemsTable: "" });
