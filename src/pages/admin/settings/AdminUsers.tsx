@@ -125,7 +125,7 @@ const AdminUsers = () => {
           title="Dostupno u sledećoj fazi"
           className="bg-foreground text-background px-4 py-2.5 font-body text-xs tracking-[0.15em] uppercase opacity-40 cursor-not-allowed"
         >
-          Pozovi korisnika
+          Dodaj korisnika
         </button>
       </div>
 
