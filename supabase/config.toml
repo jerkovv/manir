@@ -3,6 +3,15 @@ project_id = "9e73fd55-29d4-49a2-8d41-93b4b72157b8"
 [functions.invite-app-user]
 verify_jwt = true
 
+[functions.update-app-user]
+verify_jwt = true
+
+[functions.delete-app-user]
+verify_jwt = true
+
+[functions.resend-invite]
+verify_jwt = true
+
 [functions.send-order-email]
 verify_jwt = false
 
