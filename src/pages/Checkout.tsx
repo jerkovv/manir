@@ -144,7 +144,7 @@ const Checkout = () => {
           body: {
             customerEmail: email,
             customerName: `${form.firstName} ${form.lastName}`.trim(),
-            orderId: order.id,
+            orderId: order.order_number,
             items: items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price })),
             total: grandTotal,
           },
