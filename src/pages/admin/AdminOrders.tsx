@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { downloadCSV } from "@/lib/csv";
 import { StatusBadge } from "./AdminOverview";
-import { Download, X } from "lucide-react";
+import { Download, X, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 type Order = {
@@ -86,6 +86,17 @@ const AdminOrders = () => {
     downloadCSV(`porudzbine-${new Date().toISOString().slice(0, 10)}.csv`, rows);
   };
 
+  const deleteOrder = async (o: Order, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (!confirm(`Obrisati porudžbinu #${o.order_number}? Ova akcija se ne može poništiti.`)) return;
+    await supabase.from("order_items").delete().eq("order_id", o.id);
+    const { error } = await supabase.from("orders").delete().eq("id", o.id);
+    if (error) return toast.error("Greška: " + error.message);
+    toast.success("Porudžbina obrisana");
+    if (selected?.id === o.id) setSelected(null);
+    load();
+  };
+
   const filtered = filter === "all" ? orders : orders.filter((o) => o.status === filter);
 
   return (
@@ -129,6 +140,7 @@ const AdminOrders = () => {
                 <th className="text-left p-4">Kupon</th>
                 <th className="text-left p-4">Iznos</th>
                 <th className="text-left p-4">Status</th>
+                <th className="text-right p-4"></th>
               </tr>
             </thead>
             <tbody>
@@ -148,6 +160,15 @@ const AdminOrders = () => {
                   </td>
                   <td className="p-4">{Number(o.total).toLocaleString("sr-RS")} RSD</td>
                   <td className="p-4"><StatusBadge status={o.status} /></td>
+                  <td className="p-4 text-right">
+                    <button
+                      onClick={(e) => deleteOrder(o, e)}
+                      className="text-muted-foreground hover:text-destructive p-1"
+                      title="Obriši porudžbinu"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -160,7 +181,15 @@ const AdminOrders = () => {
           <div onClick={(e) => e.stopPropagation()} className="bg-white max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-5 border-b border-border">
               <h2 className="font-heading text-2xl">Porudžbina #{selected.order_number}</h2>
-              <button onClick={() => setSelected(null)}><X size={20} /></button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => deleteOrder(selected)}
+                  className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-destructive hover:underline"
+                >
+                  <Trash2 size={14} /> Obriši
+                </button>
+                <button onClick={() => setSelected(null)}><X size={20} /></button>
+              </div>
             </div>
             <div className="p-5 space-y-5">
               <div>

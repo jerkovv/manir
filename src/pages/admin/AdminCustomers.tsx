@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { downloadCSV } from "@/lib/csv";
-import { Download, Search } from "lucide-react";
+import { Download, Search, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 type Customer = {
   id: string;
@@ -19,13 +20,23 @@ const AdminCustomers = () => {
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    (async () => {
-      const { data } = await supabase.from("customers").select("*").order("created_at", { ascending: false });
-      setCustomers((data as Customer[]) || []);
-      setLoading(false);
-    })();
-  }, []);
+  const load = async () => {
+    setLoading(true);
+    const { data } = await supabase.from("customers").select("*").order("created_at", { ascending: false });
+    setCustomers((data as Customer[]) || []);
+    setLoading(false);
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const deleteCustomer = async (c: Customer) => {
+    const name = `${c.first_name || ""} ${c.last_name || ""}`.trim() || c.email;
+    if (!confirm(`Obrisati kupca "${name}"? Ova akcija se ne može poništiti.`)) return;
+    const { error } = await supabase.from("customers").delete().eq("id", c.id);
+    if (error) return toast.error("Greška: " + error.message);
+    toast.success("Kupac obrisan");
+    load();
+  };
 
   const filtered = customers.filter((c) => {
     const term = q.toLowerCase();
@@ -87,6 +98,7 @@ const AdminCustomers = () => {
                 <th className="text-left p-4">Grad</th>
                 <th className="text-left p-4">Porudžbine</th>
                 <th className="text-left p-4">Registrovan</th>
+                <th className="text-right p-4"></th>
               </tr>
             </thead>
             <tbody>
@@ -98,6 +110,15 @@ const AdminCustomers = () => {
                   <td className="p-4 text-muted-foreground">{c.city || "—"}</td>
                   <td className="p-4">{c.total_orders}</td>
                   <td className="p-4 text-muted-foreground">{new Date(c.created_at).toLocaleDateString("sr-RS")}</td>
+                  <td className="p-4 text-right">
+                    <button
+                      onClick={() => deleteCustomer(c)}
+                      className="text-muted-foreground hover:text-destructive p-1"
+                      title="Obriši kupca"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
