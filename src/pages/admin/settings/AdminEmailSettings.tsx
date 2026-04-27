@@ -495,6 +495,55 @@ const AdminEmailSettings = () => {
         </TabsContent>
       </Tabs>
 
+      {/* ===== SMTP unlock warning dialog ===== */}
+      <Dialog open={warnOpen} onOpenChange={setWarnOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-700">
+              <AlertTriangle className="text-red-600" size={22} />
+              UPOZORENJE — kritična podešavanja
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="bg-red-50 border-l-4 border-red-500 p-4 space-y-2">
+              <p className="font-body text-sm text-red-900 font-semibold">
+                Ova podešavanja drže ceo email sistem na životu.
+              </p>
+              <p className="font-body text-sm text-red-900/90">
+                Ako promeniš host, port, korisnika ili lozinku — porudžbine NEĆE STIZATI ni kupcima
+                ni adminu. Test email-ovi će padati. Sajt će izgledati kao da radi, ali nijedan
+                email neće biti poslat.
+              </p>
+            </div>
+            <ul className="text-sm text-foreground/80 space-y-1.5 list-disc pl-5">
+              <li>Ne menjaj ništa osim ako ti je SMTP server JAVIO da nešto treba da se menja.</li>
+              <li>Pre čuvanja, OBAVEZNO klikni „Testiraj konekciju" — ako test ne prođe, ne čuvaj.</li>
+              <li>Lozinku unosi samo ako je hosting promenio kredencijale.</li>
+              <li>Ako nisi siguran — zatvori ovaj prozor i ne diraj ništa.</li>
+            </ul>
+            <div className="bg-amber-50 border border-amber-300 rounded p-3 text-xs text-amber-900 font-body">
+              Sačekaj odbrojavanje ({countdown}s) pre nego što možeš da potvrdiš.
+              Ovo je namerno — da imaš vreme da se predomisliš.
+            </div>
+          </div>
+          <DialogFooter>
+            <button
+              onClick={() => setWarnOpen(false)}
+              className="px-4 py-2 text-xs uppercase tracking-wider border border-border hover:bg-muted"
+            >
+              Otkaži (preporučeno)
+            </button>
+            <button
+              onClick={() => { setSmtpUnlocked(true); setWarnOpen(false); }}
+              disabled={countdown > 0}
+              className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 text-xs uppercase tracking-wider hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {countdown > 0 ? `Sačekaj ${countdown}s` : "Razumem rizik, otključaj"}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* ===== Test dialog ===== */}
       <Dialog open={testOpen} onOpenChange={setTestOpen}>
         <DialogContent>
