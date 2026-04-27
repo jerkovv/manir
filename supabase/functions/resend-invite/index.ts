@@ -59,3 +59,4 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify(b), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 });
+// redeploy: simple-smtp v2 (1777309864)

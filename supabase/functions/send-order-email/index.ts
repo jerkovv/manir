@@ -163,3 +163,5 @@ function json(body: unknown, status: number) {
 function isUuid(v: unknown): boolean {
   return typeof v === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
 }
+
+// redeploy: simple-smtp v2 (1777309864)

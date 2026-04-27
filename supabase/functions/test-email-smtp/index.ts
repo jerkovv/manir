@@ -101,3 +101,5 @@ function json(body: unknown, status: number) {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 }
+
+// redeploy: simple-smtp v2 (1777309864)
