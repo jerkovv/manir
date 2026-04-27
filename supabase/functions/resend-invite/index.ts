@@ -19,7 +19,7 @@ Deno.serve(async (req) => {
   if (target.status !== "invited") return json({ error: "Korisnik već nije u 'invited' statusu" }, 400);
 
   const siteUrl = req.headers.get("origin") || Deno.env.get("SITE_URL") || "";
-  const redirectTo = `${siteUrl}/admin/login`;
+  const redirectTo = `${siteUrl}/admin/set-password`;
 
   const { data: linkData, error: linkErr } = await admin.auth.admin.generateLink({
     type: "invite",
