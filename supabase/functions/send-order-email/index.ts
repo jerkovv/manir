@@ -147,17 +147,28 @@ Deno.serve(async (req) => {
   const adminRecipients = new Set<string>();
   if (settings.admin_email) adminRecipients.add(settings.admin_email.toLowerCase().trim());
 
+  let adminLookupError: string | null = null;
   try {
-    const { data: appAdmins } = await admin
+    const { data: appAdmins, error: appAdminsErr } = await admin
       .from("app_users")
-      .select("email, role")
-      .in("role", ["admin", "owner"]);
+      .select("email, role, status")
+      .in("role", ["admin", "owner"])
+      .eq("status", "active");
+    if (appAdminsErr) {
+      adminLookupError = appAdminsErr.message;
+      console.error("[send-order-email] app_users query error:", appAdminsErr);
+    }
+    console.log("[send-order-email] found app_users admins:", appAdmins?.length ?? 0);
     for (const u of appAdmins ?? []) {
       if (u?.email) adminRecipients.add(String(u.email).toLowerCase().trim());
     }
-  } catch (_) {
+  } catch (e) {
+    adminLookupError = (e as Error).message;
+    console.error("[send-order-email] app_users lookup threw:", e);
     // ako ne uspe, pokušaj barem sa settings.admin_email
   }
+
+  console.log("[send-order-email] admin recipients:", Array.from(adminRecipients));
 
   for (const recipient of adminRecipients) {
     try {
@@ -188,7 +199,12 @@ Deno.serve(async (req) => {
     }
   }
 
-  return json({ ok: true, results }, 200);
+  return json({
+    ok: true,
+    results,
+    adminRecipients: Array.from(adminRecipients),
+    adminLookupError,
+  }, 200);
 });
 
 function json(body: unknown, status: number) {
