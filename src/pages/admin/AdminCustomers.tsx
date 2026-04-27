@@ -32,8 +32,12 @@ const AdminCustomers = () => {
   const deleteCustomer = async (c: Customer) => {
     const name = `${c.first_name || ""} ${c.last_name || ""}`.trim() || c.email;
     if (!confirm(`Obrisati kupca "${name}"? Ova akcija se ne može poništiti.`)) return;
-    const { error } = await supabase.from("customers").delete().eq("id", c.id);
+    const { error, count } = await supabase
+      .from("customers")
+      .delete({ count: "exact" })
+      .eq("id", c.id);
     if (error) return toast.error("Greška: " + error.message);
+    if ((count ?? 0) !== 1) return toast.error("Kupac nije obrisan (nema dozvole ili ne postoji)");
     toast.success("Kupac obrisan");
     load();
   };
