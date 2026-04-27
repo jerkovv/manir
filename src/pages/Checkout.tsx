@@ -137,6 +137,22 @@ const Checkout = () => {
       setOrderNumber(order.order_number);
       setIsSubmitted(true);
       clearCart();
+
+      // Pošalji email obaveštenja (ne blokira checkout ako padne)
+      try {
+        const { error: emailError } = await supabase.functions.invoke("send-order-email", {
+          body: {
+            customerEmail: email,
+            customerName: `${form.firstName} ${form.lastName}`.trim(),
+            orderId: order.id,
+            items: items.map(i => ({ name: i.name, quantity: i.quantity, price: i.price })),
+            total: grandTotal,
+          },
+        });
+        if (emailError) console.error("Email greška:", emailError);
+      } catch (mailErr) {
+        console.error("Email greška:", mailErr);
+      }
     } catch (err: any) {
       console.error(err);
       toast.error("Greška: " + (err.message || "Pokušajte ponovo"));

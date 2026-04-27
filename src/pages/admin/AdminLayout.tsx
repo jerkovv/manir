@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Navigate, Link, useLocation, Outlet } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { LayoutDashboard, Package, ShoppingBag, Users, FileText, Star, Layers, FilePlus, Tag, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingBag, Users, FileText, Star, Layers, FilePlus, Tag, LogOut, Menu, X, Mail } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const navItems = [
@@ -14,6 +14,7 @@ const navItems = [
   { to: "/admin/blog", label: "Blog", icon: FileText },
   { to: "/admin/pages", label: "Stranice", icon: FilePlus },
   { to: "/admin/landing", label: "Landing editor", icon: Layers },
+  { to: "/admin/settings/email", label: "Email podešavanja", icon: Mail },
 ];
 
 const AdminLayout = () => {
