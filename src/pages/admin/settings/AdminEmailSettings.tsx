@@ -51,7 +51,7 @@ const DEFAULT: Settings = {
   reply_to: "",
   customer_subject: "Potvrda porudžbine #{orderId}",
   customer_template: "",
-  admin_subject: "Nova porudžbina #{orderId}",
+  admin_subject: "Nova porudžbina #{orderId} — {customerName}",
   admin_template: "",
   enabled: false,
 };
