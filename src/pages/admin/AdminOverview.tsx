@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { displayOrderNumber } from "@/lib/orderNumber";
 import { ShoppingBag, Users, Package, TrendingUp } from "lucide-react";
 
 type Stats = {
@@ -107,7 +108,7 @@ const AdminOverview = () => {
                   <tbody>
                     {recent.map((o) => (
                       <tr key={o.id} className="border-t border-border">
-                        <td className="p-4">#{o.order_number}</td>
+                        <td className="p-4">#{displayOrderNumber(o.order_number)}</td>
                         <td className="p-4">{o.customer_name}</td>
                         <td className="p-4">{Number(o.total).toLocaleString("sr-RS")} RSD</td>
                         <td className="p-4"><StatusBadge status={o.status} /></td>
