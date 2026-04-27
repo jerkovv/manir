@@ -10,7 +10,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Eye, EyeOff, Loader2, Send, Save, FlaskConical } from "lucide-react";
+import { Eye, EyeOff, Loader2, Send, Save, FlaskConical, Lock, AlertTriangle, ShieldAlert } from "lucide-react";
 import {
   PREMIUM_CUSTOMER_TEMPLATE,
   PREMIUM_ADMIN_TEMPLATE,
