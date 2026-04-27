@@ -89,12 +89,36 @@ const AdminOrders = () => {
   const deleteOrder = async (o: Order, e?: React.MouseEvent) => {
     e?.stopPropagation();
     if (!confirm(`Obrisati porudžbinu #${o.order_number}? Ova akcija se ne može poništiti.`)) return;
-    const { data, error } = await supabase.functions.invoke("delete-order", { body: { order_id: o.id } });
-    const message = error?.message || (data as any)?.error;
-    if (message || !(data as any)?.ok) return toast.error("Greška: " + (message || "Porudžbina nije obrisana"));
-    toast.success("Porudžbina obrisana");
-    if (selected?.id === o.id) setSelected(null);
-    setOrders((current) => current.filter((order) => order.id !== o.id));
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+      if (!accessToken) {
+        return toast.error("Sesija je istekla. Prijavi se ponovo.");
+      }
+      const SUPABASE_URL = "https://caqjobwfcuwvxojengky.supabase.co";
+      const ANON_KEY = "sb_publishable_yJopNgZzXJqW5UX8SIMoBw_WRFp2KpZ";
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/delete-order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          apikey: ANON_KEY,
+        },
+        body: JSON.stringify({ order_id: o.id }),
+      });
+      let payload: any = null;
+      try { payload = await res.json(); } catch { /* ignore */ }
+      if (!res.ok || payload?.error || !payload?.ok) {
+        const msg = payload?.error || `HTTP ${res.status}`;
+        return toast.error("Greška: " + msg);
+      }
+      toast.success("Porudžbina obrisana");
+      if (selected?.id === o.id) setSelected(null);
+      setOrders((current) => current.filter((order) => order.id !== o.id));
+    } catch (err: any) {
+      console.error("[deleteOrder] network error", err);
+      toast.error("Mrežna greška: " + (err?.message || "nepoznato"));
+    }
   };
 
   const filtered = filter === "all" ? orders : orders.filter((o) => o.status === filter);
