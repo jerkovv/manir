@@ -31,9 +31,17 @@ Deno.serve(async (req) => {
   if (!VALID_ROLES.includes(role)) return json({ error: "Nevažeća uloga" }, 400);
 
   // Postoji li već?
+  // Vraćamo 200 sa flagom `already_exists` jer Supabase JS klijent tretira
+  // non-2xx kao "FunctionsHttpError" i ne propušta originalnu poruku do UI-ja.
   const { data: existing } = await admin
     .from("app_users").select("id").eq("email", email).maybeSingle();
-  if (existing) return json({ error: "Korisnik sa ovim email-om već postoji" }, 409);
+  if (existing) {
+    return json({
+      ok: false,
+      already_exists: true,
+      error: "Email je već dodat",
+    }, 200);
+  }
 
   // Generiši invite link preko Supabase Auth
   const siteUrl = req.headers.get("origin") || Deno.env.get("SITE_URL") || "";

@@ -383,6 +383,10 @@ const InviteModal = ({ onClose, onDone }: { onClose: () => void; onDone: () => v
       body: { email: email.trim(), full_name: fullName.trim(), role },
     });
     setSubmitting(false);
+    if ((data as any)?.already_exists) {
+      toast.error("Email je već dodat");
+      return;
+    }
     if (error || (data as any)?.error) {
       toast.error("Greška: " + (error?.message || (data as any)?.error));
       return;
