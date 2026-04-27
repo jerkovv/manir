@@ -51,6 +51,21 @@ export function applyTemplate(
   // korektno renderovali.
   if (template && template.toLowerCase().includes("<html")) {
     let s = template;
+    // 1) Uslovni blokovi: {#if field}...{/if}
+    //    Blok ostaje ako je vrednost "truthy" (nije prazan string / 0 / undefined).
+    s = s.replace(
+      /\{#if\s+([a-zA-Z0-9_]+)\}([\s\S]*?)\{\/if\}/g,
+      (_m, key: string, inner: string) => {
+        const v = data[key];
+        const truthy =
+          v !== undefined &&
+          v !== null &&
+          String(v).trim() !== "" &&
+          String(v).trim() !== "0";
+        return truthy ? inner : "";
+      },
+    );
+    // 2) Zamena placeholder-a {field}
     for (const [k, v] of Object.entries(data)) {
       s = s.replaceAll(`{${k}}`, String(v));
     }

@@ -120,6 +120,16 @@ const DEMO = {
 
 function applyDemo(tpl: string): string {
   let out = tpl;
+  // Uslovni blokovi: {#if field}...{/if}
+  out = out.replace(
+    /\{#if\s+([a-zA-Z0-9_]+)\}([\s\S]*?)\{\/if\}/g,
+    (_m, key: string, inner: string) => {
+      const v = (DEMO as Record<string, string>)[key];
+      const truthy =
+        v !== undefined && v !== null && String(v).trim() !== "" && String(v).trim() !== "0";
+      return truthy ? inner : "";
+    },
+  );
   for (const [k, v] of Object.entries(DEMO)) {
     out = out.split(`{${k}}`).join(v);
   }
@@ -678,6 +688,21 @@ const TemplateEditor = ({
             {`{${p}}`}
           </button>
         ))}
+      </div>
+      <div className="mt-5 pt-4 border-t border-border">
+        <Label className="text-xs uppercase tracking-wider text-muted-foreground">Uslovni blokovi</Label>
+        <p className="text-[11px] text-muted-foreground mt-1 mb-2">
+          Sakrij deo HTML-a kad polje nema vrednost. Primer:
+        </p>
+        <pre className="text-[11px] font-mono bg-[#F5F0E8] p-2 rounded whitespace-pre-wrap leading-relaxed">{`{#if discountAmount}
+  <tr>
+    <td>{discountLabel}</td>
+    <td>-{discountAmount}</td>
+  </tr>
+{/if}`}</pre>
+        <p className="text-[10px] text-muted-foreground mt-2">
+          Radi za sva polja: <code>note</code>, <code>discountAmount</code>, <code>customerPhone</code> itd.
+        </p>
       </div>
     </div>
   </div>
