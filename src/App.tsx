@@ -56,6 +56,22 @@ const ScrollToTop = () => {
   return null;
 };
 
+// Hvata Supabase invite/recovery linkove (#access_token=...&type=invite|recovery)
+// koji su redirektovani na pogrešnu stranicu i prebacuje korisnika na /admin/set-password.
+const AuthHashRedirect = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash || !hash.includes("access_token")) return;
+    const params = new URLSearchParams(hash.startsWith("#") ? hash.slice(1) : hash);
+    const type = params.get("type");
+    if (type !== "invite" && type !== "recovery" && type !== "signup") return;
+    if (pathname.startsWith("/admin/set-password")) return;
+    window.location.replace(`/admin/set-password${hash}`);
+  }, [pathname]);
+  return null;
+};
+
 const ChromeShell = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useLocation();
   const isAdmin = pathname.startsWith("/admin");
@@ -81,6 +97,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <ScrollToTop />
+          <AuthHashRedirect />
           <ChromeShell>
             <Routes>
               <Route path="/" element={<Index />} />
