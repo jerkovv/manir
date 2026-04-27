@@ -9,7 +9,7 @@ import { fetchProducts, productImage, type Product } from "@/lib/products";
 import { useLandingContent } from "@/lib/landingContent";
 import heroImage from "@/assets/hero-blurred.jpg";
 import heroOfferImage from "@/assets/hero-0202.jpg";
-import selfcareImage from "@/assets/selfcare-ritual.jpg";
+import selfcareImage from "@/assets/selfcare-team.jpg";
 import scienceImage from "@/assets/brand-science.jpg";
 
 const marqueeItems = [
@@ -267,27 +267,37 @@ const Index = () => {
       </section>
 
       {/* Self-care Section */}
-      <section className="relative py-24 lg:py-36 overflow-hidden">
-        <div className="absolute inset-0">
-          <img src={selfcare.image || selfcareImage} alt="Self-care ritual" loading="lazy" className="w-full h-full object-cover" width={1280} height={960} />
-          <div className="absolute inset-0 bg-warm-dark/50" />
-        </div>
-        <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12 text-center">
-          <SectionReveal>
-            <span className="font-body text-[11px] tracking-[0.3em] uppercase text-primary-foreground/60 block mb-6">{selfcare.eyebrow}</span>
-            <h2 className="font-heading text-4xl md:text-6xl lg:text-7xl text-primary-foreground font-light leading-[1.1] mb-8 max-w-3xl mx-auto">
-              {selfcare.title}
-            </h2>
-            <p className="font-body text-base md:text-lg text-primary-foreground/80 max-w-xl mx-auto leading-relaxed mb-10">
-              {selfcare.subtitle}
-            </p>
-            <Link
-              to={selfcare.ctaLink}
-              className="inline-flex items-center gap-3 bg-primary-foreground text-warm-dark px-8 py-4 font-body text-xs tracking-[0.15em] uppercase hover:bg-warm-cream transition-colors"
-            >
-              {selfcare.ctaLabel} <ArrowRight size={14} />
-            </Link>
-          </SectionReveal>
+      <section className="relative py-24 lg:py-36 bg-warm-cream overflow-hidden">
+        <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <SectionReveal>
+              <span className="font-body text-[11px] tracking-[0.3em] uppercase text-warm-brown/70 block mb-6">{selfcare.eyebrow}</span>
+              <h2 className="font-heading text-4xl md:text-5xl lg:text-6xl text-foreground font-light leading-[1.1] mb-8">
+                {selfcare.title}
+              </h2>
+              <p className="font-body text-base md:text-lg text-muted-foreground max-w-xl leading-relaxed mb-10">
+                {selfcare.subtitle}
+              </p>
+              <Link
+                to={selfcare.ctaLink}
+                className="inline-flex items-center gap-3 bg-warm-dark text-primary-foreground px-8 py-4 font-body text-xs tracking-[0.15em] uppercase hover:bg-warm-brown transition-colors"
+              >
+                {selfcare.ctaLabel} <ArrowRight size={14} />
+              </Link>
+            </SectionReveal>
+            <SectionReveal>
+              <div className="relative aspect-[4/3] lg:aspect-[5/4] overflow-hidden">
+                <img
+                  src={selfcare.image || selfcareImage}
+                  alt="0202 SKIN tim"
+                  loading="lazy"
+                  className="w-full h-full object-cover object-center"
+                  width={1600}
+                  height={1200}
+                />
+              </div>
+            </SectionReveal>
+          </div>
         </div>
       </section>
 
