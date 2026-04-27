@@ -49,7 +49,6 @@ const About = () => {
                 src={introVideo}
                 autoPlay
                 muted
-                defaultMuted
                 loop
                 playsInline
                 // @ts-ignore
