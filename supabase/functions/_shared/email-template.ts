@@ -45,16 +45,18 @@ export function applyTemplate(
   template: string,
   data: Record<string, string | number>,
 ): string {
-  // Ako je template prazan, koristi premium fallback (admin može da editiuje u panelu).
-  if (!template || !template.trim()) {
-    return wrapPremium(data);
+  // Premium dizajn je default. Šablon iz baze se poštuje SAMO ako sadrži pun HTML
+  // dokument (<html>) — tako admin može potpuno custom dizajn da postavi.
+  // Inače uvek koristimo premium wrapper da bi sve podatke (adresa, telefon...)
+  // korektno renderovali.
+  if (template && template.toLowerCase().includes("<html")) {
+    let s = template;
+    for (const [k, v] of Object.entries(data)) {
+      s = s.replaceAll(`{${k}}`, String(v));
+    }
+    return s;
   }
-  // Inače poštuj šablon iz baze — samo zameni {placeholder}-e.
-  let s = template;
-  for (const [k, v] of Object.entries(data)) {
-    s = s.replaceAll(`{${k}}`, String(v));
-  }
-  return s;
+  return wrapPremium(data);
 }
 
 function wrapPremium(data: Record<string, string | number>): string {
