@@ -41,12 +41,11 @@ export async function requirePermission(
     global: { headers: { Authorization: authHeader } },
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const token = authHeader.replace("Bearer ", "");
-  const { data: claimsData, error: claimsErr } = await userClient.auth.getClaims(token);
-  if (claimsErr || !claimsData?.claims?.sub) {
+  const { data: userData, error: userErr } = await userClient.auth.getUser();
+  if (userErr || !userData?.user?.id) {
     return jsonErr("Unauthorized", 401, cors);
   }
-  const userId = claimsData.claims.sub;
+  const userId = userData.user.id;
 
   // Učitaj actor preko service-role
   const admin = createClient(supabaseUrl, serviceKey, {
