@@ -1,4 +1,5 @@
 import SectionReveal from "@/components/SectionReveal";
+import { useEffect, useRef } from "react";
 import scienceImage from "@/assets/brand-science.jpg";
 import selfcareImage from "@/assets/selfcare-ritual.jpg";
 import introVideo from "@/assets/0202-intro.mp4";
@@ -6,6 +7,26 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 
 const About = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = true;
+    const tryPlay = () => {
+      const p = v.play();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    };
+    tryPlay();
+    const onLoaded = () => tryPlay();
+    v.addEventListener("loadedmetadata", onLoaded);
+    v.addEventListener("canplay", onLoaded);
+    return () => {
+      v.removeEventListener("loadedmetadata", onLoaded);
+      v.removeEventListener("canplay", onLoaded);
+    };
+  }, []);
+
   return (
     <main className="pt-24">
       {/* Page Hero */}
@@ -22,19 +43,24 @@ const About = () => {
       <section className="py-24 lg:py-36">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
           <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-            <SectionReveal>
+            <div>
               <video
+                ref={videoRef}
                 src={introVideo}
                 autoPlay
                 muted
                 loop
                 playsInline
+                // @ts-ignore
+                webkit-playsinline="true"
                 preload="auto"
                 // @ts-ignore
                 fetchpriority="high"
+                disableRemotePlayback
+                controls={false}
                 className="w-full h-auto block bg-warm-cream"
               />
-            </SectionReveal>
+            </div>
             <SectionReveal delay={0.2}>
               <h2 className="font-heading text-4xl md:text-5xl font-light text-foreground mb-8">Naša priča</h2>
               <div className="space-y-5 font-body text-base leading-relaxed text-muted-foreground">
