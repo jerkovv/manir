@@ -41,10 +41,10 @@ type LogRow = {
 
 const DEFAULT: Settings = {
   smtp_host: "mailcluster.loopia.se",
-  smtp_port: 587,
+  smtp_port: 465,
   smtp_user: "",
   smtp_password: "",
-  smtp_secure: false,
+  smtp_secure: true,
   from_name: "0202skin",
   from_email: "",
   admin_email: "",
@@ -114,7 +114,7 @@ const AdminEmailSettings = () => {
       } else if (data) {
         setS({
           smtp_host: data.smtp_host || DEFAULT.smtp_host,
-          smtp_port: data.smtp_port ?? 587,
+          smtp_port: data.smtp_port ?? 465,
           smtp_user: data.smtp_user || "",
           smtp_password: "",
           smtp_secure: !!data.smtp_secure,
