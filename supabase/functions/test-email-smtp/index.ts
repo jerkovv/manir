@@ -70,11 +70,15 @@ Deno.serve(async (req) => {
 
   let client: SMTPClient | null = null;
   try {
+    const port = Number(p.smtp_port);
+    // Port 465 = implicit TLS; 587/25 = STARTTLS (TLS pregovor nakon konekcije)
+    const useImplicitTls = port === 465 || (!!p.smtp_secure && port === 465);
+
     client = new SMTPClient({
       connection: {
         hostname: p.smtp_host,
-        port: Number(p.smtp_port),
-        tls: !!p.smtp_secure,
+        port,
+        tls: useImplicitTls,
         auth: { username: p.smtp_user, password: p.smtp_password },
       },
     });
