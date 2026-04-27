@@ -1,6 +1,8 @@
 import { corsHeaders } from "../_shared/cors.ts";
 import { requirePermission } from "../_shared/require-permission.ts";
 
+// redeploy bump v2
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
