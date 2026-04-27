@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { downloadCSV } from "@/lib/csv";
+import { displayOrderNumber } from "@/lib/orderNumber";
 import { StatusBadge } from "./AdminOverview";
 import { Download, X, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -70,7 +71,7 @@ const AdminOrders = () => {
 
   const exportCSV = () => {
     const rows = filtered.map((o) => ({
-      broj: o.order_number,
+      broj: displayOrderNumber(o.order_number),
       datum: new Date(o.created_at).toLocaleString("sr-RS"),
       kupac: o.customer_name,
       email: o.customer_email,
@@ -88,7 +89,7 @@ const AdminOrders = () => {
 
   const deleteOrder = async (o: Order, e?: React.MouseEvent) => {
     e?.stopPropagation();
-    if (!confirm(`Obrisati porudžbinu #${o.order_number}? Ova akcija se ne može poništiti.`)) return;
+    if (!confirm(`Obrisati porudžbinu #${displayOrderNumber(o.order_number)}? Ova akcija se ne može poništiti.`)) return;
     try {
       const { error: itemsError } = await supabase.from("order_items").delete().eq("order_id", o.id);
       if (itemsError) return toast.error("Greška: " + itemsError.message);
@@ -159,7 +160,7 @@ const AdminOrders = () => {
             <tbody>
               {filtered.map((o) => (
                 <tr key={o.id} onClick={() => openOrder(o)} className="border-t border-border cursor-pointer hover:bg-[#FAFAF8]">
-                  <td className="p-4">#{o.order_number}</td>
+                  <td className="p-4">#{displayOrderNumber(o.order_number)}</td>
                   <td className="p-4 text-muted-foreground">{new Date(o.created_at).toLocaleDateString("sr-RS")}</td>
                   <td className="p-4">{o.customer_name}</td>
                   <td className="p-4 text-muted-foreground">{o.customer_email}</td>
@@ -193,7 +194,7 @@ const AdminOrders = () => {
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setSelected(null)}>
           <div onClick={(e) => e.stopPropagation()} className="bg-white max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-5 border-b border-border">
-              <h2 className="font-heading text-2xl">Porudžbina #{selected.order_number}</h2>
+              <h2 className="font-heading text-2xl">Porudžbina #{displayOrderNumber(selected.order_number)}</h2>
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => deleteOrder(selected)}
