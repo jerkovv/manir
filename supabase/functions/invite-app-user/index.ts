@@ -2,7 +2,7 @@
 // Generates a Supabase invite link for a new system user and emails it via Loopia SMTP.
 import { corsHeaders } from "../_shared/cors.ts";
 import { requirePermission } from "../_shared/require-permission.ts";
-import { sendSystemEmail, credentialsEmailHtml } from "../_shared/smtp-sender.ts";
+import { sendSystemEmail, inviteEmailHtml } from "../_shared/smtp-sender.ts";
 
 interface Payload {
   email: string;
@@ -43,52 +43,54 @@ Deno.serve(async (req) => {
     }, 200);
   }
 
-  // Generiši random lozinku (16 karaktera, alfanumerička + specijalni)
-  const password = generatePassword(16);
-
-  // Kreiraj auth korisnika sa random lozinkom (email auto-confirmed)
-  const { data: createData, error: createErr } = await admin.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true,
-    user_metadata: { full_name: fullName },
-  });
-  if (createErr || !createData?.user?.id) {
-    return json({ error: `Greška pri kreiranju korisnika: ${createErr?.message || "unknown"}` }, 500);
-  }
-  const newUserId = createData.user.id;
-
   const siteUrl = req.headers.get("origin") || Deno.env.get("SITE_URL") || "";
-  const loginUrl = `${siteUrl}/admin/login`;
+  const redirectTo = `${siteUrl}/admin/set-password`;
 
-  // Insert u app_users (status: active jer je lozinka već postavljena)
+  // Pozovi korisnika kroz Supabase invite tok (kreira auth user i generiše invite link)
+  const { data: inviteData, error: inviteErr } = await admin.auth.admin.inviteUserByEmail(email, {
+    data: { full_name: fullName },
+    redirectTo,
+  });
+  if (inviteErr || !inviteData?.user?.id) {
+    return json({ error: `Greška pri pozivu: ${inviteErr?.message || "unknown"}` }, 500);
+  }
+  const newUserId = inviteData.user.id;
+
+  // Generiši svoj invite link (sa ispravnim redirectTo) za slanje preko našeg SMTP-a
+  const { data: linkData, error: linkErr } = await admin.auth.admin.generateLink({
+    type: "invite",
+    email,
+    options: { redirectTo },
+  });
+  if (linkErr || !linkData?.properties?.action_link) {
+    return json({ error: `Greška pri generisanju linka: ${linkErr?.message || "unknown"}` }, 500);
+  }
+  const inviteUrl = linkData.properties.action_link;
+
+  // Insert u app_users (status: invited dok ne postavi lozinku)
   const { error: insErr } = await admin.from("app_users").insert({
     id: newUserId,
     email,
     full_name: fullName,
     role,
-    status: "active",
+    status: "invited",
     invited_by: actor.id,
   });
   if (insErr) {
-    // Rollback auth user da ne ostane orphan
     await admin.auth.admin.deleteUser(newUserId);
     return json({ error: `DB greška: ${insErr.message}` }, 500);
   }
 
-  // Pošalji premium email sa pristupnim podacima
-  const html = credentialsEmailHtml({
+  const html = inviteEmailHtml({
     inviterName: actor.full_name || actor.email,
     recipientName: fullName,
     role,
-    email,
-    password,
-    loginUrl,
+    inviteUrl,
   });
   const result = await sendSystemEmail({
     admin,
     to: email,
-    subject: "Vaši pristupni podaci za 0202 SKIN admin panel",
+    subject: "Pozivnica za 0202 SKIN admin panel",
     html,
     replyTo: actor.email,
   });
@@ -108,22 +110,12 @@ Deno.serve(async (req) => {
     user_id: newUserId,
     email_sent: result.sent,
     email_error: result.error || null,
-    // Fallback: ako email padne, vrati lozinku adminu da je manuelno prosledi
-    fallback_credentials: result.sent ? null : { email, password, loginUrl },
+    // Fallback: ako email padne, vrati invite link adminu da ga manuelno prosledi
+    fallback_invite_url: result.sent ? null : inviteUrl,
   }, 200);
 
   function json(b: unknown, s: number) {
     return new Response(JSON.stringify(b), { status: s, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 });
-
-function generatePassword(length: number): string {
-  // Bez zbunjujućih karaktera (0/O, l/1/I)
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%&*";
-  const bytes = new Uint8Array(length);
-  crypto.getRandomValues(bytes);
-  let out = "";
-  for (let i = 0; i < length; i++) out += chars[bytes[i] % chars.length];
-  return out;
-}
-// redeploy: simple-smtp v2 (1777309864)
+// redeploy: invite-link v3
