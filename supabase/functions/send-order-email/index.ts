@@ -77,7 +77,7 @@ Deno.serve(async (req) => {
   const customerSubject = applyTemplate(settings.customer_subject, { ...data, itemsTable: "" });
   const customerHtml = applyTemplate(settings.customer_template, data);
   const adminSubject = applyTemplate(settings.admin_subject, { ...data, itemsTable: "" });
-  const adminHtml = applyTemplate(settings.admin_template, data);
+  const adminHtml = applyTemplate(settings.admin_template, { ...data, __isAdmin: 1 });
 
   // 3. SMTP podešavanja
   const smtp = {
