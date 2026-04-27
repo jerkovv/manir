@@ -90,28 +90,17 @@ const AdminOrders = () => {
     e?.stopPropagation();
     if (!confirm(`Obrisati porudžbinu #${o.order_number}? Ova akcija se ne može poništiti.`)) return;
     try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const accessToken = sessionData?.session?.access_token;
-      if (!accessToken) {
-        return toast.error("Sesija je istekla. Prijavi se ponovo.");
-      }
-      const SUPABASE_URL = "https://caqjobwfcuwvxojengky.supabase.co";
-      const ANON_KEY = "sb_publishable_yJopNgZzXJqW5UX8SIMoBw_WRFp2KpZ";
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/delete-order`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-          apikey: ANON_KEY,
-        },
-        body: JSON.stringify({ order_id: o.id }),
-      });
-      let payload: any = null;
-      try { payload = await res.json(); } catch { /* ignore */ }
-      if (!res.ok || payload?.error || !payload?.ok) {
-        const msg = payload?.error || `HTTP ${res.status}`;
-        return toast.error("Greška: " + msg);
-      }
+      const { error: itemsError } = await supabase.from("order_items").delete().eq("order_id", o.id);
+      if (itemsError) return toast.error("Greška: " + itemsError.message);
+
+      const { error: orderError, count } = await supabase
+        .from("orders")
+        .delete({ count: "exact" })
+        .eq("id", o.id);
+
+      if (orderError) return toast.error("Greška: " + orderError.message);
+      if ((count ?? 0) !== 1) return toast.error("Porudžbina nije obrisana");
+
       toast.success("Porudžbina obrisana");
       if (selected?.id === o.id) setSelected(null);
       setOrders((current) => current.filter((order) => order.id !== o.id));
