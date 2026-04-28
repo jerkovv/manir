@@ -149,7 +149,9 @@ Deno.serve(async (req) => {
       status: "sent",
     });
   } catch (e) {
-    const msg = (e as Error).message;
+    const msg = e instanceof Error
+      ? `[send-order-email] ${e.message}`
+      : `[send-order-email] ${String(e)}`;
     results.push({ type: "customer", recipient: payload.customerEmail, status: "failed", error: msg });
     await admin.from("email_logs").insert({
       order_id: isUuid(payload.orderId) ? payload.orderId : null,
@@ -241,7 +243,9 @@ Deno.serve(async (req) => {
         status: "sent",
       });
     } catch (e) {
-      const msg = (e as Error).message;
+      const msg = e instanceof Error
+        ? `[send-order-email] ${e.message}`
+        : `[send-order-email] ${String(e)}`;
       results.push({ type: "admin", recipient, status: "failed", error: msg });
       await admin.from("email_logs").insert({
         order_id: isUuid(payload.orderId) ? payload.orderId : null,
@@ -309,4 +313,4 @@ function formatOrderDate(d: Date): string {
   return `${dd}.${mm}.${yyyy}.`;
 }
 
-// redeploy: smtp-diagnostic-logging v6 (2026-04-28)
+// redeploy: smtp-pre-send-validation v7 (2026-04-28)
