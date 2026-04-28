@@ -149,7 +149,7 @@ const AdminDiscounts = () => {
           </button>
         </div>
         <p className="font-body text-xs text-muted-foreground mb-4">
-          Napomena: kupon i auto-popust se ne kombinuju — kupac koristi samo jedan u isto vreme.
+          Napomena: kupon i auto-popust se ne kombinuju kupac koristi samo jedan u isto vreme.
         </p>
         {coupons.length === 0 ? (
           <p className="font-body text-sm text-muted-foreground py-4">Nema kupona. Kreirajte prvi.</p>

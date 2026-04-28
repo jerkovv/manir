@@ -57,7 +57,7 @@ const DEFAULT: Settings = {
   reply_to: "",
   customer_subject: "Potvrda porudžbine #{orderId}",
   customer_template: "",
-  admin_subject: "Nova porudžbina #{orderId} — {customerName}",
+  admin_subject: "Nova porudžbina #{orderId} {customerName}",
   admin_template: "",
   enabled: false,
 };
@@ -302,8 +302,8 @@ const AdminEmailSettings = () => {
       <Tabs defaultValue="smtp" className="w-full">
         <TabsList className="mb-6 flex-wrap h-auto">
           <TabsTrigger value="smtp">SMTP konekcija</TabsTrigger>
-          <TabsTrigger value="customer">Šablon — kupac</TabsTrigger>
-          <TabsTrigger value="admin">Šablon — admin</TabsTrigger>
+          <TabsTrigger value="customer">Šablon kupac</TabsTrigger>
+          <TabsTrigger value="admin">Šablon admin</TabsTrigger>
           <TabsTrigger value="logs">Log poslatih</TabsTrigger>
         </TabsList>
 
@@ -331,7 +331,7 @@ const AdminEmailSettings = () => {
             <div className="bg-amber-50 border border-amber-300 rounded-md px-4 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2 text-sm text-amber-900">
                 <AlertTriangle size={16} className="text-amber-600" />
-                <span className="font-body">SMTP polja su otključana. Budi pažljiv — ne čuvaj izmene osim ako si siguran.</span>
+                <span className="font-body">SMTP polja su otključana. Budi pažljiv ne čuvaj izmene osim ako si siguran.</span>
               </div>
               <button
                 onClick={() => setSmtpUnlocked(false)}
@@ -355,7 +355,7 @@ const AdminEmailSettings = () => {
               <div>
                 <Label className="text-xs">SMTP host</Label>
                 <Input value={s.smtp_host} onChange={(e) => setS({ ...s, smtp_host: e.target.value })} placeholder="mailcluster.loopia.se" />
-                <p className="text-[11px] text-muted-foreground mt-1">Za Loopia obično je <code>mailcluster.loopia.se</code> ili <code>smtp.loopia.rs</code> — proveri u Loopia control panelu pod Email → Pristup.</p>
+                <p className="text-[11px] text-muted-foreground mt-1">Za Loopia obično je <code>mailcluster.loopia.se</code> ili <code>smtp.loopia.rs</code> proveri u Loopia control panelu pod Email → Pristup.</p>
               </div>
               <div>
                 <Label className="text-xs">SMTP port</Label>
@@ -493,7 +493,7 @@ const AdminEmailSettings = () => {
                         <td className="p-3 whitespace-nowrap">{new Date(l.sent_at).toLocaleString("sr-RS")}</td>
                         <td className="p-3">{l.type === "customer" ? "Kupac" : l.type === "admin" ? "Admin" : "Test"}</td>
                         <td className="p-3">{l.recipient}</td>
-                        <td className="p-3 text-xs text-muted-foreground">{l.order_id ? l.order_id.slice(0, 8) : "—"}</td>
+                        <td className="p-3 text-xs text-muted-foreground">{l.order_id ? l.order_id.slice(0, 8) : "-"}</td>
                         <td className="p-3">
                           {l.status === "sent"
                             ? <Badge className="bg-green-600 hover:bg-green-700">poslato</Badge>
@@ -522,7 +522,7 @@ const AdminEmailSettings = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-700">
               <AlertTriangle className="text-red-600" size={22} />
-              UPOZORENJE — kritična podešavanja
+              UPOZORENJE kritična podešavanja
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
@@ -531,20 +531,20 @@ const AdminEmailSettings = () => {
                 Ova podešavanja drže ceo email sistem na životu.
               </p>
               <p className="font-body text-sm text-red-900/90">
-                Ako promeniš host, port, korisnika ili lozinku — porudžbine NEĆE STIZATI ni kupcima
+                Ako promeniš host, port, korisnika ili lozinku porudžbine NEĆE STIZATI ni kupcima
                 ni adminu. Test email-ovi će padati. Sajt će izgledati kao da radi, ali nijedan
                 email neće biti poslat.
               </p>
             </div>
             <ul className="text-sm text-foreground/80 space-y-1.5 list-disc pl-5">
               <li>Ne menjaj ništa osim ako ti je SMTP server JAVIO da nešto treba da se menja.</li>
-              <li>Pre čuvanja, OBAVEZNO klikni „Testiraj konekciju" — ako test ne prođe, ne čuvaj.</li>
+              <li>Pre čuvanja, OBAVEZNO klikni „Testiraj konekciju" ako test ne prođe, ne čuvaj.</li>
               <li>Lozinku unosi samo ako je hosting promenio kredencijale.</li>
-              <li>Ako nisi siguran — zatvori ovaj prozor i ne diraj ništa.</li>
+              <li>Ako nisi siguran zatvori ovaj prozor i ne diraj ništa.</li>
             </ul>
             <div className="bg-amber-50 border border-amber-300 rounded p-3 text-xs text-amber-900 font-body">
               Sačekaj odbrojavanje ({countdown}s) pre nego što možeš da potvrdiš.
-              Ovo je namerno — da imaš vreme da se predomisliš.
+              Ovo je namerno da imaš vreme da se predomisliš.
             </div>
           </div>
           <DialogFooter>
@@ -576,7 +576,7 @@ const AdminEmailSettings = () => {
             <Input value={testRecipient} onChange={(e) => setTestRecipient(e.target.value)} placeholder="ti@primer.com" />
             <p className="text-[11px] text-muted-foreground">
               Šalje testni email koristeći podatke trenutno upisane u formu (i lozinku iz polja).
-              Ako je lozinka već sačuvana, ali polje prazno — moraš je ponovo uneti za test.
+              Ako je lozinka već sačuvana, ali polje prazno moraš je ponovo uneti za test.
             </p>
           </div>
           <DialogFooter>
@@ -592,7 +592,7 @@ const AdminEmailSettings = () => {
       <Dialog open={previewOpen !== null} onOpenChange={(o) => !o && setPreviewOpen(null)}>
         <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Pregled — {previewOpen === "admin" ? "Admin" : "Kupac"}</DialogTitle>
+            <DialogTitle>Pregled {previewOpen === "admin" ? "Admin" : "Kupac"}</DialogTitle>
           </DialogHeader>
           <div className="text-xs text-muted-foreground mb-2">
             Subject: <strong className="text-foreground">{applyDemo(previewOpen === "admin" ? s.admin_subject : s.customer_subject)}</strong>
