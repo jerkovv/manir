@@ -122,6 +122,7 @@ Deno.serve(async (req) => {
       replyTo: settings.admin_email || undefined,
       subject: customerSubject,
       html: customerHtml,
+      text: htmlToText(customerHtml),
     });
     results.push({ type: "customer", status: "sent" });
     await admin.from("email_logs").insert({
@@ -145,21 +146,21 @@ Deno.serve(async (req) => {
   // 4b. Adminu
   // Skupi sve admin primaoce: app_users sa rolom admin/owner + settings.admin_email
   const adminRecipients = new Set<string>();
-  if (settings.admin_email) adminRecipients.add(settings.admin_email.toLowerCase().trim());
+  addRecipients(adminRecipients, settings.admin_email);
 
   let adminLookupError: string | null = null;
   try {
     const { data: appAdmins, error: appAdminsErr } = await admin
       .from("app_users")
-      .select("email, role, status")
-      .in("role", ["admin", "owner"]);
+      .select("email, role, status");
     if (appAdminsErr) {
       adminLookupError = appAdminsErr.message;
       console.error("[send-order-email] app_users query error:", appAdminsErr);
     }
-    console.log("[send-order-email] found app_users admins:", appAdmins?.length ?? 0);
-    for (const u of appAdmins ?? []) {
-      if (u?.email) adminRecipients.add(String(u.email).toLowerCase().trim());
+    const roleAdmins = (appAdmins ?? []).filter((u) => ["admin", "owner"].includes(String(u?.role ?? "").toLowerCase().trim()));
+    console.log("[send-order-email] found app_users admins:", roleAdmins.length);
+    for (const u of roleAdmins) {
+      addRecipients(adminRecipients, u?.email);
     }
   } catch (e) {
     adminLookupError = (e as Error).message;
