@@ -1,10 +1,10 @@
-// Worker: šalje 2 talasa abandoned cart email-a.
+// Worker: šalje 2 talasa abandoned cart recovery email-a (luxury podsetnik, bez popusta).
 //
-// Stage 1 (email1_sent_at IS NULL, abandoned_at <= now - stage1_minutes):
-//   - šalje "zaboravili ste nešto" sa kuponom iz recovery_settings.email1_coupon
+// Stage 1 (email1_sent_at IS NULL, updated_at <= now - email1_delay_minutes):
+//   - "Vaša korpa Vas čeka" - blagi podsetnik
 // Stage 2 (email1_sent_at IS NOT NULL, email2_sent_at IS NULL,
-//          email1_sent_at <= now - stage2_hours):
-//   - šalje "poslednja prilika" sa kuponom iz recovery_settings.email2_coupon
+//          email1_sent_at <= now - email2_delay_hours):
+//   - "Vaša korpa je još uvek tu" - poslednje podsećanje
 //
 // Pozivan od cron-tick svakih 15 min (preko pg_cron). Throttle: max BATCH_SIZE * 2 mejlova po runu.
 // Preskače redove gde je status != 'pending' (converted/abandoned/unsubscribed),
@@ -39,12 +39,8 @@ Deno.serve(async (req) => {
     return json({ skipped: true, reason: "abandoned_cart_enabled=false" }, 200);
   }
 
-  const stage1Minutes = Number(rs.abandoned_stage1_minutes ?? 30);
-  const stage2Hours = Number(rs.abandoned_stage2_hours ?? 72);
-  const coupon1 = rs.email1_coupon || null;
-  const label1 = rs.email1_discount_label || null;
-  const coupon2 = rs.email2_coupon || null;
-  const label2 = rs.email2_discount_label || null;
+  const stage1Minutes = Number(rs.email1_delay_minutes ?? 30);
+  const stage2Hours = Number(rs.email2_delay_hours ?? 72);
 
   const sender = await loadSmtpSender(admin);
   if ("error" in sender) return json({ error: sender.error }, 200);
@@ -61,9 +57,9 @@ Deno.serve(async (req) => {
     .is("email1_sent_at", null)
     .is("unsubscribed_at", null)
     .is("converted_at", null)
-    .lte("abandoned_at", stage1Cutoff)
+    .lte("updated_at", stage1Cutoff)
     .not("email", "is", null)
-    .order("abandoned_at", { ascending: true })
+    .order("updated_at", { ascending: true })
     .limit(BATCH_SIZE);
   if (s1Err) return json({ error: s1Err.message }, 500);
 
@@ -85,15 +81,11 @@ Deno.serve(async (req) => {
   const results: Array<{ id: string; stage: number; status: string; error?: string }> = [];
 
   for (const cart of (stage1Carts ?? [])) {
-    const r = await sendStage(admin, sender, cart, 1, {
-      siteUrl, coupon: coupon1, label: label1,
-    });
+    const r = await sendStage(admin, sender, cart, 1, { siteUrl });
     results.push({ id: cart.id, stage: 1, ...r });
   }
   for (const cart of (stage2Carts ?? [])) {
-    const r = await sendStage(admin, sender, cart, 2, {
-      siteUrl, coupon: coupon2, label: label2,
-    });
+    const r = await sendStage(admin, sender, cart, 2, { siteUrl });
     results.push({ id: cart.id, stage: 2, ...r });
   }
 
@@ -110,7 +102,7 @@ async function sendStage(
   sender: { send: (o: { to: string; subject: string; html: string }) => Promise<void> },
   cart: Record<string, unknown>,
   stage: 1 | 2,
-  opts: { siteUrl: string; coupon: string | null; label: string | null },
+  opts: { siteUrl: string },
 ): Promise<{ status: string; error?: string }> {
   try {
     const items = Array.isArray(cart.items) ? (cart.items as AbandonedCartItem[]) : [];
@@ -135,13 +127,11 @@ async function sendStage(
       resumeUrl,
       unsubscribeUrl,
       siteUrl: opts.siteUrl,
-      discountCode: opts.coupon,
-      discountText: opts.label,
     });
 
     const subject = stage === 1
-      ? "Zaboravili ste nešto u korpi · 0202skin"
-      : "Poslednja prilika · 0202skin";
+      ? "Vaša korpa Vas čeka"
+      : "Vaša korpa je još uvek tu";
 
     await sender.send({ to: String(cart.email), subject, html });
 
