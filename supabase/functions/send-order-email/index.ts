@@ -282,4 +282,4 @@ function formatOrderDate(d: Date): string {
   return `${dd}.${mm}.${yyyy}.`;
 }
 
-// redeploy: simple-smtp v2 (1777309864)
+// redeploy: template-cleanup + admins-from-roles v3 (2026-04-28)
