@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
   const result = await sendSystemEmail({
     admin,
     to: target.email,
-    subject: "Podsetnik: Pozivnica za 0202 SKIN admin panel",
+    subject: "Podsetnik: Pozivnica za 0202skin admin panel",
     html,
     replyTo: actor.email,
   });
