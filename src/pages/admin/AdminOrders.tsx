@@ -41,6 +41,8 @@ const AdminOrders = () => {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Order | null>(null);
   const [items, setItems] = useState<OrderItem[]>([]);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -113,6 +115,61 @@ const AdminOrders = () => {
 
   const filtered = filter === "all" ? orders : orders.filter((o) => o.status === filter);
 
+  const toggleOne = (id: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const allVisibleSelected = filtered.length > 0 && filtered.every((o) => selectedIds.has(o.id));
+  const toggleAllVisible = () => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allVisibleSelected) {
+        filtered.forEach((o) => next.delete(o.id));
+      } else {
+        filtered.forEach((o) => next.add(o.id));
+      }
+      return next;
+    });
+  };
+
+  const bulkDelete = async () => {
+    const ids = filtered.filter((o) => selectedIds.has(o.id)).map((o) => o.id);
+    if (ids.length === 0) return;
+    if (!confirm(`Obrisati ${ids.length} ${ids.length === 1 ? "porudžbinu" : "porudžbina"}? Ova akcija se ne može poništiti.`)) return;
+    setBulkDeleting(true);
+    try {
+      const { error: itemsError } = await supabase.from("order_items").delete().in("order_id", ids);
+      if (itemsError) {
+        toast.error("Greška: " + itemsError.message);
+        return;
+      }
+      const { error: ordersError, count } = await supabase
+        .from("orders")
+        .delete({ count: "exact" })
+        .in("id", ids);
+      if (ordersError) {
+        toast.error("Greška: " + ordersError.message);
+        return;
+      }
+      const deleted = count ?? 0;
+      toast.success(`Obrisano ${deleted} ${deleted === 1 ? "porudžbina" : "porudžbina"}`);
+      if (selected && ids.includes(selected.id)) setSelected(null);
+      setOrders((current) => current.filter((o) => !ids.includes(o.id)));
+      setSelectedIds(new Set());
+    } catch (err: any) {
+      console.error("[bulkDelete] error", err);
+      toast.error("Mrežna greška: " + (err?.message || "nepoznato"));
+    } finally {
+      setBulkDeleting(false);
+    }
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
@@ -120,9 +177,20 @@ const AdminOrders = () => {
           <h1 className="font-heading text-4xl text-foreground mb-1">Porudžbine</h1>
           <p className="font-body text-sm text-muted-foreground">{filtered.length} porudžbina</p>
         </div>
-        <button onClick={exportCSV} className="flex items-center gap-2 bg-foreground text-background px-4 py-2.5 font-body text-xs tracking-[0.15em] uppercase">
-          <Download size={14} /> Export CSV
-        </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          {selectedIds.size > 0 && (
+            <button
+              onClick={bulkDelete}
+              disabled={bulkDeleting}
+              className="flex items-center gap-2 bg-destructive text-destructive-foreground px-4 py-2.5 font-body text-xs tracking-[0.15em] uppercase disabled:opacity-50"
+            >
+              <Trash2 size={14} /> {bulkDeleting ? "Brisanje..." : `Obriši (${selectedIds.size})`}
+            </button>
+          )}
+          <button onClick={exportCSV} className="flex items-center gap-2 bg-foreground text-background px-4 py-2.5 font-body text-xs tracking-[0.15em] uppercase">
+            <Download size={14} /> Export CSV
+          </button>
+        </div>
       </div>
 
       <div className="flex gap-2 mb-6 flex-wrap">
@@ -146,6 +214,16 @@ const AdminOrders = () => {
           <table className="w-full font-body text-sm">
             <thead className="bg-[#FAFAF8] text-xs uppercase tracking-wider text-muted-foreground">
               <tr>
+                <th className="text-left p-4 w-10">
+                  <input
+                    type="checkbox"
+                    checked={allVisibleSelected}
+                    onChange={toggleAllVisible}
+                    onClick={(e) => e.stopPropagation()}
+                    aria-label="Selektuj sve"
+                    className="cursor-pointer"
+                  />
+                </th>
                 <th className="text-left p-4">#</th>
                 <th className="text-left p-4">Datum</th>
                 <th className="text-left p-4">Kupac</th>
@@ -159,7 +237,16 @@ const AdminOrders = () => {
             </thead>
             <tbody>
               {filtered.map((o) => (
-                <tr key={o.id} onClick={() => openOrder(o)} className="border-t border-border cursor-pointer hover:bg-[#FAFAF8]">
+                <tr key={o.id} onClick={() => openOrder(o)} className={`border-t border-border cursor-pointer hover:bg-[#FAFAF8] ${selectedIds.has(o.id) ? "bg-[#FAFAF8]" : ""}`}>
+                  <td className="p-4 w-10" onClick={(e) => e.stopPropagation()}>
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(o.id)}
+                      onChange={() => toggleOne(o.id)}
+                      aria-label={`Selektuj porudžbinu ${displayOrderNumber(o.order_number)}`}
+                      className="cursor-pointer"
+                    />
+                  </td>
                   <td className="p-4">#{displayOrderNumber(o.order_number)}</td>
                   <td className="p-4 text-muted-foreground">{new Date(o.created_at).toLocaleDateString("sr-RS")}</td>
                   <td className="p-4">{o.customer_name}</td>
