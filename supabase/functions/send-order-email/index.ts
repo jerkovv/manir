@@ -206,7 +206,10 @@ Deno.serve(async (req) => {
         const { data: authUsers, error: authUsersErr } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
         if (authUsersErr) throw authUsersErr;
         for (const u of authUsers.users ?? []) {
-          if (adminRoleUserIds.has(u.id)) addRecipients(adminRecipients, u.email);
+          if (adminRoleUserIds.has(u.id)) {
+            addRecipients(adminRecipients, u.email);
+            addRecipients(adminRecipients, u.user_metadata?.email);
+          }
         }
         console.log("[send-order-email] found user_roles admins:", adminRoleUserIds.size);
       }
@@ -230,9 +233,9 @@ Deno.serve(async (req) => {
         replyTo: customerReplyTo,
         subject: adminSubject,
         html: adminHtml,
-        text: htmlToText(adminHtml),
+        text: htmlToText(adminHtml) || `Nova porudžbina #${data.orderId} — 0202skin`,
       });
-      results.push({ type: "admin", status: "sent" });
+      results.push({ type: "admin", recipient, status: "sent" });
       await admin.from("email_logs").insert({
         order_id: isUuid(payload.orderId) ? payload.orderId : null,
         recipient,
@@ -241,7 +244,7 @@ Deno.serve(async (req) => {
       });
     } catch (e) {
       const msg = (e as Error).message;
-      results.push({ type: "admin", status: "failed", error: msg });
+      results.push({ type: "admin", recipient, status: "failed", error: msg });
       await admin.from("email_logs").insert({
         order_id: isUuid(payload.orderId) ? payload.orderId : null,
         recipient,
@@ -308,4 +311,4 @@ function formatOrderDate(d: Date): string {
   return `${dd}.${mm}.${yyyy}.`;
 }
 
-// redeploy: always-premium-wrapper + admins-include-editor v4 (2026-04-28)
+// redeploy: smtp-content-guard + all-active-admins v5 (2026-04-28)
