@@ -309,4 +309,4 @@ function formatOrderDate(d: Date): string {
   return `${dd}.${mm}.${yyyy}.`;
 }
 
-// redeploy: smtp-content-guard + all-active-admins v5 (2026-04-28)
+// redeploy: smtp-diagnostic-logging v6 (2026-04-28)
