@@ -313,4 +313,7 @@ function formatOrderDate(d: Date): string {
   return `${dd}.${mm}.${yyyy}.`;
 }
 
-// redeploy: smtp-pre-send-validation v7 (2026-04-28)
+// redeploy: smtp-pre-send-validation v8 (2026-04-28T-force-rebuild)
+// Force bundler to pick up latest _shared/simple-smtp.ts (pre-send validation log + empty payload guard).
+const FUNCTION_BUILD_ID = "send-order-email/v8/2026-04-28-force";
+console.log("[send-order-email] boot", FUNCTION_BUILD_ID);
