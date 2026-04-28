@@ -66,7 +66,7 @@ export function reviewReminderHtml(opts: {
           ${escapeHtml(greeting)}.
         </h1>
         <p style="font-family:${SANS};font-size:14px;line-height:1.75;color:${BRAND_MUTED};margin:0 auto 8px;max-width:440px;">
-          Prošlo je dve nedelje od vaše porudžbine. Voleli bismo da čujemo kako ste se snašli sa proizvodima — vaša ocena pomaže drugima da donesu pravu odluku.
+          Prošlo je dve nedelje od vaše porudžbine. Voleli bismo da čujemo kako ste se snašli sa proizvodima, vaša ocena pomaže drugima da donesu pravu odluku.
         </p>
       </td></tr>
       <tr><td style="padding:40px 48px 8px;">

@@ -107,7 +107,7 @@ async function sendStage(
   try {
     const items = Array.isArray(cart.items) ? (cart.items as AbandonedCartItem[]) : [];
     if (items.length === 0) {
-      // prazna korpa — markiraj 'abandoned' da je worker više ne pokupi
+      // prazna korpa - markiraj 'abandoned' da je worker vise ne pokupi
       await admin.from("abandoned_carts")
         .update({ status: "abandoned" })
         .eq("id", cart.id as string);
