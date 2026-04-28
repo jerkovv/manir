@@ -161,7 +161,7 @@ Deno.serve(async (req) => {
   }
 
   // 4b. Adminu
-  // Skupi sve admin primaoce: ručno podešeni admin_email + svi app_users sa admin pristupom.
+  // Skupi sve admin primaoce: ručno podešeni admin_email + svi aktivni korisnici admin panela.
   const adminRecipients = new Set<string>();
   addRecipients(adminRecipients, settings.admin_email);
   addRecipients(adminRecipients, settings.reply_to);
@@ -175,12 +175,10 @@ Deno.serve(async (req) => {
       adminLookupError = appAdminsErr.message;
       console.error("[send-order-email] app_users query error:", appAdminsErr);
     }
-    const allowedRoles = ["admin", "owner", "editor"];
     const blockedStatuses = ["disabled", "suspended", "blocked", "deleted"];
     const roleAdmins = (appAdmins ?? []).filter((u) => {
-      const role = String(u?.role ?? "").toLowerCase().trim();
       const status = String(u?.status ?? "active").toLowerCase().trim();
-      return allowedRoles.includes(role) && !blockedStatuses.includes(status);
+      return !blockedStatuses.includes(status);
     });
     console.log("[send-order-email] app_users total:", appAdmins?.length ?? 0, "matched:", roleAdmins.length);
     for (const u of roleAdmins) {
