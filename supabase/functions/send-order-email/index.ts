@@ -139,7 +139,7 @@ Deno.serve(async (req) => {
       replyTo: settings.admin_email || undefined,
       subject: customerSubject,
       html: customerHtml,
-      text: htmlToText(customerHtml),
+      text: htmlToText(customerHtml) || `Potvrda porudžbine #${data.orderId} — 0202skin`,
     });
     results.push({ type: "customer", recipient: payload.customerEmail, status: "sent" });
     await admin.from("email_logs").insert({
