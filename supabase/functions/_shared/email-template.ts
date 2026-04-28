@@ -36,6 +36,13 @@ export function renderItemsTable(items: Item[]): string {
   </table>`;
 }
 
+export function applyTextTemplate(
+  template: string,
+  data: Record<string, string | number>,
+): string {
+  return renderTemplateString(template || "", data).replace(/\s+/g, " ").trim();
+}
+
 /**
  * applyTemplate — sad zamenjuje placeholder-e UNUTAR premium wrapper-a.
  * Ako template iz baze sadrži samo placeholder-e (ili je prazan), automatski ga
@@ -50,28 +57,43 @@ export function applyTemplate(
   // Inače uvek koristimo premium wrapper da bi sve podatke (adresa, telefon...)
   // korektno renderovali.
   if (template && template.toLowerCase().includes("<html")) {
-    let s = template;
-    // 1) Uslovni blokovi: {#if field}...{/if}
-    //    Blok ostaje ako je vrednost "truthy" (nije prazan string / 0 / undefined).
-    s = s.replace(
-      /\{#if\s+([a-zA-Z0-9_]+)\}([\s\S]*?)\{\/if\}/g,
-      (_m, key: string, inner: string) => {
-        const v = data[key];
-        const truthy =
-          v !== undefined &&
-          v !== null &&
-          String(v).trim() !== "" &&
-          String(v).trim() !== "0";
-        return truthy ? inner : "";
-      },
-    );
-    // 2) Zamena placeholder-a {field}
-    for (const [k, v] of Object.entries(data)) {
-      s = s.replaceAll(`{${k}}`, String(v));
-    }
-    return s;
+    return renderTemplateString(template, data);
   }
   return wrapPremium(data);
+}
+
+function renderTemplateString(template: string, data: Record<string, string | number>): string {
+  let s = template;
+
+  // 1) Uslovni blokovi: {#if field}...{/if}
+  //    Blok ostaje ako je vrednost "truthy" (nije prazan string / 0 / undefined).
+  s = s.replace(
+    /\{#if\s+([a-zA-Z0-9_]+)\}([\s\S]*?)\{\/if\}/g,
+    (_m, key: string, inner: string) => {
+      const v = data[key];
+      const truthy =
+        v !== undefined &&
+        v !== null &&
+        String(v).trim() !== "" &&
+        String(v).trim() !== "0";
+      return truthy ? inner : "";
+    },
+  );
+
+  // 2) Zamena placeholder-a {field}; regex varijanta hvata i ponovljene pojave bez oslanjanja na replaceAll.
+  for (const [k, v] of Object.entries(data)) {
+    s = s.replace(new RegExp(`\\{${escapeRegExp(k)}\\}`, "g"), String(v));
+  }
+
+  // 3) Sigurnosno čišćenje: nikad ne šalji vidljive template markere kupcu/adminu.
+  return s
+    .replace(/\{#if\s+[a-zA-Z0-9_]+\}/g, "")
+    .replace(/\{\/if\}/g, "")
+    .replace(/\{[a-zA-Z0-9_]+\}/g, "");
+}
+
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function wrapPremium(data: Record<string, string | number>): string {
