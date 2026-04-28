@@ -306,4 +306,4 @@ function formatOrderDate(d: Date): string {
   return `${dd}.${mm}.${yyyy}.`;
 }
 
-// redeploy: template-cleanup + admins-from-roles v3 (2026-04-28)
+// redeploy: always-premium-wrapper + admins-include-editor v4 (2026-04-28)
