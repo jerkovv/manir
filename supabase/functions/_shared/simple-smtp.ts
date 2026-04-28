@@ -64,6 +64,36 @@ export async function sendSmtpEmail(settings: SmtpSettings, message: SmtpMessage
     htmlStart: safeHtml.slice(0, 60),
   }));
 
+  // Pre-send validation log: pokazuje TAČNO šta ide u client.send() posle trim-a.
+  // Ako se denomailer žali na "You should provide at least html or text content!",
+  // ovde ćemo videti da li su trimmed dužine zaista 0.
+  console.log("[smtp] pre-send validation", JSON.stringify({
+    to: message.to,
+    subjectLen: (message.subject ?? "").length,
+    subjectTrimmed: (message.subject ?? "").trim().length,
+    htmlLen: (message.html ?? "").length,
+    htmlTrimmed: (message.html ?? "").trim().length,
+    textLen: (message.text ?? "").length,
+    textTrimmed: (message.text ?? "").trim().length,
+    safeHtmlTrimmed: safeHtml.trim().length,
+    safeTextTrimmed: safeText.trim().length,
+    htmlPreview: (message.html ?? "").slice(0, 80),
+    textPreview: (message.text ?? "").slice(0, 80),
+  }));
+
+  // Hard guard: ako su i html i text prazni posle trim-a, baci jasnu grešku
+  // sa identifikujućim podacima umesto generičke denomailer poruke.
+  const htmlOk = safeHtml.trim().length > 0;
+  const textOk = safeText.trim().length > 0;
+  if (!htmlOk && !textOk) {
+    throw new Error(
+      `[smtp] empty payload: html=${(message.html ?? "").length}b ` +
+      `text=${(message.text ?? "").length}b ` +
+      `subject="${(message.subject ?? "").slice(0, 40)}" ` +
+      `to=${message.to}`
+    );
+  }
+
   try {
     await client.send({
       from: message.from,
