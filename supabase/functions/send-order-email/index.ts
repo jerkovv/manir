@@ -6,7 +6,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { corsHeaders } from "../_shared/cors.ts";
-import { applyTemplate, renderItemsTable, type Item } from "../_shared/email-template.ts";
+import { applyTemplate, applyTextTemplate, renderItemsTable, type Item } from "../_shared/email-template.ts";
 import { sendSmtpEmail } from "../_shared/simple-smtp.ts";
 
 interface Payload {
@@ -96,9 +96,9 @@ Deno.serve(async (req) => {
     orderDate: payload.orderDate || formatOrderDate(new Date()),
   };
 
-  const customerSubject = applyTemplate(settings.customer_subject, { ...data, itemsTable: "" });
+  const customerSubject = applyTextTemplate(settings.customer_subject, { ...data, itemsTable: "" });
   const customerHtml = applyTemplate(settings.customer_template, data);
-  const adminSubject = applyTemplate(settings.admin_subject, { ...data, itemsTable: "" });
+  const adminSubject = applyTextTemplate(settings.admin_subject, { ...data, itemsTable: "" });
   const adminHtml = applyTemplate(settings.admin_template, { ...data, __isAdmin: 1 });
 
   // 3. SMTP podešavanja
