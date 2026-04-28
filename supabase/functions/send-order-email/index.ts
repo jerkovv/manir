@@ -96,10 +96,27 @@ Deno.serve(async (req) => {
     orderDate: payload.orderDate || formatOrderDate(new Date()),
   };
 
-  const customerSubject = applyTextTemplate(settings.customer_subject, { ...data, itemsTable: "" });
+  const customerSubjectRaw = applyTextTemplate(settings.customer_subject, { ...data, itemsTable: "" });
+  const customerSubject = customerSubjectRaw && customerSubjectRaw.trim()
+    ? customerSubjectRaw
+    : `Potvrda porudžbine #${data.orderId} — 0202skin`;
   const customerHtml = applyTemplate(settings.customer_template, data);
-  const adminSubject = applyTextTemplate(settings.admin_subject, { ...data, itemsTable: "" });
+
+  const adminSubjectRaw = applyTextTemplate(settings.admin_subject, { ...data, itemsTable: "" });
+  const adminSubject = adminSubjectRaw && adminSubjectRaw.trim()
+    ? adminSubjectRaw
+    : `Nova porudžbina #${data.orderId} — 0202skin`;
   const adminHtml = applyTemplate(settings.admin_template, { ...data, __isAdmin: 1 });
+
+  // Sigurnosna provera: ako iz nekog razloga template vrati prazan HTML,
+  // ne pokušavaj slanje (SMTP će odbiti sa "No content provided!").
+  if (!customerHtml || !customerHtml.trim() || !adminHtml || !adminHtml.trim()) {
+    return json({
+      error: "Email template rendered empty content",
+      customerHtmlLen: customerHtml?.length ?? 0,
+      adminHtmlLen: adminHtml?.length ?? 0,
+    }, 200);
+  }
 
   // 3. SMTP podešavanja
   const smtp = {
@@ -196,12 +213,15 @@ Deno.serve(async (req) => {
 
   console.log("[send-order-email] admin recipients:", Array.from(adminRecipients));
 
+  const validEmailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const customerReplyTo = validEmailRe.test(payload.customerEmail) ? payload.customerEmail : undefined;
+
   for (const recipient of adminRecipients) {
     try {
       await sendSmtpEmail(smtp, {
         from: fromAddr,
         to: recipient,
-        replyTo: payload.customerEmail,
+        replyTo: customerReplyTo,
         subject: adminSubject,
         html: adminHtml,
         text: htmlToText(adminHtml),
