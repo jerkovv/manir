@@ -102,11 +102,10 @@ export function abandonedCartHtml(opts: {
   siteUrl: string;
   discountCode?: string | null;
   discountText?: string | null;
-  freeShipping?: boolean;
 }): string {
   const {
     stage, customerName, items, total, resumeUrl,
-    unsubscribeUrl, siteUrl, discountCode, discountText, freeShipping,
+    unsubscribeUrl, siteUrl, discountCode, discountText,
   } = opts;
 
   const firstName = (customerName || "").split(" ")[0] || "";
@@ -138,7 +137,7 @@ export function abandonedCartHtml(opts: {
       <table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_DARK};">
         <tr><td style="padding:28px 30px;text-align:center;">
           <div style="font-family:${MONO};font-size:10px;color:#D9CFB8;letter-spacing:0.32em;text-transform:uppercase;margin-bottom:12px;">Vaš popust</div>
-          <div style="font-family:${SERIF};font-size:22px;color:#fff;font-weight:500;line-height:1.4;margin-bottom:14px;">${escapeHtml(discountText)}${freeShipping ? ' + besplatna dostava' : ''}</div>
+          <div style="font-family:${SERIF};font-size:22px;color:#fff;font-weight:500;line-height:1.4;margin-bottom:14px;">${escapeHtml(discountText)}</div>
           <div style="display:inline-block;background:#fff;color:${BRAND_DARK};padding:14px 28px;font-family:${MONO};font-size:14px;letter-spacing:0.25em;font-weight:700;border:1px dashed #fff;">${escapeHtml(discountCode)}</div>
           <div style="font-family:${SANS};font-size:11px;color:#D9CFB8;margin-top:14px;letter-spacing:0.04em;">Unesite kod pri plaćanju.</div>
         </td></tr>
