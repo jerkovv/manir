@@ -36,6 +36,13 @@ export function renderItemsTable(items: Item[]): string {
   </table>`;
 }
 
+export function applyTextTemplate(
+  template: string,
+  data: Record<string, string | number>,
+): string {
+  return renderTemplateString(template || "", data).replace(/\s+/g, " ").trim();
+}
+
 /**
  * applyTemplate — sad zamenjuje placeholder-e UNUTAR premium wrapper-a.
  * Ako template iz baze sadrži samo placeholder-e (ili je prazan), automatski ga
