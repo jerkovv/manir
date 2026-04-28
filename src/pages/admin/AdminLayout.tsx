@@ -283,11 +283,7 @@ const AdminLayout = () => {
       )}
 
       <main
-        className="flex-1 lg:ml-0 lg:mt-0 p-4 sm:p-6 lg:p-10 max-w-full overflow-x-hidden"
-        style={{
-          marginTop: "calc(3.5rem + env(safe-area-inset-top))",
-          paddingBottom: "calc(5rem + env(safe-area-inset-bottom))",
-        }}
+        className="flex-1 lg:ml-0 max-w-full overflow-x-hidden p-4 sm:p-6 lg:p-10 mt-[calc(3.5rem+env(safe-area-inset-top))] pb-[calc(5rem+env(safe-area-inset-bottom))] lg:!mt-0 lg:!pb-10"
       >
         <Outlet />
       </main>
