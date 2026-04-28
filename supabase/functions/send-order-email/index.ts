@@ -213,12 +213,15 @@ Deno.serve(async (req) => {
 
   console.log("[send-order-email] admin recipients:", Array.from(adminRecipients));
 
+  const validEmailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const customerReplyTo = validEmailRe.test(payload.customerEmail) ? payload.customerEmail : undefined;
+
   for (const recipient of adminRecipients) {
     try {
       await sendSmtpEmail(smtp, {
         from: fromAddr,
         to: recipient,
-        replyTo: payload.customerEmail,
+        replyTo: customerReplyTo,
         subject: adminSubject,
         html: adminHtml,
         text: htmlToText(adminHtml),
