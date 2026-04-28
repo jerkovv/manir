@@ -168,6 +168,32 @@ Deno.serve(async (req) => {
     // ako ne uspe, pokušaj barem sa settings.admin_email
   }
 
+  try {
+    const { data: userRoles, error: userRolesErr } = await admin
+      .from("user_roles")
+      .select("user_id, role");
+    if (userRolesErr) {
+      adminLookupError = [adminLookupError, userRolesErr.message].filter(Boolean).join(" | ") || userRolesErr.message;
+      console.error("[send-order-email] user_roles query error:", userRolesErr);
+    } else {
+      const adminRoleUserIds = new Set((userRoles ?? [])
+        .filter((r) => String(r?.role ?? "").toLowerCase().trim() === "admin")
+        .map((r) => String(r.user_id)));
+      if (adminRoleUserIds.size > 0) {
+        const { data: authUsers, error: authUsersErr } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+        if (authUsersErr) throw authUsersErr;
+        for (const u of authUsers.users ?? []) {
+          if (adminRoleUserIds.has(u.id)) addRecipients(adminRecipients, u.email);
+        }
+        console.log("[send-order-email] found user_roles admins:", adminRoleUserIds.size);
+      }
+    }
+  } catch (e) {
+    const msg = (e as Error).message;
+    adminLookupError = [adminLookupError, msg].filter(Boolean).join(" | ") || msg;
+    console.error("[send-order-email] user_roles lookup threw:", e);
+  }
+
   console.log("[send-order-email] admin recipients:", Array.from(adminRecipients));
 
   for (const recipient of adminRecipients) {
@@ -178,6 +204,7 @@ Deno.serve(async (req) => {
         replyTo: payload.customerEmail,
         subject: adminSubject,
         html: adminHtml,
+        text: htmlToText(adminHtml),
       });
       results.push({ type: "admin", status: "sent" });
       await admin.from("email_logs").insert({
