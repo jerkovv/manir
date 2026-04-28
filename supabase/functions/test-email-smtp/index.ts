@@ -102,4 +102,4 @@ function json(body: unknown, status: number) {
   });
 }
 
-// redeploy: simple-smtp v2 (1777309864)
+// redeploy: smtp-content-guard v3 (2026-04-28)

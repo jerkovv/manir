@@ -45,16 +45,54 @@ export async function sendSmtpEmail(settings: SmtpSettings, message: SmtpMessage
     pool: false,
   });
 
+  const safeSubject = String(message.subject || "0202skin obaveštenje").trim() || "0202skin obaveštenje";
+  const safeHtml = normalizeContent(message.html) || fallbackHtml(safeSubject);
+  const safeText = normalizeContent(message.text) || htmlToText(safeHtml) || `0202skin — ${safeSubject}`;
+
   try {
     await client.send({
       from: message.from,
       to: message.to,
       replyTo: message.replyTo,
-      subject: message.subject,
-      content: message.text ?? "Pogledajte HTML verziju ove poruke.",
-      html: message.html,
+      subject: safeSubject,
+      content: safeText,
+      html: safeHtml,
     });
   } finally {
     try { await client.close(); } catch { /* ignore */ }
   }
+}
+
+function normalizeContent(value?: string): string {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function fallbackHtml(subject: string): string {
+  return `<!DOCTYPE html><html lang="sr"><body><p>${escapeHtml(subject)}</p></body></html>`;
+}
+
+function htmlToText(html: string): string {
+  return html
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
