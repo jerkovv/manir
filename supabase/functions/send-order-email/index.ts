@@ -152,8 +152,7 @@ Deno.serve(async (req) => {
     const { data: appAdmins, error: appAdminsErr } = await admin
       .from("app_users")
       .select("email, role, status")
-      .in("role", ["admin", "owner"])
-      .eq("status", "active");
+      .in("role", ["admin", "owner"]);
     if (appAdminsErr) {
       adminLookupError = appAdminsErr.message;
       console.error("[send-order-email] app_users query error:", appAdminsErr);
