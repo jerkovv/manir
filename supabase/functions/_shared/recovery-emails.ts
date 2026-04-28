@@ -66,7 +66,7 @@ export function reviewReminderHtml(opts: {
           ${escapeHtml(greeting)}.
         </h1>
         <p style="font-family:${SANS};font-size:14px;line-height:1.75;color:${BRAND_MUTED};margin:0 auto 8px;max-width:440px;">
-          Prošlo je dve nedelje od vaše porudžbine. Voleli bismo da čujemo kako ste se snašli sa proizvodima — vaša ocena pomaže drugima da donesu pravu odluku.
+          Prošlo je dve nedelje od vaše porudžbine. Voleli bismo da čujemo kako ste se snašli sa proizvodima, vaša ocena pomaže drugima da donesu pravu odluku.
         </p>
       </td></tr>
       <tr><td style="padding:40px 48px 8px;">
@@ -100,23 +100,24 @@ export function abandonedCartHtml(opts: {
   resumeUrl: string;
   unsubscribeUrl: string;
   siteUrl: string;
-  discountCode?: string | null;
-  discountText?: string | null;
 }): string {
   const {
     stage, customerName, items, total, resumeUrl,
-    unsubscribeUrl, siteUrl, discountCode, discountText,
+    unsubscribeUrl, siteUrl,
   } = opts;
 
   const firstName = (customerName || "").split(" ")[0] || "";
   const greeting = firstName ? `Zdravo, ${firstName}` : "Zdravo";
 
-  const headline = stage === 1
-    ? "Zaboravili ste nešto."
-    : "Poslednja prilika.";
+  const eyebrow = stage === 1 ? "KORPA VAS ČEKA" : "POSLEDNJE PODSEĆANJE";
+  const headline = stage === 1 ? "Vaša korpa Vas čeka." : "Pre nego što se izgubi.";
   const subline = stage === 1
-    ? "Vaša korpa vas čeka. Sačuvali smo proizvode — možete dovršiti porudžbinu jednim klikom."
-    : "Korpa će uskoro biti obrisana. Ovo je poslednji put da vas podsetimo na proizvode koje ste odabrali.";
+    ? "Sačuvali smo proizvode koje ste odabrali. Možete nastaviti tačno gde ste stali, kad god Vam odgovara."
+    : "Vaša korpa je još uvek tu, ali neće zauvek. Vraćamo se sa nežnim podsećanjem, bez žurbe.";
+  const ctaText = stage === 1 ? "Vrati me u korpu" : "Pogledajte korpu";
+  const careText = stage === 1
+    ? "„Lepe stvari ne treba juriti, one strpljivo čekaju.\u201D"
+    : "„Pažnja je oblik luksuza. Tvoja korpa je još uvek tu.\u201D";
 
   const itemRows = items.map((it) => `
     <tr>
@@ -132,17 +133,35 @@ export function abandonedCartHtml(opts: {
       </td>
     </tr>`).join("");
 
-  const discountBlock = (discountCode && discountText) ? `
+  const careBlock = `
     <tr><td style="padding:32px 48px 0;">
-      <table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_DARK};">
-        <tr><td style="padding:28px 30px;text-align:center;">
-          <div style="font-family:${MONO};font-size:10px;color:#D9CFB8;letter-spacing:0.32em;text-transform:uppercase;margin-bottom:12px;">Vaš popust</div>
-          <div style="font-family:${SERIF};font-size:22px;color:#fff;font-weight:500;line-height:1.4;margin-bottom:14px;">${escapeHtml(discountText)}</div>
-          <div style="display:inline-block;background:#fff;color:${BRAND_DARK};padding:14px 28px;font-family:${MONO};font-size:14px;letter-spacing:0.25em;font-weight:700;border:1px dashed #fff;">${escapeHtml(discountCode)}</div>
-          <div style="font-family:${SANS};font-size:11px;color:#D9CFB8;margin-top:14px;letter-spacing:0.04em;">Unesite kod pri plaćanju.</div>
-        </td></tr>
+      <div style="border-top:1px solid ${BRAND_LINE};border-bottom:1px solid ${BRAND_LINE};padding:32px 24px;text-align:center;">
+        <div style="font-family:${SERIF};font-size:18px;font-style:italic;color:${BRAND_DARK};line-height:1.55;font-weight:400;">${escapeHtml(careText)}</div>
+      </div>
+    </td></tr>`;
+
+  const itemsBlock = `
+    <tr><td style="padding:40px 48px 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+        <tbody>${itemRows}</tbody>
       </table>
-    </td></tr>` : '';
+    </td></tr>
+    <tr><td style="padding:24px 48px 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="border-top:2px solid ${BRAND_DARK};">
+        <tr>
+          <td style="padding:20px 0 0;font-family:${MONO};font-size:11px;color:${BRAND_DARK};letter-spacing:0.32em;text-transform:uppercase;font-weight:600;">Ukupno</td>
+          <td style="padding:20px 0 0;font-family:${SERIF};font-size:30px;color:${BRAND_DARK};text-align:right;font-weight:500;letter-spacing:-0.015em;">${total.toLocaleString("sr-RS")} <span style="font-family:${MONO};font-size:11px;color:${BRAND_MUTED};letter-spacing:0.2em;vertical-align:5px;">RSD</span></td>
+        </tr>
+      </table>
+    </td></tr>
+    <tr><td style="padding:48px 48px 0;text-align:center;">
+      <a href="${escapeHtml(resumeUrl)}" style="display:inline-block;background:${BRAND_DARK};color:#fff;padding:18px 48px;text-decoration:none;font-family:${SANS};font-size:13px;letter-spacing:0.08em;font-weight:500;">${escapeHtml(ctaText)}</a>
+    </td></tr>`;
+
+  // Stage 1: care quote BELOW CTA. Stage 2: care quote ABOVE items.
+  const middle = stage === 1
+    ? itemsBlock + careBlock
+    : careBlock + itemsBlock;
 
   return `<!DOCTYPE html>
 <html lang="sr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${BRAND_NAME}</title></head>
@@ -155,31 +174,16 @@ export function abandonedCartHtml(opts: {
         </div>
       </td></tr>
       <tr><td style="padding:48px 48px 0;text-align:center;">
-        <div style="font-family:${MONO};font-size:10px;color:${BRAND_MUTED};letter-spacing:0.32em;text-transform:uppercase;">${stage === 1 ? 'Korpa vas čeka' : 'Poslednje podsećanje'}</div>
+        <div style="font-family:${MONO};font-size:10px;color:${BRAND_MUTED};letter-spacing:0.32em;text-transform:uppercase;">${eyebrow}</div>
         <div style="margin:18px auto 0;height:1px;background:${BRAND_DARK};width:32px;"></div>
       </td></tr>
       <tr><td style="padding:28px 48px 8px;text-align:center;">
-        <h1 style="font-family:${SERIF};font-size:38px;font-weight:400;color:${BRAND_DARK};margin:0 0 18px;letter-spacing:-0.015em;line-height:1.15;">${escapeHtml(greeting)}, ${headline.toLowerCase()}</h1>
-        <p style="font-family:${SANS};font-size:14px;line-height:1.75;color:${BRAND_MUTED};margin:0 auto;max-width:440px;">${subline}</p>
+        <h1 style="font-family:${SERIF};font-size:38px;font-weight:400;color:${BRAND_DARK};margin:0 0 14px;letter-spacing:-0.015em;line-height:1.15;">${escapeHtml(greeting)},</h1>
+        <h2 style="font-family:${SERIF};font-size:28px;font-weight:400;font-style:italic;color:${BRAND_DARK};margin:0 0 22px;letter-spacing:-0.01em;line-height:1.2;">${escapeHtml(headline)}</h2>
+        <p style="font-family:${SANS};font-size:14px;line-height:1.75;color:${BRAND_MUTED};margin:0 auto;max-width:440px;">${escapeHtml(subline)}</p>
       </td></tr>
-      <tr><td style="padding:40px 48px 0;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
-          <tbody>${itemRows}</tbody>
-        </table>
-      </td></tr>
-      <tr><td style="padding:24px 48px 0;">
-        <table width="100%" cellpadding="0" cellspacing="0" style="border-top:2px solid ${BRAND_DARK};">
-          <tr>
-            <td style="padding:20px 0 0;font-family:${MONO};font-size:11px;color:${BRAND_DARK};letter-spacing:0.32em;text-transform:uppercase;font-weight:600;">Ukupno</td>
-            <td style="padding:20px 0 0;font-family:${SERIF};font-size:30px;color:${BRAND_DARK};text-align:right;font-weight:500;letter-spacing:-0.015em;">${total.toLocaleString("sr-RS")} <span style="font-family:${MONO};font-size:11px;color:${BRAND_MUTED};letter-spacing:0.2em;vertical-align:5px;">RSD</span></td>
-          </tr>
-        </table>
-      </td></tr>
-      ${discountBlock}
-      <tr><td style="padding:40px 48px 0;text-align:center;">
-        <a href="${escapeHtml(resumeUrl)}" style="display:inline-block;background:${BRAND_DARK};color:#fff;padding:18px 48px;text-decoration:none;font-family:${MONO};font-size:11px;letter-spacing:0.25em;text-transform:uppercase;font-weight:500;">Dovrši porudžbinu</a>
-      </td></tr>
-      <tr><td style="padding:56px 48px 32px;text-align:center;">
+      ${middle}
+      <tr><td style="padding:48px 48px 32px;text-align:center;">
         <div style="font-family:${SERIF};font-weight:300;color:${BRAND_DARK};letter-spacing:0.15em;font-size:18px;line-height:1;">
           0202 <span style="font-family:${SANS};font-size:9px;letter-spacing:0.32em;text-transform:uppercase;font-weight:400;vertical-align:2px;">skin</span>
         </div>
