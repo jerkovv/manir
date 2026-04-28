@@ -129,7 +129,7 @@ Deno.serve(async (req) => {
   };
   const fromAddr = `${settings.from_name} <${settings.from_email}>`;
 
-  const results: Array<{ type: "customer" | "admin"; status: "sent" | "failed"; error?: string }> = [];
+  const results: Array<{ type: "customer" | "admin"; recipient?: string; status: "sent" | "failed"; error?: string }> = [];
 
   // 4a. Kupcu
   try {
@@ -141,7 +141,7 @@ Deno.serve(async (req) => {
       html: customerHtml,
       text: htmlToText(customerHtml),
     });
-    results.push({ type: "customer", status: "sent" });
+    results.push({ type: "customer", recipient: payload.customerEmail, status: "sent" });
     await admin.from("email_logs").insert({
       order_id: isUuid(payload.orderId) ? payload.orderId : null,
       recipient: payload.customerEmail,
@@ -150,7 +150,7 @@ Deno.serve(async (req) => {
     });
   } catch (e) {
     const msg = (e as Error).message;
-    results.push({ type: "customer", status: "failed", error: msg });
+    results.push({ type: "customer", recipient: payload.customerEmail, status: "failed", error: msg });
     await admin.from("email_logs").insert({
       order_id: isUuid(payload.orderId) ? payload.orderId : null,
       recipient: payload.customerEmail,
@@ -161,9 +161,10 @@ Deno.serve(async (req) => {
   }
 
   // 4b. Adminu
-  // Skupi sve admin primaoce: app_users sa rolom admin/owner + settings.admin_email
+  // Skupi sve admin primaoce: ručno podešeni admin_email + svi app_users sa admin pristupom.
   const adminRecipients = new Set<string>();
   addRecipients(adminRecipients, settings.admin_email);
+  addRecipients(adminRecipients, settings.reply_to);
 
   let adminLookupError: string | null = null;
   try {
@@ -175,10 +176,11 @@ Deno.serve(async (req) => {
       console.error("[send-order-email] app_users query error:", appAdminsErr);
     }
     const allowedRoles = ["admin", "owner", "editor"];
+    const blockedStatuses = ["disabled", "suspended", "blocked", "deleted"];
     const roleAdmins = (appAdmins ?? []).filter((u) => {
       const role = String(u?.role ?? "").toLowerCase().trim();
       const status = String(u?.status ?? "active").toLowerCase().trim();
-      return allowedRoles.includes(role) && status !== "disabled" && status !== "suspended";
+      return allowedRoles.includes(role) && !blockedStatuses.includes(status);
     });
     console.log("[send-order-email] app_users total:", appAdmins?.length ?? 0, "matched:", roleAdmins.length);
     for (const u of roleAdmins) {
