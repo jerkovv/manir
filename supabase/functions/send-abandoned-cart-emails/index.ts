@@ -1,14 +1,14 @@
 // Worker: šalje 2 talasa abandoned cart email-a.
 //
-// Stage 1 (recovery_email_1_sent_at IS NULL, abandoned_at <= now - stage1_minutes):
-//   - šalje "zaboravili ste nešto" sa kodom iz recovery_settings.discount_code_stage1
-// Stage 2 (recovery_email_1_sent_at IS NOT NULL, recovery_email_2_sent_at IS NULL,
-//          recovery_email_1_sent_at <= now - stage2_hours):
-//   - šalje "poslednja prilika" sa kodom iz recovery_settings.discount_code_stage2 + free shipping
+// Stage 1 (email1_sent_at IS NULL, abandoned_at <= now - stage1_minutes):
+//   - šalje "zaboravili ste nešto" sa kuponom iz recovery_settings.email1_coupon
+// Stage 2 (email1_sent_at IS NOT NULL, email2_sent_at IS NULL,
+//          email1_sent_at <= now - stage2_hours):
+//   - šalje "poslednja prilika" sa kuponom iz recovery_settings.email2_coupon
 //
-// Pozivan od cron-tick svakih 15 min. Throttle: max BATCH_SIZE * 2 mejlova po runu.
-// Preskače redove gde je status != 'pending' ili je email u suppression listi
-// (recovery_unsubscribed_at IS NOT NULL ili converted_at IS NOT NULL).
+// Pozivan od cron-tick svakih 15 min (preko pg_cron). Throttle: max BATCH_SIZE * 2 mejlova po runu.
+// Preskače redove gde je status != 'pending' (converted/abandoned/unsubscribed),
+// ili je email u suppression listi (unsubscribed_at IS NOT NULL ili converted_at IS NOT NULL).
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { corsHeaders } from "../_shared/cors.ts";
@@ -41,11 +41,10 @@ Deno.serve(async (req) => {
 
   const stage1Minutes = Number(rs.abandoned_stage1_minutes ?? 30);
   const stage2Hours = Number(rs.abandoned_stage2_hours ?? 72);
-  const code1 = rs.discount_code_stage1 || null;
-  const text1 = rs.discount_text_stage1 || null;
-  const code2 = rs.discount_code_stage2 || null;
-  const text2 = rs.discount_text_stage2 || null;
-  const freeShip2 = !!rs.free_shipping_stage2;
+  const coupon1 = rs.email1_coupon || null;
+  const label1 = rs.email1_discount_label || null;
+  const coupon2 = rs.email2_coupon || null;
+  const label2 = rs.email2_discount_label || null;
 
   const sender = await loadSmtpSender(admin);
   if ("error" in sender) return json({ error: sender.error }, 200);
@@ -59,8 +58,8 @@ Deno.serve(async (req) => {
     .from("abandoned_carts")
     .select("*")
     .eq("status", "pending")
-    .is("recovery_email_1_sent_at", null)
-    .is("recovery_unsubscribed_at", null)
+    .is("email1_sent_at", null)
+    .is("unsubscribed_at", null)
     .is("converted_at", null)
     .lte("abandoned_at", stage1Cutoff)
     .not("email", "is", null)
@@ -73,13 +72,13 @@ Deno.serve(async (req) => {
     .from("abandoned_carts")
     .select("*")
     .eq("status", "pending")
-    .not("recovery_email_1_sent_at", "is", null)
-    .is("recovery_email_2_sent_at", null)
-    .is("recovery_unsubscribed_at", null)
+    .not("email1_sent_at", "is", null)
+    .is("email2_sent_at", null)
+    .is("unsubscribed_at", null)
     .is("converted_at", null)
-    .lte("recovery_email_1_sent_at", stage2Cutoff)
+    .lte("email1_sent_at", stage2Cutoff)
     .not("email", "is", null)
-    .order("recovery_email_1_sent_at", { ascending: true })
+    .order("email1_sent_at", { ascending: true })
     .limit(BATCH_SIZE);
   if (s2Err) return json({ error: s2Err.message }, 500);
 
@@ -87,18 +86,23 @@ Deno.serve(async (req) => {
 
   for (const cart of (stage1Carts ?? [])) {
     const r = await sendStage(admin, sender, cart, 1, {
-      siteUrl, code: code1, text: text1, freeShipping: false,
+      siteUrl, coupon: coupon1, label: label1,
     });
     results.push({ id: cart.id, stage: 1, ...r });
   }
   for (const cart of (stage2Carts ?? [])) {
     const r = await sendStage(admin, sender, cart, 2, {
-      siteUrl, code: code2, text: text2, freeShipping: freeShip2,
+      siteUrl, coupon: coupon2, label: label2,
     });
     results.push({ id: cart.id, stage: 2, ...r });
   }
 
-  return json({ processed: results.length, stage1: stage1Carts?.length ?? 0, stage2: stage2Carts?.length ?? 0, results }, 200);
+  return json({
+    processed: results.length,
+    stage1: stage1Carts?.length ?? 0,
+    stage2: stage2Carts?.length ?? 0,
+    results,
+  }, 200);
 });
 
 async function sendStage(
@@ -106,13 +110,15 @@ async function sendStage(
   sender: { send: (o: { to: string; subject: string; html: string }) => Promise<void> },
   cart: Record<string, unknown>,
   stage: 1 | 2,
-  opts: { siteUrl: string; code: string | null; text: string | null; freeShipping: boolean },
+  opts: { siteUrl: string; coupon: string | null; label: string | null },
 ): Promise<{ status: string; error?: string }> {
   try {
     const items = Array.isArray(cart.items) ? (cart.items as AbandonedCartItem[]) : [];
     if (items.length === 0) {
-      // prazna korpa — markiraj abandoned da ne baulja
-      await admin.from("abandoned_carts").update({ status: "abandoned" }).eq("id", cart.id as string);
+      // prazna korpa — markiraj 'abandoned' da je worker više ne pokupi
+      await admin.from("abandoned_carts")
+        .update({ status: "abandoned" })
+        .eq("id", cart.id as string);
       return { status: "skipped_empty" };
     }
 
@@ -129,9 +135,8 @@ async function sendStage(
       resumeUrl,
       unsubscribeUrl,
       siteUrl: opts.siteUrl,
-      discountCode: opts.code,
-      discountText: opts.text,
-      freeShipping: opts.freeShipping,
+      discountCode: opts.coupon,
+      discountText: opts.label,
     });
 
     const subject = stage === 1
@@ -141,8 +146,9 @@ async function sendStage(
     await sender.send({ to: String(cart.email), subject, html });
 
     const update: Record<string, unknown> = stage === 1
-      ? { recovery_email_1_sent_at: new Date().toISOString() }
-      : { recovery_email_2_sent_at: new Date().toISOString() };
+      ? { email1_sent_at: new Date().toISOString() }
+      : { email2_sent_at: new Date().toISOString(), status: "abandoned" };
+    // Posle stage 2, prelazimo u 'abandoned' (sva komunikacija završena bez konverzije).
     await admin.from("abandoned_carts").update(update).eq("id", cart.id as string);
 
     await admin.from("email_logs").insert({
