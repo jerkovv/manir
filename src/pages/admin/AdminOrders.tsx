@@ -167,10 +167,10 @@ const AdminOrders = () => {
                   <td className="p-4 text-muted-foreground">
                     {o.discount_amount && Number(o.discount_amount) > 0
                       ? `−${Number(o.discount_amount).toLocaleString("sr-RS")} RSD`
-                      : "—"}
+                      : "-"}
                   </td>
                   <td className="p-4 text-muted-foreground">
-                    {o.coupon_code ? <span className="font-mono text-xs uppercase">{o.coupon_code}</span> : "—"}
+                    {o.coupon_code ? <span className="font-mono text-xs uppercase">{o.coupon_code}</span> : "-"}
                   </td>
                   <td className="p-4">{Number(o.total).toLocaleString("sr-RS")} RSD</td>
                   <td className="p-4"><StatusBadge status={o.status} /></td>
@@ -219,9 +219,9 @@ const AdminOrders = () => {
               <div className="grid grid-cols-2 gap-4 font-body text-sm">
                 <div><div className="text-[11px] uppercase tracking-wider text-muted-foreground">Kupac</div>{selected.customer_name}</div>
                 <div><div className="text-[11px] uppercase tracking-wider text-muted-foreground">Email</div>{selected.customer_email}</div>
-                <div><div className="text-[11px] uppercase tracking-wider text-muted-foreground">Telefon</div>{selected.customer_phone || "—"}</div>
+                <div><div className="text-[11px] uppercase tracking-wider text-muted-foreground">Telefon</div>{selected.customer_phone || "-"}</div>
                 <div><div className="text-[11px] uppercase tracking-wider text-muted-foreground">Datum</div>{new Date(selected.created_at).toLocaleString("sr-RS")}</div>
-                <div className="col-span-2"><div className="text-[11px] uppercase tracking-wider text-muted-foreground">Adresa</div>{selected.shipping_address || "—"}, {selected.shipping_postal_code} {selected.shipping_city}</div>
+                <div className="col-span-2"><div className="text-[11px] uppercase tracking-wider text-muted-foreground">Adresa</div>{selected.shipping_address || "-"}, {selected.shipping_postal_code} {selected.shipping_city}</div>
                 {selected.notes && <div className="col-span-2"><div className="text-[11px] uppercase tracking-wider text-muted-foreground">Napomena</div>{selected.notes}</div>}
               </div>
               <div>

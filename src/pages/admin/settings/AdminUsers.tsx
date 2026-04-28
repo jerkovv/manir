@@ -5,15 +5,15 @@ import { Crown, Shield, Pencil, Eye, Search, UserCog, MoreVertical, X, AlertTria
 import { toast } from "sonner";
 
 const ROLE_META: Record<AppRole, { label: string; icon: any; cls: string }> = {
-  owner:  { label: "Owner",  icon: Crown,  cls: "bg-amber-100 text-amber-800 border-amber-300" },
-  admin:  { label: "Admin",  icon: Shield, cls: "bg-blue-100 text-blue-800 border-blue-300" },
+  owner: { label: "Owner", icon: Crown, cls: "bg-amber-100 text-amber-800 border-amber-300" },
+  admin: { label: "Admin", icon: Shield, cls: "bg-blue-100 text-blue-800 border-blue-300" },
   editor: { label: "Editor", icon: Pencil, cls: "bg-green-100 text-green-800 border-green-300" },
-  viewer: { label: "Viewer", icon: Eye,    cls: "bg-gray-100 text-gray-700 border-gray-300" },
+  viewer: { label: "Viewer", icon: Eye, cls: "bg-gray-100 text-gray-700 border-gray-300" },
 };
 
 const STATUS_META: Record<AppStatus, { label: string; cls: string }> = {
-  active:    { label: "Aktivan",     cls: "bg-green-100 text-green-800 border-green-300" },
-  invited:   { label: "Pozvan",      cls: "bg-yellow-100 text-yellow-800 border-yellow-300" },
+  active: { label: "Aktivan", cls: "bg-green-100 text-green-800 border-green-300" },
+  invited: { label: "Pozvan", cls: "bg-yellow-100 text-yellow-800 border-yellow-300" },
   suspended: { label: "Suspendovan", cls: "bg-red-100 text-red-800 border-red-300" },
 };
 
@@ -244,7 +244,7 @@ const AdminUsers = () => {
                     <div className="flex items-center gap-3">
                       <Avatar user={u} />
                       <div>
-                        <div className="font-medium text-foreground">{u.full_name || "—"}</div>
+                        <div className="font-medium text-foreground">{u.full_name || "-"}</div>
                         <div className="text-xs text-muted-foreground">{u.email}</div>
                       </div>
                     </div>
@@ -366,7 +366,7 @@ const UserActionsMenu = ({ user, isSelf, isOwner, open, onToggle, onClose, onEdi
 // ============================================================
 const ROLE_DESC: Record<string, string> = {
   admin: "Sve osim brisanja owner-a",
-  editor: "Proizvodi, porudžbine, content — bez podešavanja",
+  editor: "Proizvodi, porudžbine, content bez podešavanja",
   viewer: "Samo čitanje (npr. računovođa)",
 };
 
@@ -402,7 +402,7 @@ const InviteModal = ({ onClose, onDone }: { onClose: () => void; onDone: () => v
         toast.warning("Korisnik dodat, ali email nije poslat: " + ((data as any)?.email_error || "nepoznato"));
       }
     } else {
-      toast.success("Korisnik kreiran — pristupni podaci su poslati na email");
+      toast.success("Korisnik kreiran pristupni podaci su poslati na email");
     }
     onDone();
   };
@@ -496,7 +496,7 @@ const EditUserModal = ({ user, isOwner, onClose, onDone }: { user: AppUser; isOw
         <div className="flex items-center gap-3 p-3 bg-[#FAFAF8] border border-border">
           <Avatar user={user} />
           <div>
-            <div className="font-medium">{user.full_name || "—"}</div>
+            <div className="font-medium">{user.full_name || "-"}</div>
             <div className="text-xs text-muted-foreground">{user.email}</div>
           </div>
         </div>
@@ -643,12 +643,12 @@ const ActivityTab = () => {
               <tr key={l.id} className="border-t border-border">
                 <td className="p-4 text-muted-foreground whitespace-nowrap">{new Date(l.created_at).toLocaleString("sr-RS")}</td>
                 <td className="p-4">{ACTION_LABEL[l.action] || l.action}</td>
-                <td className="p-4 text-muted-foreground">{l.actor_email || "—"}</td>
-                <td className="p-4 text-muted-foreground">{l.target_email || "—"}</td>
+                <td className="p-4 text-muted-foreground">{l.actor_email || "-"}</td>
+                <td className="p-4 text-muted-foreground">{l.target_email || "-"}</td>
                 <td className="p-4 text-muted-foreground text-xs">
                   {l.metadata && Object.keys(l.metadata).length > 0
                     ? Object.entries(l.metadata).map(([k, v]) => `${k}: ${JSON.stringify(v)}`).join(", ")
-                    : "—"}
+                    : "-"}
                 </td>
               </tr>
             ))}

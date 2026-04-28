@@ -1,4 +1,4 @@
-// Premium email HTML šabloni za 0202 SKIN — koriste {placeholder} sintaksu
+// Premium email HTML šabloni za 0202 SKIN koriste {placeholder} sintaksu
 // koju razrešava supabase/functions/_shared/email-template.ts (applyTemplate).
 // Podržani su i uslovni blokovi {#if field}...{/if}.
 
@@ -37,7 +37,7 @@ const HEAD_COMMON = `<head>
 </head>`;
 
 // =====================================================================
-// CUSTOMER TEMPLATE — Potvrda porudžbine
+// CUSTOMER TEMPLATE Potvrda porudžbine
 // =====================================================================
 export const PREMIUM_CUSTOMER_TEMPLATE = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="sr" xml:lang="sr">
@@ -202,7 +202,7 @@ ${HEAD_COMMON.replace('<head>', '<head><title>0202 SKIN, potvrda</title>')}
 </html>`;
 
 // =====================================================================
-// ADMIN TEMPLATE — Nova porudžbina
+// ADMIN TEMPLATE Nova porudžbina
 // =====================================================================
 export const PREMIUM_ADMIN_TEMPLATE = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="sr" xml:lang="sr">
@@ -387,4 +387,4 @@ ${HEAD_COMMON.replace('<head>', '<head><title>0202 SKIN, nova porudžbina</title
 </html>`;
 
 export const PREMIUM_CUSTOMER_SUBJECT = "Potvrda porudžbine {orderId} · 0202 SKIN";
-export const PREMIUM_ADMIN_SUBJECT = "Nova porudžbina {orderId} — {customerName}";
+export const PREMIUM_ADMIN_SUBJECT = "Nova porudžbina {orderId} {customerName}";

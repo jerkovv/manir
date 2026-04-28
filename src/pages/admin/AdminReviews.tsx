@@ -90,7 +90,7 @@ const AdminReviews = () => {
                     )}
                   </div>
                   <div className="font-body text-xs text-muted-foreground">
-                    {products[r.product_id] || "—"} · {new Date(r.created_at).toLocaleDateString("sr-RS")}
+                    {products[r.product_id] || "-"} · {new Date(r.created_at).toLocaleDateString("sr-RS")}
                     {r.reviewer_email && ` · ${r.reviewer_email}`}
                   </div>
                 </div>

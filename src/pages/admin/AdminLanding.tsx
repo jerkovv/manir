@@ -122,20 +122,20 @@ const AdminLanding = () => {
               <div className="space-y-4">
                 <Field label="Eyebrow (sitan tekst iznad)" value={content.hero.eyebrow}
                   onChange={(v) => update("hero", { eyebrow: v })} />
-                <Field label="Naslov — prvi red" value={content.hero.titleLine1}
+                <Field label="Naslov prvi red" value={content.hero.titleLine1}
                   onChange={(v) => update("hero", { titleLine1: v })} />
-                <Field label="Naslov — drugi red (italic)" value={content.hero.titleLine2}
+                <Field label="Naslov drugi red (italic)" value={content.hero.titleLine2}
                   onChange={(v) => update("hero", { titleLine2: v })} />
                 <Field label="Podnaslov" value={content.hero.subtitle} textarea
                   onChange={(v) => update("hero", { subtitle: v })} />
                 <div className="grid grid-cols-2 gap-4">
-                  <Field label="Primarni CTA — tekst" value={content.hero.ctaPrimaryLabel}
+                  <Field label="Primarni CTA tekst" value={content.hero.ctaPrimaryLabel}
                     onChange={(v) => update("hero", { ctaPrimaryLabel: v })} />
-                  <Field label="Primarni CTA — link" value={content.hero.ctaPrimaryLink}
+                  <Field label="Primarni CTA link" value={content.hero.ctaPrimaryLink}
                     onChange={(v) => update("hero", { ctaPrimaryLink: v })} />
-                  <Field label="Sekundarni CTA — tekst" value={content.hero.ctaSecondaryLabel}
+                  <Field label="Sekundarni CTA tekst" value={content.hero.ctaSecondaryLabel}
                     onChange={(v) => update("hero", { ctaSecondaryLabel: v })} />
-                  <Field label="Sekundarni CTA — link" value={content.hero.ctaSecondaryLink}
+                  <Field label="Sekundarni CTA link" value={content.hero.ctaSecondaryLink}
                     onChange={(v) => update("hero", { ctaSecondaryLink: v })} />
                 </div>
                 <ImageUpload
@@ -185,9 +185,9 @@ const AdminLanding = () => {
                 <Field label="Citat (italic)" value={content.brand_intro.quote} textarea
                   onChange={(v) => update("brand_intro", { quote: v })} />
                 <div className="grid grid-cols-2 gap-4">
-                  <Field label="Badge — broj" value={content.brand_intro.badgeNumber}
+                  <Field label="Badge broj" value={content.brand_intro.badgeNumber}
                     onChange={(v) => update("brand_intro", { badgeNumber: v })} />
-                  <Field label="Badge — tekst" value={content.brand_intro.badgeLabel}
+                  <Field label="Badge tekst" value={content.brand_intro.badgeLabel}
                     onChange={(v) => update("brand_intro", { badgeLabel: v })} />
                 </div>
                 <ImageUpload
@@ -208,9 +208,9 @@ const AdminLanding = () => {
                 <Field label="Podnaslov" value={content.selfcare.subtitle} textarea
                   onChange={(v) => update("selfcare", { subtitle: v })} />
                 <div className="grid grid-cols-2 gap-4">
-                  <Field label="CTA — tekst" value={content.selfcare.ctaLabel}
+                  <Field label="CTA tekst" value={content.selfcare.ctaLabel}
                     onChange={(v) => update("selfcare", { ctaLabel: v })} />
-                  <Field label="CTA — link" value={content.selfcare.ctaLink}
+                  <Field label="CTA link" value={content.selfcare.ctaLink}
                     onChange={(v) => update("selfcare", { ctaLink: v })} />
                 </div>
                 <ImageUpload
@@ -231,13 +231,13 @@ const AdminLanding = () => {
                 <Field label="Podnaslov" value={content.final_cta.subtitle} textarea
                   onChange={(v) => update("final_cta", { subtitle: v })} />
                 <div className="grid grid-cols-2 gap-4">
-                  <Field label="Primarni CTA — tekst" value={content.final_cta.ctaPrimaryLabel}
+                  <Field label="Primarni CTA tekst" value={content.final_cta.ctaPrimaryLabel}
                     onChange={(v) => update("final_cta", { ctaPrimaryLabel: v })} />
-                  <Field label="Primarni CTA — link" value={content.final_cta.ctaPrimaryLink}
+                  <Field label="Primarni CTA link" value={content.final_cta.ctaPrimaryLink}
                     onChange={(v) => update("final_cta", { ctaPrimaryLink: v })} />
-                  <Field label="Sekundarni CTA — tekst" value={content.final_cta.ctaSecondaryLabel}
+                  <Field label="Sekundarni CTA tekst" value={content.final_cta.ctaSecondaryLabel}
                     onChange={(v) => update("final_cta", { ctaSecondaryLabel: v })} />
-                  <Field label="Sekundarni CTA — link" value={content.final_cta.ctaSecondaryLink}
+                  <Field label="Sekundarni CTA link" value={content.final_cta.ctaSecondaryLink}
                     onChange={(v) => update("final_cta", { ctaSecondaryLink: v })} />
                 </div>
               </div>

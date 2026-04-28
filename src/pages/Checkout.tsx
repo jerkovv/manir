@@ -23,7 +23,7 @@ const Checkout = () => {
     address: "", city: "", zip: "", note: "",
   });
 
-  // Discounts (kupon ima prioritet — kupon i auto se ne kombinuju)
+  // Discounts (kupon ima prioritet kupon i auto se ne kombinuju)
   const [qdConfig, setQdConfig] = useState<QuantityDiscount>({ enabled: false, min_quantity: 3, percent: 20 });
   const [couponInput, setCouponInput] = useState("");
   const [couponDiscount, setCouponDiscount] = useState<AppliedDiscount | null>(null);

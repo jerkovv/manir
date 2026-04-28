@@ -106,8 +106,8 @@ const AdminCustomers = () => {
                 <tr key={c.id} className="border-t border-border">
                   <td className="p-4">{c.first_name} {c.last_name}</td>
                   <td className="p-4 text-muted-foreground">{c.email}</td>
-                  <td className="p-4 text-muted-foreground">{c.phone || "—"}</td>
-                  <td className="p-4 text-muted-foreground">{c.city || "—"}</td>
+                  <td className="p-4 text-muted-foreground">{c.phone || "-"}</td>
+                  <td className="p-4 text-muted-foreground">{c.city || "-"}</td>
                   <td className="p-4">{c.total_orders}</td>
                   <td className="p-4 text-muted-foreground">{new Date(c.created_at).toLocaleDateString("sr-RS")}</td>
                   <td className="p-4 text-right">
