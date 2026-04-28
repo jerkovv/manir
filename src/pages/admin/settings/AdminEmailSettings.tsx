@@ -395,14 +395,6 @@ const AdminEmailSettings = () => {
                 <Label className="text-xs">From email</Label>
                 <Input value={s.from_email} onChange={(e) => setS({ ...s, from_email: e.target.value })} placeholder="info@0202skin.com" />
               </div>
-              <div>
-                <Label className="text-xs">Admin email (prima obaveštenja)</Label>
-                <Input value={s.admin_email} onChange={(e) => setS({ ...s, admin_email: e.target.value })} placeholder="porudzbine@0202skin.com" />
-              </div>
-              <div>
-                <Label className="text-xs">Reply-To (opciono)</Label>
-                <Input value={s.reply_to} onChange={(e) => setS({ ...s, reply_to: e.target.value })} />
-              </div>
             </div>
 
             <div className="flex flex-wrap gap-3 pt-2 border-t">
