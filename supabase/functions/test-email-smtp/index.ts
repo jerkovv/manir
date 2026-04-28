@@ -102,4 +102,4 @@ function json(body: unknown, status: number) {
   });
 }
 
-// redeploy: smtp-content-guard v3 (2026-04-28)
+// redeploy: smtp-diagnostic-logging v6 (2026-04-28)
