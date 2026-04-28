@@ -52,14 +52,13 @@ export function applyTemplate(
   template: string,
   data: Record<string, string | number>,
 ): string {
-  // Premium dizajn je default. Šablon iz baze se poštuje SAMO ako sadrži pun HTML
-  // dokument (<html>) — tako admin može potpuno custom dizajn da postavi.
-  // Inače uvek koristimo premium wrapper da bi sve podatke (adresa, telefon...)
-  // korektno renderovali.
-  if (template && template.toLowerCase().includes("<html")) {
-    return renderTemplateString(template, data);
-  }
-  return wrapPremium(data);
+  // Uvek renderuj premium wrapper. Template iz baze se trenutno ignoriše
+  // jer je čišćen i može biti prazan/nevalidan — premium dizajn je single
+  // source of truth i garantuje neprazan HTML.
+  const html = wrapPremium(data);
+  if (html && html.trim()) return html;
+  // Krajnji fallback (teorijski nedostižan) — minimalni neprazan HTML.
+  return `<!DOCTYPE html><html><body><p>Porudžbina #${String(data.orderId ?? "")} — ${String(data.total ?? "")} RSD</p></body></html>`;
 }
 
 function renderTemplateString(template: string, data: Record<string, string | number>): string {
