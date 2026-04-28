@@ -49,6 +49,21 @@ export async function sendSmtpEmail(settings: SmtpSettings, message: SmtpMessage
   const safeHtml = normalizeContent(message.html) || fallbackHtml(safeSubject);
   const safeText = normalizeContent(message.text) || htmlToText(safeHtml) || `0202skin — ${safeSubject}`;
 
+  // Detaljan dijagnostički log - vidi se u Supabase Edge Function logs
+  console.log("[smtp] sending", JSON.stringify({
+    host: settings.hostname,
+    port,
+    implicitTls: useImplicitTls,
+    from: message.from,
+    to: message.to,
+    replyTo: message.replyTo ?? null,
+    subjectLen: safeSubject.length,
+    subjectPreview: safeSubject.slice(0, 80),
+    htmlLen: safeHtml.length,
+    textLen: safeText.length,
+    htmlStart: safeHtml.slice(0, 60),
+  }));
+
   try {
     await client.send({
       from: message.from,
@@ -58,6 +73,7 @@ export async function sendSmtpEmail(settings: SmtpSettings, message: SmtpMessage
       content: safeText,
       html: safeHtml,
     });
+    console.log("[smtp] sent OK to", message.to);
   } finally {
     try { await client.close(); } catch { /* ignore */ }
   }
