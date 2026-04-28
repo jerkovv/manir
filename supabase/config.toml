@@ -26,3 +26,18 @@ verify_jwt = true
 
 [functions.test-email-smtp]
 verify_jwt = true
+
+[functions.cron-tick]
+verify_jwt = false
+
+[functions.send-review-emails]
+verify_jwt = false
+
+[functions.send-abandoned-cart-emails]
+verify_jwt = false
+
+[functions.review-public-api]
+verify_jwt = false
+
+[functions.abandoned-cart-public-api]
+verify_jwt = false
