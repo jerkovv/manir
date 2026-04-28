@@ -1,5 +1,9 @@
 {
+  "crons": [
+    { "path": "/api/cron-tick", "schedule": "*/15 * * * *" }
+  ],
   "rewrites": [
+    { "source": "/api/cron-tick", "destination": "https://caqjobwfcuwvxojengky.supabase.co/functions/v1/cron-tick" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
