@@ -174,15 +174,19 @@ Deno.serve(async (req) => {
       adminLookupError = appAdminsErr.message;
       console.error("[send-order-email] app_users query error:", appAdminsErr);
     }
-    const roleAdmins = (appAdmins ?? []).filter((u) => ["admin", "owner"].includes(String(u?.role ?? "").toLowerCase().trim()));
-    console.log("[send-order-email] found app_users admins:", roleAdmins.length);
+    const allowedRoles = ["admin", "owner", "editor"];
+    const roleAdmins = (appAdmins ?? []).filter((u) => {
+      const role = String(u?.role ?? "").toLowerCase().trim();
+      const status = String(u?.status ?? "active").toLowerCase().trim();
+      return allowedRoles.includes(role) && status !== "disabled" && status !== "suspended";
+    });
+    console.log("[send-order-email] app_users total:", appAdmins?.length ?? 0, "matched:", roleAdmins.length);
     for (const u of roleAdmins) {
       addRecipients(adminRecipients, u?.email);
     }
   } catch (e) {
     adminLookupError = (e as Error).message;
     console.error("[send-order-email] app_users lookup threw:", e);
-    // ako ne uspe, pokušaj barem sa settings.admin_email
   }
 
   try {
