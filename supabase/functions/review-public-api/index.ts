@@ -1,4 +1,5 @@
 // Public endpoint za /oceni stranicu.
+// deploy-touch: 2026-04-29
 // GET  ?token=...        → vraća info o proizvodu (preko get_review_token_info RPC)
 // POST { token, rating, review_text, reviewer_name } → submituje review
 

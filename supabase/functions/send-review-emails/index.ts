@@ -1,6 +1,7 @@
 // Worker: nalazi porudžbine starije od review_delay_days (default 14) bez
 // poslatog review email-a, kreira tokene preko create_review_tokens_for_order,
 // i šalje 1 mejl po porudžbini sa listom proizvoda (svaki ima svoj review URL).
+// deploy-touch: 2026-04-29
 //
 // Pozivan od cron-tick svakih 15 min. Interno throttle: jedan run obrađuje
 // najviše BATCH_SIZE porudžbina, da SMTP ne pukne.

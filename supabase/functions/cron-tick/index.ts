@@ -1,6 +1,7 @@
 // Vercel Cron entry point. Validira CRON_SECRET (constant-time), pa
 // poziva worker funkcije sa istim secret-om u headeru. Ne radi posao
 // sam — samo orkestrira, da bude lako dodati nove worker-e kasnije.
+// deploy-touch: 2026-04-29
 
 import { corsHeaders } from "../_shared/cors.ts";
 
