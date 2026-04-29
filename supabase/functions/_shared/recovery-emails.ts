@@ -47,20 +47,20 @@ export function reviewReminderHtml(opts: {
   const greeting = firstName ? `Zdravo, ${firstName}` : "Zdravo";
 
   const itemBlocks = items.map((it) => `
-    <table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};border:1px solid ${BRAND_LINE};margin:0 0 16px;">
+    <table class="product-card" width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};border:1px solid ${BRAND_LINE};margin:0 0 16px;">
       <tr>
-        <td style="padding:20px 22px;vertical-align:middle;width:88px;">
+        <td class="product-image-cell" style="padding:20px 22px;vertical-align:middle;width:88px;">
           ${it.product_image ? `<img src="${escapeHtml(absoluteUrl(it.product_image, siteUrl))}" alt="" width="72" height="72" style="display:block;width:72px;height:72px;object-fit:cover;border:1px solid ${BRAND_LINE};">` : ''}
         </td>
-        <td style="padding:20px 22px 20px 0;vertical-align:middle;">
-          <div style="font-family:${SERIF};font-size:18px;color:${BRAND_DARK};font-weight:500;margin:0 0 12px;line-height:1.3;">${escapeHtml(it.product_name)}</div>
-          <a href="${escapeHtml(it.review_url)}" style="display:inline-block;background:${BRAND_DARK};color:#fff;padding:10px 22px;text-decoration:none;font-family:${MONO};font-size:10px;letter-spacing:0.25em;text-transform:uppercase;">Oceni proizvod</a>
+        <td class="product-text-cell" style="padding:20px 22px 20px 0;vertical-align:middle;">
+          <div class="product-name" style="font-family:${SERIF};font-size:18px;color:${BRAND_DARK};font-weight:500;margin:0 0 12px;line-height:1.3;">${escapeHtml(it.product_name)}</div>
+          <a class="cta-button" href="${escapeHtml(it.review_url)}" style="display:inline-block;white-space:nowrap;background:${BRAND_DARK};color:#fff;padding:10px 22px;text-decoration:none;font-family:${MONO};font-size:10px;letter-spacing:0.25em;text-transform:uppercase;">Oceni proizvod</a>
         </td>
       </tr>
     </table>`).join("");
 
   const html = `<!DOCTYPE html>
-<html lang="sr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${BRAND_NAME}</title></head>
+<html lang="sr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${BRAND_NAME}</title><style>${RESPONSIVE_STYLE}</style></head>
 <body style="margin:0;padding:0;background:${BRAND_CREAM};font-family:${SANS};color:${BRAND_INK};">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};"><tr><td align="center" style="padding:32px 12px;">
     <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:${BRAND_PAPER};border:1px solid ${BRAND_LINE};">
@@ -170,7 +170,7 @@ export function abandonedCartHtml(opts: {
       </table>
     </td></tr>
     <tr><td style="padding:48px 48px 0;text-align:center;">
-      <a href="${escapeHtml(resumeUrl)}" style="display:inline-block;background:${BRAND_DARK};color:#fff;padding:18px 48px;text-decoration:none;font-family:${SANS};font-size:13px;letter-spacing:0.08em;font-weight:500;">${escapeHtml(ctaText)}</a>
+      <a class="cta-button" href="${escapeHtml(resumeUrl)}" style="display:inline-block;white-space:nowrap;background:${BRAND_DARK};color:#fff;padding:18px 48px;text-decoration:none;font-family:${SANS};font-size:13px;letter-spacing:0.08em;font-weight:500;">${escapeHtml(ctaText)}</a>
     </td></tr>`;
 
   // Stage 1: care quote BELOW CTA. Stage 2: care quote ABOVE items.
@@ -179,7 +179,7 @@ export function abandonedCartHtml(opts: {
     : careBlock + itemsBlock;
 
   const html = `<!DOCTYPE html>
-<html lang="sr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${BRAND_NAME}</title></head>
+<html lang="sr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${BRAND_NAME}</title><style>${RESPONSIVE_STYLE}</style></head>
 <body style="margin:0;padding:0;background:${BRAND_CREAM};font-family:${SANS};color:${BRAND_INK};">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};"><tr><td align="center" style="padding:32px 12px;">
     <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:${BRAND_PAPER};border:1px solid ${BRAND_LINE};">
