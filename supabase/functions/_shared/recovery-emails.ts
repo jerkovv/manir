@@ -131,10 +131,6 @@ export function abandonedCartHtml(opts: {
     ? "„Lepe stvari ne treba juriti, one strpljivo čekaju.\u201D"
     : "„Pažnja je oblik luksuza. Tvoja korpa je još uvek tu.\u201D";
 
-  const preheaderText = stage === 1
-    ? "Sačuvali smo proizvode koje ste odabrali. Bez žurbe."
-    : "Pažnja je oblik luksuza. Korpa je još uvek tu.";
-
   const itemRows = items.map((it) => `
     <tr>
       <td style="padding:18px 0;border-bottom:1px solid ${BRAND_LINE};vertical-align:middle;width:72px;">
@@ -182,7 +178,6 @@ export function abandonedCartHtml(opts: {
   return `<!DOCTYPE html>
 <html lang="sr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${BRAND_NAME}</title></head>
 <body style="margin:0;padding:0;background:${BRAND_CREAM};font-family:${SANS};color:${BRAND_INK};">
-  <div style="display:none;font-size:1px;color:#fffaf0;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">${escapeHtml(preheaderText)}</div>
   <table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};"><tr><td align="center" style="padding:32px 12px;">
     <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:${BRAND_PAPER};border:1px solid ${BRAND_LINE};">
       <tr><td style="padding:36px 48px 8px;text-align:center;border-bottom:1px solid ${BRAND_LINE};">
