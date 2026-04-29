@@ -19,6 +19,18 @@ function escapeHtml(s: string): string {
     .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
+// Pretvara relativne putanje slika ("/products/x.jpeg") u apsolutne URL-ove
+// koji rade u email klijentima (Gmail, Outlook, itd.).
+// Ako je već apsolutni URL ili data: URI, vraća ga netaknutog.
+function absoluteUrl(src: string | null | undefined, siteUrl: string): string {
+  const s = (src ?? "").trim();
+  if (!s) return "";
+  if (/^(https?:|data:|cid:)/i.test(s)) return s;
+  const base = (siteUrl || "").replace(/\/+$/, "");
+  if (s.startsWith("/")) return `${base}${s}`;
+  return `${base}/${s}`;
+}
+
 export interface ReviewEmailItem {
   product_name: string;
   product_image?: string | null;
@@ -38,7 +50,7 @@ export function reviewReminderHtml(opts: {
     <table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};border:1px solid ${BRAND_LINE};margin:0 0 16px;">
       <tr>
         <td style="padding:20px 22px;vertical-align:middle;width:88px;">
-          ${it.product_image ? `<img src="${escapeHtml(it.product_image)}" alt="" width="72" height="72" style="display:block;width:72px;height:72px;object-fit:cover;border:1px solid ${BRAND_LINE};">` : ''}
+          ${it.product_image ? `<img src="${escapeHtml(absoluteUrl(it.product_image, siteUrl))}" alt="" width="72" height="72" style="display:block;width:72px;height:72px;object-fit:cover;border:1px solid ${BRAND_LINE};">` : ''}
         </td>
         <td style="padding:20px 22px 20px 0;vertical-align:middle;">
           <div style="font-family:${SERIF};font-size:18px;color:${BRAND_DARK};font-weight:500;margin:0 0 12px;line-height:1.3;">${escapeHtml(it.product_name)}</div>
