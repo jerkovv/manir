@@ -19,6 +19,18 @@ function escapeHtml(s: string): string {
     .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
+// Pretvara relativne putanje slika ("/products/x.jpeg") u apsolutne URL-ove
+// koji rade u email klijentima (Gmail, Outlook, itd.).
+// Ako je već apsolutni URL ili data: URI, vraća ga netaknutog.
+function absoluteUrl(src: string | null | undefined, siteUrl: string): string {
+  const s = (src ?? "").trim();
+  if (!s) return "";
+  if (/^(https?:|data:|cid:)/i.test(s)) return s;
+  const base = (siteUrl || "").replace(/\/+$/, "");
+  if (s.startsWith("/")) return `${base}${s}`;
+  return `${base}/${s}`;
+}
+
 export interface ReviewEmailItem {
   product_name: string;
   product_image?: string | null;
@@ -38,7 +50,7 @@ export function reviewReminderHtml(opts: {
     <table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};border:1px solid ${BRAND_LINE};margin:0 0 16px;">
       <tr>
         <td style="padding:20px 22px;vertical-align:middle;width:88px;">
-          ${it.product_image ? `<img src="${escapeHtml(it.product_image)}" alt="" width="72" height="72" style="display:block;width:72px;height:72px;object-fit:cover;border:1px solid ${BRAND_LINE};">` : ''}
+          ${it.product_image ? `<img src="${escapeHtml(absoluteUrl(it.product_image, siteUrl))}" alt="" width="72" height="72" style="display:block;width:72px;height:72px;object-fit:cover;border:1px solid ${BRAND_LINE};">` : ''}
         </td>
         <td style="padding:20px 22px 20px 0;vertical-align:middle;">
           <div style="font-family:${SERIF};font-size:18px;color:${BRAND_DARK};font-weight:500;margin:0 0 12px;line-height:1.3;">${escapeHtml(it.product_name)}</div>
@@ -119,10 +131,6 @@ export function abandonedCartHtml(opts: {
     ? "„Lepe stvari ne treba juriti, one strpljivo čekaju.\u201D"
     : "„Pažnja je oblik luksuza. Tvoja korpa je još uvek tu.\u201D";
 
-  const preheaderText = stage === 1
-    ? "Sačuvali smo proizvode koje ste odabrali. Bez žurbe."
-    : "Pažnja je oblik luksuza. Korpa je još uvek tu.";
-
   const itemRows = items.map((it) => `
     <tr>
       <td style="padding:18px 0;border-bottom:1px solid ${BRAND_LINE};vertical-align:middle;width:72px;">
@@ -170,7 +178,6 @@ export function abandonedCartHtml(opts: {
   return `<!DOCTYPE html>
 <html lang="sr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${BRAND_NAME}</title></head>
 <body style="margin:0;padding:0;background:${BRAND_CREAM};font-family:${SANS};color:${BRAND_INK};">
-  <div style="display:none;font-size:1px;color:#fffaf0;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">${escapeHtml(preheaderText)}</div>
   <table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};"><tr><td align="center" style="padding:32px 12px;">
     <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:${BRAND_PAPER};border:1px solid ${BRAND_LINE};">
       <tr><td style="padding:36px 48px 8px;text-align:center;border-bottom:1px solid ${BRAND_LINE};">
