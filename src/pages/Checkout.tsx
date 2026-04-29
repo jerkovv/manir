@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useSearchParams, useNavigate } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Check, ShoppingBag, Truck, CreditCard, ShieldCheck, Loader2, Tag } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
@@ -16,7 +16,6 @@ import {
 const Checkout = () => {
   const { items, totalPrice, clearCart, addItem } = useCart();
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const [recovering, setRecovering] = useState(false);
   const [recoveryBlocked, setRecoveryBlocked] = useState<null | "unsubscribed" | "converted" | "invalid">(null);
   const totalQty = items.reduce((s, i) => s + i.quantity, 0);
