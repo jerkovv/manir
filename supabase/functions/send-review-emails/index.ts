@@ -85,10 +85,13 @@ Deno.serve(async (req) => {
         siteUrl,
       });
 
+      // htmlOnly: true → čist text/html, bez multipart/alternative.
+      // Sprečava duplikat-render i `=20` artefakte u Gmail web klijentu.
       await sender.send({
         to: order.customer_email,
         subject: "Kako ste se snašli? · 0202skin",
         html,
+        htmlOnly: true,
       });
 
       await admin.from("orders").update({

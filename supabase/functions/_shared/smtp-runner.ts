@@ -5,7 +5,7 @@ import { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { sendSmtpEmail } from "./simple-smtp.ts";
 
 export interface SmtpSender {
-  send: (opts: { to: string; subject: string; html: string; replyTo?: string }) => Promise<void>;
+  send: (opts: { to: string; subject: string; html: string; replyTo?: string; htmlOnly?: boolean }) => Promise<void>;
   fromAddr: string;
   adminEmail: string;
 }
@@ -35,13 +35,14 @@ export async function loadSmtpSender(admin: SupabaseClient): Promise<SmtpSender 
   return {
     fromAddr,
     adminEmail: settings.admin_email || "",
-    send: async ({ to, subject, html, replyTo }) => {
+    send: async ({ to, subject, html, replyTo, htmlOnly }) => {
       await sendSmtpEmail(smtp, {
         from: fromAddr,
         to,
         replyTo: replyTo || settings.admin_email || undefined,
         subject,
         html,
+        htmlOnly,
       });
     },
   };

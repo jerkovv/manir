@@ -18,6 +18,12 @@ export interface SmtpMessage {
   subject: string;
   html?: string;
   text?: string;
+  // Kad je true, šalje SAMO HTML deo (Content-Type: text/html), bez
+  // multipart/alternative wrapper-a. Koristi se za recovery/review email-ove
+  // kako bi se izbegli denomailer 1.6.0 multipart artefakti u Gmail-u
+  // (duplikat tela, vidljivi `=20` quoted-printable znaci).
+  // Default false → postojeće ponašanje (multipart sa tekstom + html-om).
+  htmlOnly?: boolean;
 }
 
 export async function sendSmtpEmail(settings: SmtpSettings, message: SmtpMessage) {
@@ -95,15 +101,31 @@ export async function sendSmtpEmail(settings: SmtpSettings, message: SmtpMessage
   }
 
   try {
-    await client.send({
-      from: message.from,
-      to: message.to,
-      replyTo: message.replyTo,
-      subject: safeSubject,
-      content: safeText,
-      html: safeHtml,
-    });
-    console.log("[smtp] sent OK to", message.to);
+    if (message.htmlOnly) {
+      // HTML-only put: bez `content` polja → denomailer šalje čist
+      // text/html (ne multipart/alternative). Eliminise duplikat-render
+      // i `=20` artefakte u Gmail web klijentu.
+      await client.send({
+        from: message.from,
+        to: message.to,
+        replyTo: message.replyTo,
+        subject: safeSubject,
+        html: safeHtml,
+      });
+      console.log("[smtp] sent OK (html-only) to", message.to);
+    } else {
+      // Postojeće ponašanje — multipart/alternative sa tekstom i HTML-om.
+      // Koristi se za order email-ove i sve što već radi stabilno.
+      await client.send({
+        from: message.from,
+        to: message.to,
+        replyTo: message.replyTo,
+        subject: safeSubject,
+        content: safeText,
+        html: safeHtml,
+      });
+      console.log("[smtp] sent OK to", message.to);
+    }
   } finally {
     try { await client.close(); } catch { /* ignore */ }
   }
