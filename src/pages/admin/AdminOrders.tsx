@@ -68,7 +68,7 @@ const AdminOrders = () => {
   // Lazy batch fetch resend statusa za vidljive shipped/delivered porudžbine
   useEffect(() => {
     const eligible = orders
-      .filter((o) => o.status === "shipped" || o.status === "delivered")
+      .filter((o) => o.status !== "cancelled")
       .map((o) => o.id)
       .filter((id) => !(id in resendStatuses));
     if (eligible.length === 0) return;
@@ -139,11 +139,11 @@ const AdminOrders = () => {
     const eligible = filtered.filter(
       (o) =>
         selectedIds.has(o.id) &&
-        (o.status === "shipped" || o.status === "delivered") &&
+        o.status !== "cancelled" &&
         resendStatuses[o.id]?.suggested_action !== "skip_all_used",
     );
     if (eligible.length === 0) {
-      toast.error("Nema porudžbina za slanje (filter: shipped/delivered, ne sve poslate).");
+      toast.error("Nema porudžbina za slanje (otkazane i one sa svim poslatim recenzijama su preskočene).");
       return;
     }
     if (!confirm(`Poslati review email za ${eligible.length} ${eligible.length === 1 ? "porudžbinu" : "porudžbina"}?`)) return;
@@ -222,7 +222,7 @@ const AdminOrders = () => {
   const finalFiltered = reviewOnlyMissing
     ? filtered.filter(
         (o) =>
-          (o.status === "shipped" || o.status === "delivered") &&
+          o.status !== "cancelled" &&
           !o.review_email_sent &&
           resendStatuses[o.id]?.suggested_action !== "skip_all_used",
       )
@@ -329,7 +329,7 @@ const AdminOrders = () => {
         <button
           onClick={() => setReviewOnlyMissing((v) => !v)}
           className={`px-3 py-1.5 font-body text-xs tracking-wider uppercase border ${reviewOnlyMissing ? "bg-foreground text-background border-foreground" : "border-border text-muted-foreground"}`}
-          title="Prikaži samo shipped/delivered porudžbine bez poslatog review email-a"
+          title="Prikaži samo porudžbine (osim otkazanih) bez poslatog review email-a"
         >
           Bez review email-a
         </button>
@@ -369,7 +369,7 @@ const AdminOrders = () => {
             <tbody>
               {finalFiltered.map((o) => {
                 const rs = resendStatuses[o.id];
-                const eligible = o.status === "shipped" || o.status === "delivered";
+                const eligible = o.status !== "cancelled";
                 const allUsed = rs?.suggested_action === "skip_all_used";
                 const isResending = resendingIds.has(o.id);
                 return (

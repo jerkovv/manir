@@ -46,6 +46,7 @@ Deno.serve(async (req) => {
     .eq("review_email_sent", false)
     .lte("created_at", cutoff)
     .not("customer_email", "is", null)
+    .neq("status", "cancelled")
     .order("created_at", { ascending: true })
     .limit(BATCH_SIZE);
   if (oErr) return json({ error: oErr.message }, 500);
