@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Star, Loader2, Check, AlertCircle } from "lucide-react";
 
 const SUPABASE_URL = "https://caqjobwfcuwvxojengky.supabase.co";
-const TOKEN_RE = /^[a-f0-9]{48}$/i;
+const TOKEN_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_TEXT = 2000;
 const MIN_TEXT = 10;
 
