@@ -1,24 +1,30 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Minus, Plus, ShoppingBag, ArrowRight, Trash2 } from "lucide-react";
+import { X, Minus, Plus, ShoppingBag, ArrowRight, Trash2, Sparkles } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { fetchQuantityDiscount, computeQuantityDiscount, type AppliedDiscount } from "@/lib/discount";
+import { fetchQuantityDiscount, computeQuantityDiscount, type AppliedDiscount, type QuantityDiscount } from "@/lib/discount";
 
 const CartDrawer = () => {
   const { items, isCartOpen, setIsCartOpen, removeItem, updateQuantity, totalPrice, totalItems } = useCart();
   const [autoDiscount, setAutoDiscount] = useState<AppliedDiscount | null>(null);
+  const [discountCfg, setDiscountCfg] = useState<QuantityDiscount | null>(null);
 
   useEffect(() => {
     let active = true;
     fetchQuantityDiscount().then(cfg => {
       if (!active) return;
+      setDiscountCfg(cfg);
       setAutoDiscount(computeQuantityDiscount(totalPrice, totalItems, cfg));
     });
     return () => { active = false; };
   }, [totalPrice, totalItems]);
 
   const finalTotal = totalPrice - (autoDiscount?.amount || 0);
+  const remainingForDiscount = discountCfg && discountCfg.enabled
+    ? Math.max(0, discountCfg.min_quantity - totalItems)
+    : 0;
+  const showNudge = !!discountCfg?.enabled && remainingForDiscount > 0 && totalItems > 0;
 
   return (
     <AnimatePresence>
@@ -140,6 +146,14 @@ const CartDrawer = () => {
             {/* Footer */}
             {items.length > 0 && (
               <div className="border-t border-border/60 px-6 py-5 space-y-3 bg-background">
+                {showNudge && discountCfg && (
+                  <div className="bg-warm-cream/60 border border-warm-brown/20 px-3 py-2.5 flex items-start gap-2.5">
+                    <Sparkles size={14} className="text-warm-brown mt-0.5 flex-shrink-0" />
+                    <p className="font-body text-[11px] tracking-[0.05em] text-warm-brown leading-relaxed">
+                      Dodajte još {remainingForDiscount} {remainingForDiscount === 1 ? "proizvod" : "proizvoda"} i ostvarite popust od {discountCfg.percent}%.
+                    </p>
+                  </div>
+                )}
                 {autoDiscount && (
                   <div className="bg-warm-cream/60 border border-warm-brown/20 px-3 py-2 flex items-center justify-between">
                     <span className="font-body text-[11px] tracking-[0.1em] uppercase text-warm-brown">{autoDiscount.label}</span>
