@@ -146,19 +146,30 @@ export function abandonedCartHtml(opts: {
     ? "„Lepe stvari ne treba juriti, one strpljivo čekaju.\u201D"
     : "„Pažnja je oblik luksuza. Tvoja korpa je još uvek tu.\u201D";
 
+  // Single-column kartica po stavci (slika centrirana gore, naziv + qty + cena ispod).
   const itemRows = items.map((it) => `
-    <tr class="product-card">
-      <td class="product-image-cell" style="padding:18px 0;border-bottom:1px solid ${BRAND_LINE};vertical-align:middle;width:72px;">
-        ${it.image ? `<img src="${escapeHtml(absoluteUrl(it.image, siteUrl))}" alt="" width="60" height="60" style="display:block;width:60px;height:60px;object-fit:cover;border:1px solid ${BRAND_LINE};">` : ''}
-      </td>
-      <td class="product-text-cell" style="padding:18px 0 18px 16px;border-bottom:1px solid ${BRAND_LINE};font-family:${SERIF};font-size:16px;color:${BRAND_INK};vertical-align:middle;">
-        <div class="product-name">${escapeHtml(it.name)}</div>
-        <div style="font-family:${MONO};font-size:10px;color:${BRAND_MUTED};margin-top:6px;letter-spacing:0.22em;text-transform:uppercase;">${it.quantity} kom · ${it.price.toLocaleString("sr-RS")} RSD</div>
-      </td>
-      <td style="padding:18px 0;border-bottom:1px solid ${BRAND_LINE};font-family:${SERIF};font-size:18px;color:${BRAND_DARK};text-align:right;font-weight:500;vertical-align:middle;white-space:nowrap;">
-        ${(it.price * it.quantity).toLocaleString("sr-RS")} RSD
-      </td>
-    </tr>`).join("");
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};border:1px solid ${BRAND_LINE};margin:0 0 16px;">
+      <tr>
+        <td style="padding:28px 24px 14px;text-align:center;">
+          ${it.image ? `<img src="${escapeHtml(absoluteUrl(it.image, siteUrl))}" alt="" width="120" height="120" style="display:inline-block;width:120px;height:120px;object-fit:cover;border:1px solid ${BRAND_LINE};">` : ''}
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:0 24px 8px;text-align:center;">
+          <div style="font-family:${SERIF};font-size:20px;color:${BRAND_DARK};font-weight:500;line-height:1.3;">${escapeHtml(it.name)}</div>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:0 24px 10px;text-align:center;">
+          <div style="font-family:${MONO};font-size:10px;color:${BRAND_MUTED};letter-spacing:0.22em;text-transform:uppercase;">${it.quantity} kom · ${it.price.toLocaleString("sr-RS")} RSD</div>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:0 24px 28px;text-align:center;">
+          <div style="font-family:${SERIF};font-size:20px;color:${BRAND_DARK};font-weight:500;">${(it.price * it.quantity).toLocaleString("sr-RS")} RSD</div>
+        </td>
+      </tr>
+    </table>`).join("");
 
   const careBlock = `
     <tr><td style="padding:32px 48px 0;">
@@ -169,9 +180,7 @@ export function abandonedCartHtml(opts: {
 
   const itemsBlock = `
     <tr><td style="padding:40px 48px 0;">
-      <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
-        <tbody>${itemRows}</tbody>
-      </table>
+      ${itemRows}
     </td></tr>
     <tr><td style="padding:24px 48px 0;">
       <table width="100%" cellpadding="0" cellspacing="0" style="border-top:2px solid ${BRAND_DARK};">
@@ -182,7 +191,7 @@ export function abandonedCartHtml(opts: {
       </table>
     </td></tr>
     <tr><td style="padding:48px 48px 0;text-align:center;">
-      <a class="cta-button" href="${escapeHtml(resumeUrl)}" style="display:inline-block;white-space:nowrap;background:${BRAND_DARK};color:#fff;padding:18px 48px;text-decoration:none;font-family:${SANS};font-size:13px;letter-spacing:0.08em;font-weight:500;">${escapeHtml(ctaText)}</a>
+      <a href="${escapeHtml(resumeUrl)}" style="display:inline-block;white-space:nowrap;background:${BRAND_DARK};color:#fff;padding:18px 48px;text-decoration:none;font-family:${SANS};font-size:13px;letter-spacing:0.08em;font-weight:500;">${escapeHtml(ctaText)}</a>
     </td></tr>`;
 
   // Stage 1: care quote BELOW CTA. Stage 2: care quote ABOVE items.
@@ -191,7 +200,7 @@ export function abandonedCartHtml(opts: {
     : careBlock + itemsBlock;
 
   const html = `<!DOCTYPE html>
-<html lang="sr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${BRAND_NAME}</title><style>${RESPONSIVE_STYLE}</style></head>
+<html lang="sr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${BRAND_NAME}</title></head>
 <body style="margin:0;padding:0;background:${BRAND_CREAM};font-family:${SANS};color:${BRAND_INK};">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};"><tr><td align="center" style="padding:32px 12px;">
     <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:${BRAND_PAPER};border:1px solid ${BRAND_LINE};">
