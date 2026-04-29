@@ -3,13 +3,13 @@
 ## Core
 Homepage hero must use the generated skincare composition with products.
 Current offer should use the original 0202 promo visual below the hero in portrait ratio.
-Dates in UI use `sr-Latn-RS` (Latin script) via `src/lib/format.ts` helpers.
-DB columns pairing a word + digit have NO underscore separator (e.g. `email1_sent_at`, not `email_1_sent_at`).
+DB column names that pair word+digit use no underscore separator (e.g. `email1_sent_at`, NOT `email_1_sent_at`).
+Email subject lines MUST NOT contain `?` if they include non-ASCII chars (č, š, ž, ć, đ, ·) — denomailer Q-encoding breaks in Apple Mail. Rephrase to a statement.
 
 ## Memories
 - [Homepage hero assets](mem://design/homepage-hero-assets.md) — Use hero-skincare as hero; use hero-0202 as current offer below, uncropped portrait.
-- [Review RPC params](mem://feature/review-rpc-params.md) — submit_review_by_token uses _author/_comment, never _reviewer_name/_review_text.
-- [Schema verification](mem://constraint/schema-verification.md) — Verify RPC signatures via pg_get_function_arguments before writing data-access code.
-- [Recovery emails](mem://design/recovery-emails.md)
-- [DB schema reference](mem://reference/db-schema.md) — Authoritative column names for abandoned_carts, recovery_settings, orders.
-- [Email encoding](mem://design/email-encoding.md) — htmlOnly grana mora slati body kao 8bit (mimeContent), ne QP, zbog Apple Mail =20 artefakata.
+- [DB schema column names](mem://reference/db-schema.md) — Authoritative column names per table; check before writing queries.
+- [Schema verification](mem://constraint/schema-verification.md) — Always verify schema in information_schema before assuming column names.
+- [SMTP encoding rules](mem://design/email-encoding.md) — Body 8bit (not QP); Subject Q-encoded OK but NEVER contains `?` with non-ASCII.
+- [Recovery emails](mem://design/recovery-emails.md) — Recovery/review email design + flow rules.
+- [Review RPC params](mem://feature/review-rpc-params.md) — Param naming for review RPC calls.
