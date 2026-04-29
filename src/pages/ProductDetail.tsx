@@ -7,6 +7,7 @@ import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
 import SectionReveal from "@/components/SectionReveal";
 import ProductCard from "@/components/ProductCard";
+import ProductReviews from "@/components/ProductReviews";
 
 interface AccordionItemProps {
   title: string;
@@ -273,12 +274,18 @@ const ProductDetail = () => {
             </SectionReveal>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
               {related.map((p) => (
-                <ProductCard key={p.id} id={p.slug} name={p.name} price={Number(p.price)} category={p.category || ""} image={productImage(p)} featured={p.featured} size={p.size || undefined} />
+                <ProductCard key={p.id} id={p.slug} name={p.name} price={Number(p.price)} category={p.category || ""} image={productImage(p)} featured={p.featured} size={p.size || undefined} avgRating={p.avg_rating ?? null} reviewCount={p.review_count ?? 0} />
               ))}
             </div>
           </div>
         </section>
       )}
+
+      <ProductReviews
+        productId={product.id}
+        avgRating={product.avg_rating ?? null}
+        reviewCount={product.review_count ?? 0}
+      />
 
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pb-16">
         <Link to="/prodavnica" className="inline-flex items-center gap-2 font-body text-xs tracking-[0.15em] uppercase text-warm-brown hover:text-warm-dark transition-colors">

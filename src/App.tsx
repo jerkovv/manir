@@ -21,6 +21,7 @@ import EducationDetail from "./pages/EducationDetail";
 import Checkout from "./pages/Checkout";
 import PartnerSalons from "./pages/PartnerSalons";
 import Unsubscribe from "./pages/Unsubscribe";
+import ReviewSubmit from "./pages/ReviewSubmit";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminSetPassword from "./pages/admin/AdminSetPassword";
@@ -114,6 +115,7 @@ const App = () => (
               <Route path="/partner-saloni" element={<PartnerSalons />} />
               <Route path="/naruci" element={<Checkout />} />
               <Route path="/odjava/:token" element={<Unsubscribe />} />
+              <Route path="/oceni" element={<ReviewSubmit />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin/set-password" element={<AdminSetPassword />} />
               <Route path="/admin" element={<AdminLayout />}>
