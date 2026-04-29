@@ -134,7 +134,7 @@ export function abandonedCartHtml(opts: {
   const itemRows = items.map((it) => `
     <tr>
       <td style="padding:18px 0;border-bottom:1px solid ${BRAND_LINE};vertical-align:middle;width:72px;">
-        ${it.image ? `<img src="${escapeHtml(it.image)}" alt="" width="60" height="60" style="display:block;width:60px;height:60px;object-fit:cover;border:1px solid ${BRAND_LINE};">` : ''}
+        ${it.image ? `<img src="${escapeHtml(absoluteUrl(it.image, siteUrl))}" alt="" width="60" height="60" style="display:block;width:60px;height:60px;object-fit:cover;border:1px solid ${BRAND_LINE};">` : ''}
       </td>
       <td style="padding:18px 0 18px 16px;border-bottom:1px solid ${BRAND_LINE};font-family:${SERIF};font-size:16px;color:${BRAND_INK};vertical-align:middle;">
         <div>${escapeHtml(it.name)}</div>
@@ -175,7 +175,7 @@ export function abandonedCartHtml(opts: {
     ? itemsBlock + careBlock
     : careBlock + itemsBlock;
 
-  return `<!DOCTYPE html>
+  const html = `<!DOCTYPE html>
 <html lang="sr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${BRAND_NAME}</title></head>
 <body style="margin:0;padding:0;background:${BRAND_CREAM};font-family:${SANS};color:${BRAND_INK};">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};"><tr><td align="center" style="padding:32px 12px;">
@@ -211,4 +211,7 @@ export function abandonedCartHtml(opts: {
     </table>
   </td></tr></table>
 </body></html>`;
+  // Strip whitespace between tags, sprečava da Loopia/quoted-printable
+  // ubaci vidljive artefakte tipa "=20" između elemenata.
+  return html.replace(/>\s+</g, "><");
 }
