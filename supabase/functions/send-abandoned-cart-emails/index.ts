@@ -106,7 +106,7 @@ async function sendStage(
   opts: { siteUrl: string },
 ): Promise<{ status: string; error?: string }> {
   try {
-    const items = Array.isArray(cart.items) ? (cart.items as AbandonedCartItem[]) : [];
+    const items = Array.isArray(cart.cart_data) ? (cart.cart_data as AbandonedCartItem[]) : [];
     if (items.length === 0) {
       // prazna korpa - markiraj 'abandoned' da je worker vise ne pokupi
       await admin.from("abandoned_carts")
@@ -115,7 +115,7 @@ async function sendStage(
       return { status: "skipped_empty" };
     }
 
-    const total = Number(cart.total ?? items.reduce((s, it) => s + it.price * it.quantity, 0));
+    const total = Number(cart.cart_total ?? items.reduce((s, it) => s + it.price * it.quantity, 0));
     const token = String(cart.recovery_token || "");
     const resumeUrl = `${opts.siteUrl}/checkout?recover=${token}`;
     const unsubscribeUrl = `${opts.siteUrl}/api/cart-unsubscribe?token=${token}`;
