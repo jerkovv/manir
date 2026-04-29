@@ -111,7 +111,7 @@ const AdminBlog = () => {
                       <span className="bg-gray-100 text-gray-700 px-2 py-0.5 text-[11px] uppercase tracking-wider">Skica</span>
                     )}
                   </td>
-                  <td className="p-4 text-muted-foreground">{new Date(p.created_at).toLocaleDateString("sr-RS")}</td>
+                  <td className="p-4 text-muted-foreground">{new Date(p.created_at).toLocaleDateString("sr-Latn-RS")}</td>
                   <td className="p-4 text-right whitespace-nowrap">
                     <button onClick={() => openEdit(p)} className="p-2 hover:bg-[#FAFAF8]"><Pencil size={14} /></button>
                     <button onClick={() => remove(p)} className="p-2 hover:bg-red-50 text-red-600"><Trash2 size={14} /></button>

@@ -191,7 +191,7 @@ const AdminOverview = () => {
                         <td className="p-4">{o.customer_name}</td>
                         <td className="p-4">{Number(o.total).toLocaleString("sr-RS")} RSD</td>
                         <td className="p-4"><StatusBadge status={o.status} /></td>
-                        <td className="p-4 text-muted-foreground">{new Date(o.created_at).toLocaleDateString("sr-RS")}</td>
+                        <td className="p-4 text-muted-foreground">{new Date(o.created_at).toLocaleDateString("sr-Latn-RS")}</td>
                       </tr>
                     ))}
                   </tbody>

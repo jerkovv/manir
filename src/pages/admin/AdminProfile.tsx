@@ -108,7 +108,7 @@ const AdminProfile = () => {
       <div className="bg-white border border-border p-6 grid grid-cols-2 gap-4 font-body text-sm">
         <div>
           <div className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground mb-1">Pridružio se</div>
-          <div>{new Date(appUser.created_at).toLocaleDateString("sr-RS")}</div>
+          <div>{new Date(appUser.created_at).toLocaleDateString("sr-Latn-RS")}</div>
         </div>
         <div>
           <div className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground mb-1">Poslednji login</div>

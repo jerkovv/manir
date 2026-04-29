@@ -56,7 +56,7 @@ const AdminCustomers = () => {
       telefon: c.phone || "",
       grad: c.city || "",
       broj_porudzbina: c.total_orders,
-      registrovan: new Date(c.created_at).toLocaleDateString("sr-RS"),
+      registrovan: new Date(c.created_at).toLocaleDateString("sr-Latn-RS"),
     }));
     downloadCSV(`kupci-${new Date().toISOString().slice(0, 10)}.csv`, rows);
   };
@@ -109,7 +109,7 @@ const AdminCustomers = () => {
                   <td className="p-4 text-muted-foreground">{c.phone || "-"}</td>
                   <td className="p-4 text-muted-foreground">{c.city || "-"}</td>
                   <td className="p-4">{c.total_orders}</td>
-                  <td className="p-4 text-muted-foreground">{new Date(c.created_at).toLocaleDateString("sr-RS")}</td>
+                  <td className="p-4 text-muted-foreground">{new Date(c.created_at).toLocaleDateString("sr-Latn-RS")}</td>
                   <td className="p-4 text-right">
                     <button
                       onClick={() => deleteCustomer(c)}

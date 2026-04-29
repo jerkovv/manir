@@ -248,7 +248,7 @@ const AdminOrders = () => {
                     />
                   </td>
                   <td className="p-4">#{displayOrderNumber(o.order_number)}</td>
-                  <td className="p-4 text-muted-foreground">{new Date(o.created_at).toLocaleDateString("sr-RS")}</td>
+                  <td className="p-4 text-muted-foreground">{new Date(o.created_at).toLocaleDateString("sr-Latn-RS")}</td>
                   <td className="p-4">{o.customer_name}</td>
                   <td className="p-4 text-muted-foreground">{o.customer_email}</td>
                   <td className="p-4 text-muted-foreground">
