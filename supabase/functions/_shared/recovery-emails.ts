@@ -143,12 +143,12 @@ export function abandonedCartHtml(opts: {
     : "„Pažnja je oblik luksuza. Tvoja korpa je još uvek tu.\u201D";
 
   const itemRows = items.map((it) => `
-    <tr>
-      <td style="padding:18px 0;border-bottom:1px solid ${BRAND_LINE};vertical-align:middle;width:72px;">
+    <tr class="product-card">
+      <td class="product-image-cell" style="padding:18px 0;border-bottom:1px solid ${BRAND_LINE};vertical-align:middle;width:72px;">
         ${it.image ? `<img src="${escapeHtml(absoluteUrl(it.image, siteUrl))}" alt="" width="60" height="60" style="display:block;width:60px;height:60px;object-fit:cover;border:1px solid ${BRAND_LINE};">` : ''}
       </td>
-      <td style="padding:18px 0 18px 16px;border-bottom:1px solid ${BRAND_LINE};font-family:${SERIF};font-size:16px;color:${BRAND_INK};vertical-align:middle;">
-        <div>${escapeHtml(it.name)}</div>
+      <td class="product-text-cell" style="padding:18px 0 18px 16px;border-bottom:1px solid ${BRAND_LINE};font-family:${SERIF};font-size:16px;color:${BRAND_INK};vertical-align:middle;">
+        <div class="product-name">${escapeHtml(it.name)}</div>
         <div style="font-family:${MONO};font-size:10px;color:${BRAND_MUTED};margin-top:6px;letter-spacing:0.22em;text-transform:uppercase;">${it.quantity} kom · ${it.price.toLocaleString("sr-RS")} RSD</div>
       </td>
       <td style="padding:18px 0;border-bottom:1px solid ${BRAND_LINE};font-family:${SERIF};font-size:18px;color:${BRAND_DARK};text-align:right;font-weight:500;vertical-align:middle;white-space:nowrap;">
