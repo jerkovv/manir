@@ -68,9 +68,9 @@ Deno.serve(async (req) => {
 
     const { data, error } = await admin.rpc("upsert_abandoned_cart", {
       _email: email,
-      _items: body.items,
-      _total: total,
       _customer_name: customerName,
+      _cart_data: body.items,
+      _cart_total: total,
       _source: source,
     });
     if (error) return json({ error: error.message }, 400);
