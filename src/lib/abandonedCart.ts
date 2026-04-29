@@ -62,13 +62,13 @@ export async function captureAbandonedCart(args: CaptureCartArgs): Promise<boole
  * podržava samo token-based convert. Ovo radi direktno preko Supabase RPC-ja.
  */
 export async function markCartConverted(
-  supabase: { rpc: (fn: string, args: Record<string, unknown>) => Promise<{ error: unknown }> },
+  supabase: { rpc: (fn: string, args: Record<string, unknown>) => unknown },
   email: string,
 ): Promise<void> {
   const e = email.trim().toLowerCase();
   if (!EMAIL_RE.test(e)) return;
   try {
-    await supabase.rpc("mark_cart_converted", { _email: e });
+    await (supabase.rpc("mark_cart_converted", { _email: e }) as unknown as Promise<unknown>);
   } catch (err) {
     console.warn("[abandonedCart] mark_converted failed:", err);
   }
