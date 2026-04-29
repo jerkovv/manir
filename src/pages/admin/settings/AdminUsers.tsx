@@ -69,7 +69,7 @@ const formatRelative = (iso: string | null): string => {
   if (h < 24) return `pre ${h} h`;
   const days = Math.floor(h / 24);
   if (days < 30) return `pre ${days} ${days === 1 ? "dan" : "dana"}`;
-  return new Date(iso).toLocaleDateString("sr-RS");
+  return new Date(iso).toLocaleDateString("sr-Latn-RS");
 };
 
 type AuditEntry = {
@@ -252,7 +252,7 @@ const AdminUsers = () => {
                   <td className="p-4"><RoleBadge role={u.role} /></td>
                   <td className="p-4"><StatusBadge status={u.status} /></td>
                   <td className="p-4 text-muted-foreground">{formatRelative(u.last_login_at)}</td>
-                  <td className="p-4 text-muted-foreground">{new Date(u.created_at).toLocaleDateString("sr-RS")}</td>
+                  <td className="p-4 text-muted-foreground">{new Date(u.created_at).toLocaleDateString("sr-Latn-RS")}</td>
                   <td className="p-4 text-right relative">
                     <UserActionsMenu
                       user={u}
@@ -641,7 +641,7 @@ const ActivityTab = () => {
           <tbody>
             {logs.map((l) => (
               <tr key={l.id} className="border-t border-border">
-                <td className="p-4 text-muted-foreground whitespace-nowrap">{new Date(l.created_at).toLocaleString("sr-RS")}</td>
+                <td className="p-4 text-muted-foreground whitespace-nowrap">{new Date(l.created_at).toLocaleString("sr-Latn-RS")}</td>
                 <td className="p-4">{ACTION_LABEL[l.action] || l.action}</td>
                 <td className="p-4 text-muted-foreground">{l.actor_email || "-"}</td>
                 <td className="p-4 text-muted-foreground">{l.target_email || "-"}</td>

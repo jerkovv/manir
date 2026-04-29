@@ -19,7 +19,7 @@ type Post = {
 };
 
 const formatDate = (iso: string | null) =>
-  iso ? new Date(iso).toLocaleDateString("sr-RS", { day: "numeric", month: "long", year: "numeric" }) : "";
+  iso ? new Date(iso).toLocaleDateString("sr-Latn-RS", { day: "numeric", month: "long", year: "numeric" }) : "";
 
 const BlogPost = () => {
   const { id } = useParams();

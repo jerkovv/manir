@@ -74,7 +74,7 @@ const AdminOrders = () => {
   const exportCSV = () => {
     const rows = filtered.map((o) => ({
       broj: displayOrderNumber(o.order_number),
-      datum: new Date(o.created_at).toLocaleString("sr-RS"),
+      datum: new Date(o.created_at).toLocaleString("sr-Latn-RS"),
       kupac: o.customer_name,
       email: o.customer_email,
       telefon: o.customer_phone || "",
@@ -248,18 +248,18 @@ const AdminOrders = () => {
                     />
                   </td>
                   <td className="p-4">#{displayOrderNumber(o.order_number)}</td>
-                  <td className="p-4 text-muted-foreground">{new Date(o.created_at).toLocaleDateString("sr-RS")}</td>
+                  <td className="p-4 text-muted-foreground">{new Date(o.created_at).toLocaleDateString("sr-Latn-RS")}</td>
                   <td className="p-4">{o.customer_name}</td>
                   <td className="p-4 text-muted-foreground">{o.customer_email}</td>
                   <td className="p-4 text-muted-foreground">
                     {o.discount_amount && Number(o.discount_amount) > 0
-                      ? `−${Number(o.discount_amount).toLocaleString("sr-RS")} RSD`
+                      ? `−${Number(o.discount_amount).toLocaleString("sr-Latn-RS")} RSD`
                       : "-"}
                   </td>
                   <td className="p-4 text-muted-foreground">
                     {o.coupon_code ? <span className="font-mono text-xs uppercase">{o.coupon_code}</span> : "-"}
                   </td>
-                  <td className="p-4">{Number(o.total).toLocaleString("sr-RS")} RSD</td>
+                  <td className="p-4">{Number(o.total).toLocaleString("sr-Latn-RS")} RSD</td>
                   <td className="p-4"><StatusBadge status={o.status} /></td>
                   <td className="p-4 text-right">
                     <button
@@ -307,7 +307,7 @@ const AdminOrders = () => {
                 <div><div className="text-[11px] uppercase tracking-wider text-muted-foreground">Kupac</div>{selected.customer_name}</div>
                 <div><div className="text-[11px] uppercase tracking-wider text-muted-foreground">Email</div>{selected.customer_email}</div>
                 <div><div className="text-[11px] uppercase tracking-wider text-muted-foreground">Telefon</div>{selected.customer_phone || "-"}</div>
-                <div><div className="text-[11px] uppercase tracking-wider text-muted-foreground">Datum</div>{new Date(selected.created_at).toLocaleString("sr-RS")}</div>
+                <div><div className="text-[11px] uppercase tracking-wider text-muted-foreground">Datum</div>{new Date(selected.created_at).toLocaleString("sr-Latn-RS")}</div>
                 <div className="col-span-2"><div className="text-[11px] uppercase tracking-wider text-muted-foreground">Adresa</div>{selected.shipping_address || "-"}, {selected.shipping_postal_code} {selected.shipping_city}</div>
                 {selected.notes && <div className="col-span-2"><div className="text-[11px] uppercase tracking-wider text-muted-foreground">Napomena</div>{selected.notes}</div>}
               </div>
@@ -322,14 +322,14 @@ const AdminOrders = () => {
                       <tr key={it.id} className="border-t border-border">
                         <td className="p-3">{it.product_name}</td>
                         <td className="p-3">{it.quantity}</td>
-                        <td className="p-3">{Number(it.unit_price).toLocaleString("sr-RS")}</td>
-                        <td className="p-3 text-right">{Number(it.subtotal).toLocaleString("sr-RS")}</td>
+                        <td className="p-3">{Number(it.unit_price).toLocaleString("sr-Latn-RS")}</td>
+                        <td className="p-3 text-right">{Number(it.subtotal).toLocaleString("sr-Latn-RS")}</td>
                       </tr>
                     ))}
                     {selected.subtotal != null && (
                       <tr className="border-t border-border">
                         <td colSpan={3} className="p-3 text-right text-muted-foreground">Međuzbir</td>
-                        <td className="p-3 text-right text-muted-foreground">{Number(selected.subtotal).toLocaleString("sr-RS")} RSD</td>
+                        <td className="p-3 text-right text-muted-foreground">{Number(selected.subtotal).toLocaleString("sr-Latn-RS")} RSD</td>
                       </tr>
                     )}
                     {selected.discount_amount != null && Number(selected.discount_amount) > 0 && (
@@ -338,12 +338,12 @@ const AdminOrders = () => {
                           Popust{selected.discount_label ? ` (${selected.discount_label})` : ""}
                           {selected.coupon_code ? ` · kupon ${selected.coupon_code}` : ""}
                         </td>
-                        <td className="p-3 text-right text-muted-foreground">−{Number(selected.discount_amount).toLocaleString("sr-RS")} RSD</td>
+                        <td className="p-3 text-right text-muted-foreground">−{Number(selected.discount_amount).toLocaleString("sr-Latn-RS")} RSD</td>
                       </tr>
                     )}
                     <tr className="border-t border-border bg-[#FAFAF8]">
                       <td colSpan={3} className="p-3 text-right font-medium">Ukupno</td>
-                      <td className="p-3 text-right font-medium">{Number(selected.total).toLocaleString("sr-RS")} RSD</td>
+                      <td className="p-3 text-right font-medium">{Number(selected.total).toLocaleString("sr-Latn-RS")} RSD</td>
                     </tr>
                   </tbody>
                 </table>
