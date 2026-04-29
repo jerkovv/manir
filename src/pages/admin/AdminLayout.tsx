@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Navigate, Link, useLocation, Outlet } from "react-router-dom";
 import { useAuth, useHasPermission } from "@/hooks/useAuth";
-import { LayoutDashboard, Package, ShoppingBag, Users, FileText, Star, Layers, FilePlus, Tag, LogOut, Menu, X, Mail, UserCog, MailWarning } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingBag, Users, FileText, Star, Layers, FilePlus, Tag, LogOut, Menu, X, Mail, UserCog, MailWarning, MailX } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 type Perm = "manage_users" | "manage_settings" | "manage_products" | "manage_orders" | "view_only";
@@ -14,6 +14,7 @@ const navGroups: NavGroup[] = [
     items: [
       { to: "/admin", label: "Pregled", icon: LayoutDashboard, end: true, perm: "view_only" },
       { to: "/admin/orders", label: "Porudžbine", icon: ShoppingBag, perm: "manage_orders" },
+      { to: "/admin/abandoned-carts", label: "Napuštene korpe", icon: MailX, perm: "manage_orders" },
       { to: "/admin/customers", label: "Kupci", icon: Users, perm: "view_only" },
       { to: "/admin/products", label: "Proizvodi", icon: Package, perm: "manage_products" },
       { to: "/admin/discounts", label: "Popusti i kuponi", icon: Tag, perm: "manage_products" },
