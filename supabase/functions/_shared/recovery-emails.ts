@@ -13,13 +13,11 @@ const SERIF = "'Cormorant Garamond', Georgia, 'Times New Roman', serif";
 const SANS = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 const MONO = "'Courier New', Courier, monospace";
 
-// Responsive overrides za uske viewport-e (Apple Mail iOS, Gmail mobile).
-// Bez ovoga, 2-kolone <table> layout se prelama karakter-po-karakter
-// na ekranima <480px (CTA dugme se cepa vertikalno, naziv proizvoda u 3+ reda).
-// Klase: .product-card / .product-image-cell / .product-text-cell / .product-name / .cta-button.
-// Mora ostati u jednom redu (bez whitespace-a između selektora) jer .replace(/>\s+</g,"><")
-// ne dira <style> sadržaj, ali držimo kratko radi quoted-printable bezbednosti.
-const RESPONSIVE_STYLE = `@media only screen and (max-width:480px){.product-card,.product-card td{display:block !important;width:100% !important;box-sizing:border-box !important;padding:0 !important;}.product-image-cell{text-align:center !important;padding:20px 0 16px !important;}.product-text-cell{text-align:center !important;padding:0 24px 20px !important;}.cta-button{display:inline-block !important;white-space:nowrap !important;width:auto !important;letter-spacing:0.15em !important;}.product-name{font-size:18px !important;line-height:1.4 !important;}}`;
+// NAPOMENA: Ne koristimo <style> blok ni CSS klase. denomailer mimeContent put
+// strip-uje <style> i class atribute pri konstruisanju MIME body-ja, pa media
+// query responsive strategija ne radi. Umesto toga: single-column inline layout
+// uvek (i na desktop-u i na mobile-u). Email-safe i prirodno responsive.
+// Vidi mem://design/email-html-singlecolumn.md
 
 function escapeHtml(s: string): string {
   return String(s ?? "")
@@ -55,20 +53,26 @@ export function reviewReminderHtml(opts: {
   const greeting = firstName ? `Zdravo, ${firstName}` : "Zdravo";
 
   const itemBlocks = items.map((it) => `
-    <table class="product-card" width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};border:1px solid ${BRAND_LINE};margin:0 0 16px;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};border:1px solid ${BRAND_LINE};margin:0 0 16px;">
       <tr>
-        <td class="product-image-cell" style="padding:20px 22px;vertical-align:middle;width:88px;">
-          ${it.product_image ? `<img src="${escapeHtml(absoluteUrl(it.product_image, siteUrl))}" alt="" width="72" height="72" style="display:block;width:72px;height:72px;object-fit:cover;border:1px solid ${BRAND_LINE};">` : ''}
+        <td style="padding:32px 24px 16px;text-align:center;">
+          ${it.product_image ? `<img src="${escapeHtml(absoluteUrl(it.product_image, siteUrl))}" alt="" width="120" height="120" style="display:inline-block;width:120px;height:120px;object-fit:cover;border:1px solid ${BRAND_LINE};">` : ''}
         </td>
-        <td class="product-text-cell" style="padding:20px 22px 20px 0;vertical-align:middle;">
-          <div class="product-name" style="font-family:${SERIF};font-size:18px;color:${BRAND_DARK};font-weight:500;margin:0 0 12px;line-height:1.3;">${escapeHtml(it.product_name)}</div>
-          <a class="cta-button" href="${escapeHtml(it.review_url)}" style="display:inline-block;white-space:nowrap;background:${BRAND_DARK};color:#fff;padding:10px 22px;text-decoration:none;font-family:${MONO};font-size:10px;letter-spacing:0.25em;text-transform:uppercase;">Oceni proizvod</a>
+      </tr>
+      <tr>
+        <td style="padding:0 24px 12px;text-align:center;">
+          <div style="font-family:${SERIF};font-size:20px;color:${BRAND_DARK};font-weight:500;line-height:1.3;">${escapeHtml(it.product_name)}</div>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:0 24px 32px;text-align:center;">
+          <a href="${escapeHtml(it.review_url)}" style="display:inline-block;white-space:nowrap;background:${BRAND_DARK};color:#fff;padding:14px 28px;text-decoration:none;font-family:${MONO};font-size:11px;letter-spacing:0.2em;text-transform:uppercase;">Oceni proizvod</a>
         </td>
       </tr>
     </table>`).join("");
 
   const html = `<!DOCTYPE html>
-<html lang="sr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${BRAND_NAME}</title><style>${RESPONSIVE_STYLE}</style></head>
+<html lang="sr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${BRAND_NAME}</title></head>
 <body style="margin:0;padding:0;background:${BRAND_CREAM};font-family:${SANS};color:${BRAND_INK};">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};"><tr><td align="center" style="padding:32px 12px;">
     <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:${BRAND_PAPER};border:1px solid ${BRAND_LINE};">
