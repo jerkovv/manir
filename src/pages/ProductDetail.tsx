@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import SectionReveal from "@/components/SectionReveal";
 import ProductCard from "@/components/ProductCard";
 import ProductReviews from "@/components/ProductReviews";
+import ProductSocialProof from "@/components/ProductSocialProof";
 
 interface AccordionItemProps {
   title: string;
