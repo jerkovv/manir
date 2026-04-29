@@ -3,6 +3,6 @@ name: Supabase schema verification before Phase 3b
 description: Verify exact Supabase table and RPC column names before writing Phase 3b code.
 type: constraint
 ---
-Before writing any Phase 3b code that reads or writes Supabase tables or RPCs, verify the exact live schema first using available Supabase schema access or Table Editor details. Do not infer column or parameter names from earlier context.
+Before writing any code that reads or writes Supabase tables or RPCs, verify the exact live schema first. For RPCs, run `pg_get_function_arguments` (or check pg_proc) to confirm parameter names — do not infer from earlier context or related functions.
 
-Why: This project has had repeated schema mismatches in abandoned cart and recovery flows.
+Why: This project has had 3+ schema mismatches (abandoned cart, recovery, reviews). Top source of bugs.

@@ -47,8 +47,8 @@ Deno.serve(async (req) => {
     const { data, error } = await admin.rpc("submit_review_by_token", {
       _token: token,
       _rating: rating,
-      _review_text: reviewText || null,
-      _reviewer_name: reviewerName || null,
+      _comment: reviewText || null,
+      _author: reviewerName || null,
     });
     if (error) return json({ error: error.message }, 400);
     return json({ ok: true, review_id: data }, 200);
