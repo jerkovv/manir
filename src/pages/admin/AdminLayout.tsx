@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Navigate, Link, useLocation, Outlet } from "react-router-dom";
 import { useAuth, useHasPermission } from "@/hooks/useAuth";
-import { LayoutDashboard, Package, ShoppingBag, Users, FileText, Star, Layers, FilePlus, Tag, LogOut, Menu, X, Mail, UserCog } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingBag, Users, FileText, Star, Layers, FilePlus, Tag, LogOut, Menu, X, Mail, UserCog, MailWarning } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 type Perm = "manage_users" | "manage_settings" | "manage_products" | "manage_orders" | "view_only";
@@ -32,6 +32,7 @@ const navGroups: NavGroup[] = [
     label: "Podešavanja",
     items: [
       { to: "/admin/settings/email", label: "Email podešavanja", icon: Mail, perm: "manage_settings" },
+      { to: "/admin/settings/recovery", label: "Recovery email-ovi", icon: MailWarning, perm: "manage_settings" },
       { to: "/admin/settings/users", label: "Korisnici", icon: UserCog, perm: "manage_users" },
     ],
   },
