@@ -112,7 +112,7 @@ const AdminProfile = () => {
         </div>
         <div>
           <div className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground mb-1">Poslednji login</div>
-          <div>{appUser.last_login_at ? new Date(appUser.last_login_at).toLocaleString("sr-RS") : "-"}</div>
+          <div>{appUser.last_login_at ? new Date(appUser.last_login_at).toLocaleString("sr-Latn-RS") : "-"}</div>
         </div>
       </div>
     </div>

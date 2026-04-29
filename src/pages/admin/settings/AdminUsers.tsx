@@ -641,7 +641,7 @@ const ActivityTab = () => {
           <tbody>
             {logs.map((l) => (
               <tr key={l.id} className="border-t border-border">
-                <td className="p-4 text-muted-foreground whitespace-nowrap">{new Date(l.created_at).toLocaleString("sr-RS")}</td>
+                <td className="p-4 text-muted-foreground whitespace-nowrap">{new Date(l.created_at).toLocaleString("sr-Latn-RS")}</td>
                 <td className="p-4">{ACTION_LABEL[l.action] || l.action}</td>
                 <td className="p-4 text-muted-foreground">{l.actor_email || "-"}</td>
                 <td className="p-4 text-muted-foreground">{l.target_email || "-"}</td>

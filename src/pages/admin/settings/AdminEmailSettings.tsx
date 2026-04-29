@@ -482,7 +482,7 @@ const AdminEmailSettings = () => {
                         className={`border-t border-border ${l.status === "failed" ? "cursor-pointer hover:bg-red-50" : ""}`}
                         onClick={() => l.status === "failed" && setErrorRow(l)}
                       >
-                        <td className="p-3 whitespace-nowrap">{new Date(l.sent_at).toLocaleString("sr-RS")}</td>
+                        <td className="p-3 whitespace-nowrap">{new Date(l.sent_at).toLocaleString("sr-Latn-RS")}</td>
                         <td className="p-3">{l.type === "customer" ? "Kupac" : l.type === "admin" ? "Admin" : "Test"}</td>
                         <td className="p-3">{l.recipient}</td>
                         <td className="p-3 text-xs text-muted-foreground">{l.order_id ? l.order_id.slice(0, 8) : "-"}</td>
@@ -607,7 +607,7 @@ const AdminEmailSettings = () => {
           </DialogHeader>
           <div className="text-sm space-y-2">
             <div><span className="text-muted-foreground">Primalac:</span> {errorRow?.recipient}</div>
-            <div><span className="text-muted-foreground">Vreme:</span> {errorRow && new Date(errorRow.sent_at).toLocaleString("sr-RS")}</div>
+            <div><span className="text-muted-foreground">Vreme:</span> {errorRow && new Date(errorRow.sent_at).toLocaleString("sr-Latn-RS")}</div>
             <div className="bg-red-50 border border-red-200 rounded p-3 font-mono text-xs whitespace-pre-wrap break-all">
               {errorRow?.error_message || "(prazno)"}
             </div>
