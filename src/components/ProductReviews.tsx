@@ -1,22 +1,13 @@
 import { useEffect, useState } from "react";
 import { fetchProductReviews, type ReviewItem } from "@/lib/products";
 import StarRating from "@/components/StarRating";
+import { formatDate } from "@/lib/format";
 
 interface ProductReviewsProps {
   productId: string;
   avgRating: number | null;
   reviewCount: number;
 }
-
-const formatDate = (iso: string) => {
-  try {
-    return new Date(iso).toLocaleDateString("sr-RS", {
-      day: "numeric", month: "long", year: "numeric",
-    });
-  } catch {
-    return iso;
-  }
-};
 
 const ProductReviews = ({ productId, avgRating, reviewCount }: ProductReviewsProps) => {
   const [reviews, setReviews] = useState<ReviewItem[] | null>(null);
