@@ -36,8 +36,8 @@ type AbandonedCart = {
   cart_total: number | null;
   created_at: string;
   updated_at: string | null;
-  email_1_sent_at: string | null;
-  email_2_sent_at: string | null;
+  email1_sent_at: string | null;
+  email2_sent_at: string | null;
   converted_at: string | null;
   unsubscribed_at: string | null;
 };
@@ -104,8 +104,8 @@ function lifecycleStage(c: AbandonedCart): LifecycleStage {
   if (c.status === "converted") return "converted";
   if (c.status === "unsubscribed") return "unsubscribed";
   if (c.status === "abandoned") return "abandoned";
-  if (c.email_2_sent_at) return "email_2_sent";
-  if (c.email_1_sent_at) return "email_1_sent";
+  if (c.email2_sent_at) return "email_2_sent";
+  if (c.email1_sent_at) return "email_1_sent";
   return "awaiting_email_1";
 }
 
@@ -146,7 +146,7 @@ const AdminAbandonedCarts = () => {
     const [{ data: c, error: ec }, { data: s }] = await Promise.all([
       supabase
         .from("abandoned_carts")
-        .select("id, email, customer_name, status, source, cart_data, cart_total, created_at, updated_at, email_1_sent_at, email_2_sent_at, converted_at, unsubscribed_at")
+        .select("id, email, customer_name, status, source, cart_data, cart_total, created_at, updated_at, email1_sent_at, email2_sent_at, converted_at, unsubscribed_at")
         .order("created_at", { ascending: false }),
       supabase.from("abandoned_cart_stats").select("*").maybeSingle(),
     ]);
@@ -459,8 +459,8 @@ const AdminAbandonedCarts = () => {
                       {/* Meta dates */}
                       <div className="font-body text-xs text-muted-foreground mb-3 flex flex-wrap gap-x-3 gap-y-1">
                         <span>Kreirano: {formatDate(c.created_at)}</span>
-                        {c.email_1_sent_at && <span>· Email 1: {formatDate(c.email_1_sent_at)}</span>}
-                        {c.email_2_sent_at && <span>· Email 2: {formatDate(c.email_2_sent_at)}</span>}
+                        {c.email1_sent_at && <span>· Email 1: {formatDate(c.email1_sent_at)}</span>}
+                        {c.email2_sent_at && <span>· Email 2: {formatDate(c.email2_sent_at)}</span>}
                         {c.converted_at && <span>· Konvertovano: {formatDate(c.converted_at)}</span>}
                         {c.unsubscribed_at && <span>· Odjavljen: {formatDate(c.unsubscribed_at)}</span>}
                       </div>
