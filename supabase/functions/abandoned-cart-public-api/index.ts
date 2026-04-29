@@ -45,6 +45,37 @@ Deno.serve(async (req) => {
         .eq("recovery_token", token);
       return json({ ok: true }, 200);
     }
+    if (action === "recover") {
+      const { data: cart, error } = await admin
+        .from("abandoned_carts")
+        .select("email, customer_name, cart_data, cart_total, status, unsubscribed_at, converted_at")
+        .eq("recovery_token", token)
+        .maybeSingle();
+      if (error) return json({ ok: false, status: "error", message: error.message }, 200);
+      if (!cart) return json({ ok: false, status: "invalid_token" }, 200);
+      if (cart.unsubscribed_at || cart.status === "unsubscribed") {
+        return json({ ok: false, status: "unsubscribed" }, 200);
+      }
+      if (cart.status === "converted" || cart.converted_at) {
+        return json({ ok: false, status: "converted" }, 200);
+      }
+      const items = Array.isArray(cart.cart_data) ? cart.cart_data : [];
+      if (items.length === 0) {
+        return json({ ok: false, status: "empty" }, 200);
+      }
+      // Markiraj da je link iskorišćen za otvaranje (ali ne kao converted - tek kad naruči)
+      await admin.from("abandoned_carts")
+        .update({ recovered_at: new Date().toISOString() })
+        .eq("recovery_token", token);
+      return json({
+        ok: true,
+        status: "recovered",
+        email: cart.email,
+        customer_name: cart.customer_name,
+        items,
+        total: Number(cart.cart_total) || 0,
+      }, 200);
+    }
     return json({ error: "Unknown action" }, 400);
   }
 
