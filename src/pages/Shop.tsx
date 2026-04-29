@@ -66,6 +66,8 @@ const Shop = () => {
                   image={productImage(p)}
                   featured={p.featured}
                   size={p.size || undefined}
+                  avgRating={p.avg_rating ?? null}
+                  reviewCount={p.review_count ?? 0}
                 />
               ))}
             </div>
