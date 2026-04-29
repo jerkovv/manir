@@ -102,17 +102,36 @@ export async function sendSmtpEmail(settings: SmtpSettings, message: SmtpMessage
 
   try {
     if (message.htmlOnly) {
-      // HTML-only put: bez `content` polja → denomailer šalje čist
-      // text/html (ne multipart/alternative). Eliminise duplikat-render
-      // i `=20` artefakte u Gmail web klijentu.
+      // HTML-only put + 8bit transfer encoding.
+      //
+      // Zašto mimeContent umesto html polja:
+      //   denomailer 1.6.0 hardcoded provlači `html` kroz quotedPrintableEncode
+      //   i postavlja `Content-Transfer-Encoding: quoted-printable`. To u
+      //   Apple Mail (iOS i macOS) ostavlja vidljive `=20` artefakte između
+      //   HTML tagova (poznat bug u Apple Mail QP renderer-u sa whitespace-om
+      //   na kraju linije pre CRLF).
+      //
+      // Rešenje: prosledimo HTML kao mimeContent sa transferEncoding "8bit".
+      // denomailer tada šalje raw UTF-8 byte-ove direktno (bez QP enkodovanja).
+      // Svi moderni SMTP serveri (uključujući Loopia) podržavaju 8BITMIME
+      // ekstenziju, pa se ovo prenosi bez gubitaka.
+      //
+      // Subject: ostaje denomailer-ov default (=?utf-8?Q?...?=, RFC 2047
+      // Q-encoding). Validan i renderuje se ispravno u svim klijentima.
       await client.send({
         from: message.from,
         to: message.to,
         replyTo: message.replyTo,
         subject: safeSubject,
-        html: safeHtml,
+        mimeContent: [
+          {
+            mimeType: 'text/html; charset="utf-8"',
+            content: safeHtml,
+            transferEncoding: "8bit",
+          },
+        ],
       });
-      console.log("[smtp] sent OK (html-only) to", message.to);
+      console.log("[smtp] sent OK (html-only, 8bit) to", message.to);
     } else {
       // Postojeće ponašanje — multipart/alternative sa tekstom i HTML-om.
       // Koristi se za order email-ove i sve što već radi stabilno.
