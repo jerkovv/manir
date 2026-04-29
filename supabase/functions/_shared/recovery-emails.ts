@@ -13,6 +13,14 @@ const SERIF = "'Cormorant Garamond', Georgia, 'Times New Roman', serif";
 const SANS = "'Helvetica Neue', Helvetica, Arial, sans-serif";
 const MONO = "'Courier New', Courier, monospace";
 
+// Responsive overrides za uske viewport-e (Apple Mail iOS, Gmail mobile).
+// Bez ovoga, 2-kolone <table> layout se prelama karakter-po-karakter
+// na ekranima <480px (CTA dugme se cepa vertikalno, naziv proizvoda u 3+ reda).
+// Klase: .product-card / .product-image-cell / .product-text-cell / .product-name / .cta-button.
+// Mora ostati u jednom redu (bez whitespace-a između selektora) jer .replace(/>\s+</g,"><")
+// ne dira <style> sadržaj, ali držimo kratko radi quoted-printable bezbednosti.
+const RESPONSIVE_STYLE = `@media only screen and (max-width:480px){.product-card,.product-card td{display:block !important;width:100% !important;box-sizing:border-box !important;padding:0 !important;}.product-image-cell{text-align:center !important;padding:20px 0 16px !important;}.product-text-cell{text-align:center !important;padding:0 24px 20px !important;}.cta-button{display:inline-block !important;white-space:nowrap !important;width:auto !important;letter-spacing:0.15em !important;}.product-name{font-size:18px !important;line-height:1.4 !important;}}`;
+
 function escapeHtml(s: string): string {
   return String(s ?? "")
     .replace(/&/g, "&amp;").replace(/</g, "&lt;")
