@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import StarRating from "@/components/StarRating";
 
 interface ProductCardProps {
   id: string;
@@ -10,9 +11,12 @@ interface ProductCardProps {
   image: string;
   featured?: boolean;
   size?: string;
+  avgRating?: number | null;
+  reviewCount?: number;
 }
 
-const ProductCard = ({ id, name, price, category, image, featured, size }: ProductCardProps) => {
+const ProductCard = ({ id, name, price, category, image, featured, size, avgRating, reviewCount }: ProductCardProps) => {
+  const hasReviews = !!reviewCount && reviewCount > 0 && avgRating != null;
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -42,6 +46,14 @@ const ProductCard = ({ id, name, price, category, image, featured, size }: Produ
         </div>
         <div className="mt-4 space-y-1.5">
           <p className="font-body text-[10px] tracking-[0.2em] uppercase text-muted-foreground">{category}</p>
+          {hasReviews && (
+            <div className="flex items-center gap-1.5">
+              <StarRating value={avgRating!} size={12} />
+              <span className="font-body text-[11px] text-muted-foreground">
+                {avgRating!.toFixed(1)} <span className="opacity-60">({reviewCount})</span>
+              </span>
+            </div>
+          )}
           <h3 className="font-heading text-lg text-foreground leading-tight">{name}{size && ` (${size})`}</h3>
           <p className="font-body text-sm font-medium text-warm-brown">{price.toLocaleString("sr-RS")} RSD</p>
         </div>
