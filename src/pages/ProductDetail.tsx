@@ -183,6 +183,8 @@ const ProductDetail = () => {
                   </div>
                 )}
 
+                <ProductSocialProof productId={product.id} />
+
                 <div className="flex items-center gap-4 mb-4">
                   <div className="flex items-center border border-border/60">
                     <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="w-11 h-12 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">−</button>
