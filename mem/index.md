@@ -12,4 +12,5 @@ Email subject lines MUST NOT contain `?` if they include non-ASCII chars (č, š
 - [Schema verification](mem://constraint/schema-verification.md) — Always verify schema in information_schema before assuming column names.
 - [SMTP encoding rules](mem://design/email-encoding.md) — Body 8bit (not QP); Subject Q-encoded OK but NEVER contains `?` with non-ASCII.
 - [Recovery emails](mem://design/recovery-emails.md) — Recovery/review email design + flow rules.
+- [Email single-column layout](mem://design/email-html-singlecolumn.md) — denomailer strips <style>/class; templates must use inline single-column always.
 - [Review RPC params](mem://feature/review-rpc-params.md) — Param naming for review RPC calls.
