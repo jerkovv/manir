@@ -25,6 +25,7 @@ Deno.serve(async (req) => {
     const url = new URL(req.url);
     const token = url.searchParams.get("token") || "";
     const action = url.searchParams.get("action") || "unsubscribe";
+    const confirm = url.searchParams.get("confirm") === "true";
     const wantsJson = url.searchParams.get("format") === "json"
       || (req.headers.get("accept") || "").includes("application/json");
     if (!TOKEN_RE.test(token)) {
@@ -32,6 +33,22 @@ Deno.serve(async (req) => {
     }
 
     if (action === "unsubscribe") {
+      // Anti-prefetch zaštita: GET bez confirm=true samo verifikuje token,
+      // NE menja state. Pravi unsubscribe ide preko POST ili GET sa confirm=true.
+      if (!confirm) {
+        const { data: cart } = await admin
+          .from("abandoned_carts")
+          .select("email, unsubscribed_at")
+          .eq("recovery_token", token)
+          .maybeSingle();
+        if (!cart) {
+          return wantsJson ? json({ ok: false, status: "invalid_token" }, 200) : redirectMsg(siteUrl, "invalid_token");
+        }
+        if (cart.unsubscribed_at) {
+          return wantsJson ? json({ ok: true, status: "already_unsubscribed", email: cart.email }, 200) : redirectMsg(siteUrl, "already_unsubscribed");
+        }
+        return wantsJson ? json({ ok: true, status: "pending", email: cart.email }, 200) : redirectMsg(siteUrl, "pending");
+      }
       const { data, error } = await admin.rpc("unsubscribe_abandoned_cart", { _token: token });
       if (error) {
         return wantsJson ? json({ ok: false, status: "error", message: error.message }, 200) : redirectMsg(siteUrl, "error");
@@ -78,6 +95,15 @@ Deno.serve(async (req) => {
   if (req.method === "POST") {
     let body: Record<string, unknown> = {};
     try { body = await req.json(); } catch { return json({ error: "Invalid JSON" }, 400); }
+
+    // Unsubscribe preko POST: { action: "unsubscribe", token }
+    if (body.action === "unsubscribe") {
+      const token = String(body.token || "");
+      if (!TOKEN_RE.test(token)) return json({ ok: false, status: "invalid_token" }, 200);
+      const { data, error } = await admin.rpc("unsubscribe_abandoned_cart", { _token: token });
+      if (error) return json({ ok: false, status: "error", message: error.message }, 200);
+      return json({ ok: !!data, status: data ? "unsubscribed" : "invalid_token" }, 200);
+    }
 
     const email = String(body.email || "").toLowerCase().trim();
     if (!EMAIL_RE.test(email)) return json({ error: "Invalid email" }, 400);
