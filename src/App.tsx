@@ -20,6 +20,7 @@ import Educations from "./pages/Educations";
 import EducationDetail from "./pages/EducationDetail";
 import Checkout from "./pages/Checkout";
 import PartnerSalons from "./pages/PartnerSalons";
+import Unsubscribe from "./pages/Unsubscribe";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminSetPassword from "./pages/admin/AdminSetPassword";
@@ -34,6 +35,7 @@ import AdminPages from "./pages/admin/AdminPages";
 import AdminDiscounts from "./pages/admin/AdminDiscounts";
 import AdminLanding from "./pages/admin/AdminLanding";
 import AdminEmailSettings from "./pages/admin/settings/AdminEmailSettings";
+import AdminRecoverySettings from "./pages/admin/settings/AdminRecoverySettings";
 import AdminUsers from "./pages/admin/settings/AdminUsers";
 import { useEffect } from "react";
 
@@ -111,6 +113,7 @@ const App = () => (
               <Route path="/edukacije/:id" element={<EducationDetail />} />
               <Route path="/partner-saloni" element={<PartnerSalons />} />
               <Route path="/naruci" element={<Checkout />} />
+              <Route path="/odjava/:token" element={<Unsubscribe />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin/set-password" element={<AdminSetPassword />} />
               <Route path="/admin" element={<AdminLayout />}>
@@ -124,6 +127,7 @@ const App = () => (
                 <Route path="discounts" element={<AdminDiscounts />} />
                 <Route path="landing" element={<AdminLanding />} />
                 <Route path="settings/email" element={<AdminEmailSettings />} />
+                <Route path="settings/recovery" element={<AdminRecoverySettings />} />
               <Route path="settings/users" element={<AdminUsers />} />
               </Route>
               <Route path="*" element={<NotFound />} />

@@ -7,6 +7,7 @@ import SectionReveal from "@/components/SectionReveal";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { displayOrderNumber } from "@/lib/orderNumber";
+import { captureAbandonedCart, markCartConverted } from "@/lib/abandonedCart";
 import {
   fetchQuantityDiscount, computeQuantityDiscount, validateCoupon, computeCouponDiscount,
   type AppliedDiscount, type QuantityDiscount,
@@ -70,6 +71,20 @@ const Checkout = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  // Capture korpe ako kupac napusti checkout posle što je uneo email.
+  // Ne pravi buku: tiha greška, jednom po unique (email + items signature) — backend RPC je upsert.
+  const handleEmailBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const email = e.target.value.trim();
+    if (!email || items.length === 0) return;
+    void captureAbandonedCart({
+      email,
+      items,
+      total: grandTotal,
+      customerName: `${form.firstName} ${form.lastName}`.trim() || null,
+      source: "checkout",
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -147,6 +162,9 @@ const Checkout = () => {
       setOrderNumber(Number(publicOrderNumber));
       setIsSubmitted(true);
       clearCart();
+
+      // Markiraj korpu kao "converted" da worker prestane da šalje recovery mejlove.
+      void markCartConverted(supabase, email);
 
       // Pošalji email obaveštenja (ne blokira checkout ako padne)
       try {
@@ -286,7 +304,7 @@ const Checkout = () => {
                       </div>
                       <div>
                         <label className="font-body text-[10px] tracking-[0.15em] uppercase text-muted-foreground block mb-2">Email *</label>
-                        <input name="email" type="email" value={form.email} onChange={handleChange} required
+                        <input name="email" type="email" value={form.email} onChange={handleChange} onBlur={handleEmailBlur} required
                           className="w-full bg-transparent border border-border/60 px-4 py-3.5 font-body text-sm text-foreground placeholder:text-muted-foreground/40 focus:border-warm-brown focus:outline-none transition-colors"
                           placeholder="email@primer.com" />
                       </div>
