@@ -1,4 +1,5 @@
 // Worker: šalje 2 talasa abandoned cart recovery email-a (luxury podsetnik, bez popusta).
+// deploy-touch: 2026-04-29
 //
 // Stage 1 (email1_sent_at IS NULL, updated_at <= now - email1_delay_minutes):
 //   - "Vaša korpa Vas čeka" - blagi podsetnik
