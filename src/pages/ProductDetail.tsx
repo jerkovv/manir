@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import SectionReveal from "@/components/SectionReveal";
 import ProductCard from "@/components/ProductCard";
 import ProductReviews from "@/components/ProductReviews";
+import ProductSocialProof from "@/components/ProductSocialProof";
 
 interface AccordionItemProps {
   title: string;
@@ -181,6 +182,8 @@ const ProductDetail = () => {
                     </div>
                   </div>
                 )}
+
+                <ProductSocialProof productId={product.id} />
 
                 <div className="flex items-center gap-4 mb-4">
                   <div className="flex items-center border border-border/60">
