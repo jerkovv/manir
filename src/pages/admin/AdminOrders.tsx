@@ -3,8 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { downloadCSV } from "@/lib/csv";
 import { displayOrderNumber } from "@/lib/orderNumber";
 import { StatusBadge } from "./AdminOverview";
-import { Download, X, Trash2 } from "lucide-react";
+import { Download, X, Trash2, Mail, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  fetchResendStatuses,
+  resendActionLabel,
+  type ResendStatus,
+} from "@/lib/orders";
 
 type Order = {
   id: string;
@@ -23,6 +28,9 @@ type Order = {
   status: string;
   notes: string | null;
   created_at: string;
+  review_email_sent?: boolean | null;
+  review_email_sent_at?: string | null;
+  review_email_sent_count?: number | null;
 };
 
 type OrderItem = {
@@ -43,6 +51,10 @@ const AdminOrders = () => {
   const [items, setItems] = useState<OrderItem[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkDeleting, setBulkDeleting] = useState(false);
+  const [reviewOnlyMissing, setReviewOnlyMissing] = useState(false);
+  const [resendStatuses, setResendStatuses] = useState<Record<string, ResendStatus>>({});
+  const [resendingIds, setResendingIds] = useState<Set<string>>(new Set());
+  const [bulkResending, setBulkResending] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -52,6 +64,99 @@ const AdminOrders = () => {
   };
 
   useEffect(() => { load(); }, []);
+
+  // Lazy batch fetch resend statusa za vidljive shipped/delivered porudžbine
+  useEffect(() => {
+    const eligible = orders
+      .filter((o) => o.status === "shipped" || o.status === "delivered")
+      .map((o) => o.id)
+      .filter((id) => !(id in resendStatuses));
+    if (eligible.length === 0) return;
+    let cancelled = false;
+    fetchResendStatuses(eligible).then((map) => {
+      if (cancelled) return;
+      setResendStatuses((prev) => ({ ...prev, ...map }));
+    });
+    return () => { cancelled = true; };
+  }, [orders]);
+
+  const refreshResendStatus = async (orderId: string) => {
+    const map = await fetchResendStatuses([orderId]);
+    setResendStatuses((prev) => ({ ...prev, ...map }));
+  };
+
+  const sendReviewEmail = async (order: Order, e?: React.MouseEvent): Promise<boolean> => {
+    e?.stopPropagation();
+    setResendingIds((prev) => new Set(prev).add(order.id));
+    try {
+      const { data, error } = await supabase.functions.invoke("admin-resend-review-email", {
+        body: { order_id: order.id },
+      });
+      if (error) {
+        const msg = (data as { error?: string })?.error || error.message;
+        toast.error(`Greška: ${msg}`);
+        return false;
+      }
+      const r = data as {
+        action: string;
+        email_sent_to: string;
+        tokens_active_count: number;
+        tokens_used_count: number;
+      };
+      toast.success(
+        `Email poslat (${r.tokens_active_count} ${r.tokens_active_count === 1 ? "link" : "linka"}` +
+          (r.tokens_used_count > 0 ? `, ${r.tokens_used_count} već iskorišćen` : "") +
+          `)`,
+      );
+      // Update lokalno
+      setOrders((cur) =>
+        cur.map((o) =>
+          o.id === order.id
+            ? {
+                ...o,
+                review_email_sent: true,
+                review_email_sent_at: new Date().toISOString(),
+                review_email_sent_count: (o.review_email_sent_count ?? 0) + 1,
+              }
+            : o,
+        ),
+      );
+      await refreshResendStatus(order.id);
+      return true;
+    } catch (err: any) {
+      toast.error("Mrežna greška: " + (err?.message || "nepoznato"));
+      return false;
+    } finally {
+      setResendingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(order.id);
+        return next;
+      });
+    }
+  };
+
+  const bulkSendReviewEmails = async () => {
+    const eligible = filtered.filter(
+      (o) =>
+        selectedIds.has(o.id) &&
+        (o.status === "shipped" || o.status === "delivered") &&
+        resendStatuses[o.id]?.suggested_action !== "skip_all_used",
+    );
+    if (eligible.length === 0) {
+      toast.error("Nema porudžbina za slanje (filter: shipped/delivered, ne sve poslate).");
+      return;
+    }
+    if (!confirm(`Poslati review email za ${eligible.length} ${eligible.length === 1 ? "porudžbinu" : "porudžbina"}?`)) return;
+    setBulkResending(true);
+    let ok = 0;
+    let fail = 0;
+    for (const o of eligible) {
+      const success = await sendReviewEmail(o);
+      if (success) ok++; else fail++;
+    }
+    setBulkResending(false);
+    toast.success(`Poslato: ${ok}${fail > 0 ? `, neuspeh: ${fail}` : ""}`);
+  };
 
   const openOrder = async (o: Order) => {
     setSelected(o);
@@ -114,6 +219,14 @@ const AdminOrders = () => {
   };
 
   const filtered = filter === "all" ? orders : orders.filter((o) => o.status === filter);
+  const finalFiltered = reviewOnlyMissing
+    ? filtered.filter(
+        (o) =>
+          (o.status === "shipped" || o.status === "delivered") &&
+          !o.review_email_sent &&
+          resendStatuses[o.id]?.suggested_action !== "skip_all_used",
+      )
+    : filtered;
 
   const toggleOne = (id: string, e?: React.MouseEvent) => {
     e?.stopPropagation();
@@ -125,21 +238,21 @@ const AdminOrders = () => {
     });
   };
 
-  const allVisibleSelected = filtered.length > 0 && filtered.every((o) => selectedIds.has(o.id));
+  const allVisibleSelected = finalFiltered.length > 0 && finalFiltered.every((o) => selectedIds.has(o.id));
   const toggleAllVisible = () => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
       if (allVisibleSelected) {
-        filtered.forEach((o) => next.delete(o.id));
+        finalFiltered.forEach((o) => next.delete(o.id));
       } else {
-        filtered.forEach((o) => next.add(o.id));
+        finalFiltered.forEach((o) => next.add(o.id));
       }
       return next;
     });
   };
 
   const bulkDelete = async () => {
-    const ids = filtered.filter((o) => selectedIds.has(o.id)).map((o) => o.id);
+    const ids = finalFiltered.filter((o) => selectedIds.has(o.id)).map((o) => o.id);
     if (ids.length === 0) return;
     if (!confirm(`Obrisati ${ids.length} ${ids.length === 1 ? "porudžbinu" : "porudžbina"}? Ova akcija se ne može poništiti.`)) return;
     setBulkDeleting(true);
@@ -175,10 +288,19 @@ const AdminOrders = () => {
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div>
           <h1 className="font-heading text-4xl text-foreground mb-1">Porudžbine</h1>
-          <p className="font-body text-sm text-muted-foreground">{filtered.length} porudžbina</p>
+          <p className="font-body text-sm text-muted-foreground">{finalFiltered.length} porudžbina</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           {selectedIds.size > 0 && (
+            <>
+            <button
+              onClick={bulkSendReviewEmails}
+              disabled={bulkResending}
+              className="flex items-center gap-2 bg-foreground text-background px-4 py-2.5 font-body text-xs tracking-[0.15em] uppercase disabled:opacity-50"
+            >
+              {bulkResending ? <Loader2 size={14} className="animate-spin" /> : <Mail size={14} />}
+              {bulkResending ? "Slanje..." : `Pošalji review (${selectedIds.size})`}
+            </button>
             <button
               onClick={bulkDelete}
               disabled={bulkDeleting}
@@ -186,6 +308,7 @@ const AdminOrders = () => {
             >
               <Trash2 size={14} /> {bulkDeleting ? "Brisanje..." : `Obriši (${selectedIds.size})`}
             </button>
+            </>
           )}
           <button onClick={exportCSV} className="flex items-center gap-2 bg-foreground text-background px-4 py-2.5 font-body text-xs tracking-[0.15em] uppercase">
             <Download size={14} /> Export CSV
@@ -203,12 +326,19 @@ const AdminOrders = () => {
             {s === "all" ? "Sve" : s === "pending" ? "Na čekanju" : s === "shipped" ? "Poslato" : s === "delivered" ? "Isporučeno" : "Otkazano"}
           </button>
         ))}
+        <button
+          onClick={() => setReviewOnlyMissing((v) => !v)}
+          className={`px-3 py-1.5 font-body text-xs tracking-wider uppercase border ${reviewOnlyMissing ? "bg-foreground text-background border-foreground" : "border-border text-muted-foreground"}`}
+          title="Prikaži samo shipped/delivered porudžbine bez poslatog review email-a"
+        >
+          Bez review email-a
+        </button>
       </div>
 
       <div className="bg-white border border-border overflow-x-auto">
         {loading ? (
           <div className="p-8 text-center font-body text-sm text-muted-foreground">Učitavanje...</div>
-        ) : filtered.length === 0 ? (
+        ) : finalFiltered.length === 0 ? (
           <div className="p-8 text-center font-body text-sm text-muted-foreground">Nema porudžbina.</div>
         ) : (
           <table className="w-full font-body text-sm">
@@ -232,11 +362,17 @@ const AdminOrders = () => {
                 <th className="text-left p-4">Kupon</th>
                 <th className="text-left p-4">Iznos</th>
                 <th className="text-left p-4">Status</th>
+                <th className="text-left p-4">Review</th>
                 <th className="text-right p-4"></th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map((o) => (
+              {finalFiltered.map((o) => {
+                const rs = resendStatuses[o.id];
+                const eligible = o.status === "shipped" || o.status === "delivered";
+                const allUsed = rs?.suggested_action === "skip_all_used";
+                const isResending = resendingIds.has(o.id);
+                return (
                 <tr key={o.id} onClick={() => openOrder(o)} className={`border-t border-border cursor-pointer hover:bg-[#FAFAF8] ${selectedIds.has(o.id) ? "bg-[#FAFAF8]" : ""}`}>
                   <td className="p-4 w-10" onClick={(e) => e.stopPropagation()}>
                     <input
@@ -261,6 +397,25 @@ const AdminOrders = () => {
                   </td>
                   <td className="p-4">{Number(o.total).toLocaleString("sr-Latn-RS")} RSD</td>
                   <td className="p-4"><StatusBadge status={o.status} /></td>
+                  <td className="p-4" onClick={(e) => e.stopPropagation()}>
+                    {!eligible ? (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    ) : allUsed ? (
+                      <span className="text-xs text-muted-foreground" title="Sve recenzije poslate">Sve poslate</span>
+                    ) : (
+                      <button
+                        onClick={(e) => sendReviewEmail(o, e)}
+                        disabled={isResending || !rs}
+                        className="flex items-center gap-1.5 text-xs uppercase tracking-wider border border-border px-2.5 py-1.5 hover:bg-foreground hover:text-background disabled:opacity-50 disabled:cursor-not-allowed"
+                        title={rs ? resendActionLabel(rs.suggested_action) : "Učitavanje..."}
+                      >
+                        {isResending ? <Loader2 size={12} className="animate-spin" /> : <Mail size={12} />}
+                        {o.review_email_sent_count && o.review_email_sent_count > 0
+                          ? `Pošalji ponovo (${o.review_email_sent_count}×)`
+                          : "Pošalji"}
+                      </button>
+                    )}
+                  </td>
                   <td className="p-4 text-right">
                     <button
                       onClick={(e) => deleteOrder(o, e)}
@@ -271,7 +426,8 @@ const AdminOrders = () => {
                     </button>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         )}
