@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Check, X, Trash2, Star, RotateCcw, MessageSquare, Search, Filter as FilterIcon, ChevronDown } from "lucide-react";
+import { Check, X, Trash2, Star, RotateCcw, MessageSquare, Search } from "lucide-react";
 import { toast } from "sonner";
 import { formatDate } from "@/lib/format";
 import {
