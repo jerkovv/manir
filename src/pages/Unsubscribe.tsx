@@ -40,7 +40,7 @@ const Unsubscribe = () => {
         // korisnika preflight skenom linkova.
         const res = await fetch(
           `${SUPABASE_URL}/functions/v1/abandoned-cart-public-api?token=${encodeURIComponent(token)}&action=unsubscribe&format=json`,
-          { method: "GET", headers: { Accept: "application/json", "Cache-Control": "no-store" } },
+          { method: "GET", headers: { Accept: "application/json" }, cache: "no-store" },
         );
         const data = await res.json().catch(() => ({}));
         if (cancelled) return;
