@@ -304,7 +304,7 @@ const Checkout = () => {
                       </div>
                       <div>
                         <label className="font-body text-[10px] tracking-[0.15em] uppercase text-muted-foreground block mb-2">Email *</label>
-                        <input name="email" type="email" value={form.email} onChange={handleChange} required
+                        <input name="email" type="email" value={form.email} onChange={handleChange} onBlur={handleEmailBlur} required
                           className="w-full bg-transparent border border-border/60 px-4 py-3.5 font-body text-sm text-foreground placeholder:text-muted-foreground/40 focus:border-warm-brown focus:outline-none transition-colors"
                           placeholder="email@primer.com" />
                       </div>
