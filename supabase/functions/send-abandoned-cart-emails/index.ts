@@ -100,7 +100,7 @@ Deno.serve(async (req) => {
 
 async function sendStage(
   admin: ReturnType<typeof createClient>,
-  sender: { send: (o: { to: string; subject: string; html: string }) => Promise<void> },
+  sender: { send: (o: { to: string; subject: string; html: string; htmlOnly?: boolean }) => Promise<void> },
   cart: Record<string, unknown>,
   stage: 1 | 2,
   opts: { siteUrl: string },
@@ -134,7 +134,10 @@ async function sendStage(
       ? "Vaša korpa Vas čeka"
       : "Vaša korpa je još uvek tu";
 
-    await sender.send({ to: String(cart.email), subject, html });
+    // htmlOnly: true → šalje čist text/html (ne multipart/alternative).
+    // Bez ovoga, Gmail web prikazuje email duplo i ostavlja vidljive
+    // `=20` quoted-printable artefakte iz htmlToText() plain-text dela.
+    await sender.send({ to: String(cart.email), subject, html, htmlOnly: true });
 
     const update: Record<string, unknown> = stage === 1
       ? { email1_sent_at: new Date().toISOString() }
