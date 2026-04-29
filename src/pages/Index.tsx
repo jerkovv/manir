@@ -260,7 +260,7 @@ const Index = () => {
           </SectionReveal>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {featuredProducts.map((p) => (
-              <ProductCard key={p.id} id={p.slug} name={p.name} price={Number(p.price)} category={p.category || ""} image={productImage(p)} featured={p.featured} size={p.size || undefined} />
+              <ProductCard key={p.id} id={p.slug} name={p.name} price={Number(p.price)} category={p.category || ""} image={productImage(p)} featured={p.featured} size={p.size || undefined} avgRating={p.avg_rating ?? null} reviewCount={p.review_count ?? 0} />
             ))}
           </div>
         </div>
