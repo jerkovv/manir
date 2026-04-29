@@ -41,3 +41,6 @@ verify_jwt = false
 
 [functions.abandoned-cart-public-api]
 verify_jwt = false
+
+[functions.admin-resend-review-email]
+verify_jwt = true
