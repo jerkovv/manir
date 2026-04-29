@@ -59,7 +59,7 @@ export function reviewReminderHtml(opts: {
       </tr>
     </table>`).join("");
 
-  return `<!DOCTYPE html>
+  const html = `<!DOCTYPE html>
 <html lang="sr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${BRAND_NAME}</title></head>
 <body style="margin:0;padding:0;background:${BRAND_CREAM};font-family:${SANS};color:${BRAND_INK};">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:${BRAND_CREAM};"><tr><td align="center" style="padding:32px 12px;">
@@ -95,6 +95,9 @@ export function reviewReminderHtml(opts: {
     </table>
   </td></tr></table>
 </body></html>`;
+  // Strip whitespace between tags — sprečava `=20` quoted-printable
+  // artefakte u Gmail web klijentu. MORA biti na svim recovery email-ovima.
+  return html.replace(/>\s+</g, "><");
 }
 
 export interface AbandonedCartItem {

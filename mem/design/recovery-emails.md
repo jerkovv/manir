@@ -10,3 +10,5 @@ Stage 1 (30 min): eyebrow "KORPA VAS ČEKA", headline "Vaša korpa Vas čeka." (
 Stage 2 (72h): eyebrow "POSLEDNJE PODSEĆANJE", headline "Pre nego što se izgubi.", CTA "Pogledajte korpu", care quote ABOVE items: „Pažnja je oblik luksuza. Tvoja korpa je još uvek tu." Subject: "Vaša korpa je još uvek tu". Preview: "Pažnja je oblik luksuza. Korpa je još uvek tu."
 
 Greeting: "Zdravo, {firstName}" or "Zdravo" (fallback). No personalization in subject. Footer 0202skin.com clickable. Unsubscribe link in footer. NO discount codes, NO free shipping, NO coupons, NO urgency.
+
+CRITICAL: Every HTML template in `supabase/functions/_shared/recovery-emails.ts` (reviewReminderHtml, abandonedCartHtml, and any future ones) MUST end with `.replace(/>\s+</g, "><")`. Without it, Loopia's quoted-printable encoding leaks visible `=20` artifacts between tags in Gmail web. Do not regress.
