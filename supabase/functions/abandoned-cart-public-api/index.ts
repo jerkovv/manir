@@ -63,10 +63,6 @@ Deno.serve(async (req) => {
       if (items.length === 0) {
         return json({ ok: false, status: "empty" }, 200);
       }
-      // Markiraj da je link iskorišćen za otvaranje (ali ne kao converted - tek kad naruči)
-      await admin.from("abandoned_carts")
-        .update({ recovered_at: new Date().toISOString() })
-        .eq("recovery_token", token);
       return json({
         ok: true,
         status: "recovered",
