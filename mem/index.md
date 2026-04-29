@@ -12,3 +12,4 @@ DB columns pairing a word + digit have NO underscore separator (e.g. `email1_sen
 - [Schema verification](mem://constraint/schema-verification.md) — Verify RPC signatures via pg_get_function_arguments before writing data-access code.
 - [Recovery emails](mem://design/recovery-emails.md)
 - [DB schema reference](mem://reference/db-schema.md) — Authoritative column names for abandoned_carts, recovery_settings, orders.
+- [Email encoding](mem://design/email-encoding.md) — htmlOnly grana mora slati body kao 8bit (mimeContent), ne QP, zbog Apple Mail =20 artefakata.
