@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Check, ShoppingBag, Truck, CreditCard, ShieldCheck, Loader2, Tag } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
@@ -14,7 +14,10 @@ import {
 } from "@/lib/discount";
 
 const Checkout = () => {
-  const { items, totalPrice, clearCart } = useCart();
+  const { items, totalPrice, clearCart, addItem } = useCart();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [recovering, setRecovering] = useState(false);
+  const [recoveryBlocked, setRecoveryBlocked] = useState<null | "unsubscribed" | "converted" | "invalid">(null);
   const totalQty = items.reduce((s, i) => s + i.quantity, 0);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -31,6 +34,76 @@ const Checkout = () => {
   const [validatingCoupon, setValidatingCoupon] = useState(false);
 
   useEffect(() => { fetchQuantityDiscount().then(setQdConfig); }, []);
+
+  // Recovery handler: ?recover=<token> dohvata abandoned_cart i puni korpu + email.
+  useEffect(() => {
+    const token = searchParams.get("recover");
+    if (!token) return;
+    if (!/^[a-f0-9]{48}$/i.test(token)) {
+      setRecoveryBlocked("invalid");
+      // Očisti URL
+      const next = new URLSearchParams(searchParams);
+      next.delete("recover");
+      setSearchParams(next, { replace: true });
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      setRecovering(true);
+      try {
+        const SUPABASE_URL = "https://caqjobwfcuwvxojengky.supabase.co";
+        const res = await fetch(
+          `${SUPABASE_URL}/functions/v1/abandoned-cart-public-api?token=${encodeURIComponent(token)}&action=recover`,
+          { method: "GET", headers: { Accept: "application/json" } },
+        );
+        const data = await res.json().catch(() => ({}));
+        if (cancelled) return;
+        if (!data?.ok) {
+          if (data?.status === "unsubscribed") setRecoveryBlocked("unsubscribed");
+          else if (data?.status === "converted") setRecoveryBlocked("converted");
+          else setRecoveryBlocked("invalid");
+          return;
+        }
+        // Napuni korpu (ako je već prazna ili ima drugi sadržaj — radimo merge preko addItem koji sabira količine)
+        const recoveredItems: Array<{ id: string; name: string; price: number; image: string; size?: string | null; quantity: number }> = data.items || [];
+        if (recoveredItems.length === 0) {
+          setRecoveryBlocked("invalid");
+          return;
+        }
+        // Resetuj postojeću korpu da bi recovery bio autoritativan
+        clearCart();
+        for (const it of recoveredItems) {
+          addItem(
+            { id: it.id, name: it.name, price: Number(it.price) || 0, image: it.image, size: it.size || undefined },
+            Math.max(1, Number(it.quantity) || 1),
+          );
+        }
+        // Pre-popuni email (i ime ako stiglo)
+        if (data.email) {
+          setForm(prev => ({
+            ...prev,
+            email: prev.email || String(data.email),
+            firstName: prev.firstName || (data.customer_name ? String(data.customer_name).split(" ")[0] : ""),
+            lastName: prev.lastName || (data.customer_name ? String(data.customer_name).split(" ").slice(1).join(" ") : ""),
+          }));
+        }
+        toast.success("Vaša korpa je vraćena");
+      } catch (err) {
+        console.warn("[recover] failed:", err);
+        if (!cancelled) setRecoveryBlocked("invalid");
+      } finally {
+        if (!cancelled) {
+          setRecovering(false);
+          // Očisti recover token iz URL-a da refresh ne ponavlja akciju
+          const next = new URLSearchParams(searchParams);
+          next.delete("recover");
+          setSearchParams(next, { replace: true });
+        }
+      }
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (isSubmitted) {
@@ -197,6 +270,52 @@ const Checkout = () => {
       setSubmitting(false);
     }
   };
+
+  if (recovering) {
+    return (
+      <main className="pt-24 min-h-screen flex items-center justify-center">
+        <div className="text-center px-6">
+          <Loader2 size={28} className="text-warm-brown animate-spin mx-auto mb-6" />
+          <p className="font-body text-sm text-muted-foreground">Vraćamo vašu korpu…</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (recoveryBlocked && items.length === 0 && !isSubmitted) {
+    const messages: Record<string, { title: string; body: string }> = {
+      unsubscribed: {
+        title: "Link nije više aktivan",
+        body: "Odjavili ste se sa naših podsetnika, pa ovaj link za vraćanje korpe ne radi. Slobodno dodajte proizvode ručno.",
+      },
+      converted: {
+        title: "Ova korpa je već naručena",
+        body: "Porudžbina iz ove korpe je već poslata. Hvala vam!",
+      },
+      invalid: {
+        title: "Link nije valjan",
+        body: "Ovaj link za vraćanje korpe je istekao ili nije pronađen.",
+      },
+    };
+    const m = messages[recoveryBlocked];
+    return (
+      <main className="pt-24 min-h-screen flex items-center justify-center">
+        <div className="text-center px-6 max-w-md">
+          <div className="w-20 h-20 rounded-full bg-warm-cream flex items-center justify-center mx-auto mb-6">
+            <ShoppingBag size={28} className="text-warm-brown/60" />
+          </div>
+          <h1 className="font-heading text-3xl text-foreground mb-3">{m.title}</h1>
+          <p className="font-body text-sm text-muted-foreground leading-relaxed mb-8">{m.body}</p>
+          <Link
+            to="/prodavnica"
+            className="inline-flex items-center gap-2 bg-warm-brown text-primary-foreground px-8 py-4 font-body text-[11px] tracking-[0.2em] uppercase hover:bg-warm-dark transition-colors"
+          >
+            Prodavnica
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
   if (items.length === 0 && !isSubmitted) {
     return (
