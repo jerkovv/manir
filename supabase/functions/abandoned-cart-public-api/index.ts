@@ -25,12 +25,19 @@ Deno.serve(async (req) => {
     const url = new URL(req.url);
     const token = url.searchParams.get("token") || "";
     const action = url.searchParams.get("action") || "unsubscribe";
-    if (!TOKEN_RE.test(token)) return redirectMsg(siteUrl, "invalid_token");
+    const wantsJson = url.searchParams.get("format") === "json"
+      || (req.headers.get("accept") || "").includes("application/json");
+    if (!TOKEN_RE.test(token)) {
+      return wantsJson ? json({ ok: false, status: "invalid_token" }, 200) : redirectMsg(siteUrl, "invalid_token");
+    }
 
     if (action === "unsubscribe") {
       const { data, error } = await admin.rpc("unsubscribe_abandoned_cart", { _token: token });
-      if (error) return redirectMsg(siteUrl, "error");
-      return redirectMsg(siteUrl, data ? "unsubscribed" : "invalid_token");
+      if (error) {
+        return wantsJson ? json({ ok: false, status: "error", message: error.message }, 200) : redirectMsg(siteUrl, "error");
+      }
+      const status = data ? "unsubscribed" : "invalid_token";
+      return wantsJson ? json({ ok: !!data, status }, 200) : redirectMsg(siteUrl, status);
     }
     if (action === "convert") {
       await admin.from("abandoned_carts")
