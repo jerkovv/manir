@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Trash2, Search, MailX, ShoppingCart } from "lucide-react";
+import { Trash2, Search, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import { formatDate } from "@/lib/format";
 import {
@@ -588,8 +588,5 @@ const AdminAbandonedCarts = () => {
     </div>
   );
 };
-
-// MailX icon imported but unused-safe (kept for potential header icon usage).
-void MailX;
 
 export default AdminAbandonedCarts;
