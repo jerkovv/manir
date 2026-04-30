@@ -123,7 +123,7 @@ const ExitIntentPopup = () => {
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) handleDismiss(); }}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md z-[80]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-light tracking-wide">
             Sačuvaj svoju korpu
