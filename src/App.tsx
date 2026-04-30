@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import SocialProofNotification from "@/components/SocialProofNotification";
+import ExitIntentPopup from "@/components/ExitIntentPopup";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
@@ -85,6 +86,7 @@ const ChromeShell = ({ children }: { children: React.ReactNode }) => {
       <Header />
       <CartDrawer />
       <SocialProofNotification />
+      <ExitIntentPopup />
       {children}
       <Footer />
     </CartProvider>
