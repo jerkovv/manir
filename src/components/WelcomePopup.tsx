@@ -10,7 +10,7 @@ import { X } from "lucide-react";
 const SESSION_KEY = "welcome_popup_shown";
 const K1_SLUG = "serum-koncentrat-k1";
 const K1_PATH = `/proizvod/${K1_SLUG}`;
-const ARM_DELAY_MS = 2500;
+const ARM_DELAY_MS = 0;
 
 const formatPrice = (rsd: number) =>
   `${new Intl.NumberFormat("sr-RS").format(rsd)} RSD`;
@@ -28,24 +28,36 @@ const WelcomePopup = () => {
   });
 
   useEffect(() => {
+    console.log("[WelcomePopup] mount, pathname:", pathname, "product:", !!product, "isCartOpen:", isCartOpen);
+
     // Statički guard-ovi po ruti
-    if (pathname.startsWith("/admin")) return;
-    if (pathname.startsWith("/naruci")) return;
-    if (pathname === K1_PATH) return;
+    if (pathname.startsWith("/admin")) { console.log("[WelcomePopup] skip: admin route"); return; }
+    if (pathname.startsWith("/naruci")) { console.log("[WelcomePopup] skip: checkout route"); return; }
+    if (pathname === K1_PATH) { console.log("[WelcomePopup] skip: K1 page"); return; }
 
     // Već prikazano u ovoj sesiji
     try {
-      if (sessionStorage.getItem(SESSION_KEY)) return;
+      if (sessionStorage.getItem(SESSION_KEY)) { console.log("[WelcomePopup] skip: session flag set"); return; }
     } catch { /* ignore */ }
 
     const timer = window.setTimeout(() => {
+      console.log("[WelcomePopup] timer fired, guards:", {
+        pathname,
+        isAdmin: pathname.startsWith("/admin"),
+        isK1: pathname === K1_PATH,
+        isCheckout: pathname.startsWith("/naruci"),
+        hasFlag: sessionStorage.getItem(SESSION_KEY),
+        isCartOpen,
+        hasProduct: !!product,
+      });
       // Re-check u trenutku triggera
-      if (isCartOpen) return; // skip BEZ postavljanja flag-a (po dopuni)
+      if (isCartOpen) { console.log("[WelcomePopup] skip: cart open at trigger"); return; }
       try {
-        if (sessionStorage.getItem(SESSION_KEY)) return;
+        if (sessionStorage.getItem(SESSION_KEY)) { console.log("[WelcomePopup] skip: flag set at trigger"); return; }
       } catch { /* ignore */ }
-      if (!product) return; // ako fetch nije stigao / pao, tihi skip
+      if (!product) { console.log("[WelcomePopup] skip: product not loaded yet"); return; }
 
+      console.log("[WelcomePopup] OPEN");
       setOpen(true);
       try { sessionStorage.setItem(SESSION_KEY, "1"); } catch { /* ignore */ }
     }, ARM_DELAY_MS);
