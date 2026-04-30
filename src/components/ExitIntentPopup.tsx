@@ -16,17 +16,19 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const ExitIntentPopup = () => {
   const { pathname } = useLocation();
-  const { items, totalPrice } = useCart();
+  const { items, totalPrice, isCartOpen } = useCart();
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const armedRef = useRef(false);
   const itemsRef = useRef(items);
   const totalRef = useRef(totalPrice);
+  const cartOpenRef = useRef(isCartOpen);
 
   // Drži najsvežije vrednosti korpe u ref-u za listener
   useEffect(() => { itemsRef.current = items; }, [items]);
   useEffect(() => { totalRef.current = totalPrice; }, [totalPrice]);
+  useEffect(() => { cartOpenRef.current = isCartOpen; }, [isCartOpen]);
 
   // Pre-fill email iz localStorage ako postoji
   useEffect(() => {
@@ -62,6 +64,8 @@ const ExitIntentPopup = () => {
     const onMouseLeave = (e: MouseEvent) => {
       if (!armedRef.current) return;
       if (e.clientY > 0) return;
+      // Ne okidaj dok je korpa drawer otvoren — kupac upravo gleda korpu
+      if (cartOpenRef.current) return;
       // Korpa mora postojati
       if (!itemsRef.current?.length) return;
       try { sessionStorage.setItem(SESSION_KEY, "1"); } catch { /* ignore */ }
@@ -119,7 +123,7 @@ const ExitIntentPopup = () => {
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) handleDismiss(); }}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md z-[80]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-light tracking-wide">
             Sačuvaj svoju korpu
