@@ -136,7 +136,7 @@ Deno.serve(async (req) => {
     await sendSmtpEmail(smtp, {
       from: fromAddr,
       to: payload.customerEmail,
-      replyTo: settings.admin_email || undefined,
+      replyTo: settings.reply_to || settings.admin_email || undefined,
       subject: customerSubject,
       html: customerHtml,
       text: htmlToText(customerHtml) || `Potvrda porudžbine #${data.orderId} — 0202skin`,
