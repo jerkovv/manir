@@ -118,8 +118,9 @@ const Checkout = () => {
   const discountAmount = appliedDiscount?.amount || 0;
   const subtotalAfterDiscount = totalPrice - discountAmount;
 
-  const shippingCost = subtotalAfterDiscount >= 5000 ? 0 : 350;
-  const grandTotal = subtotalAfterDiscount + shippingCost;
+  // Dostava je uvek besplatna.
+  const shippingCost = 0;
+  const grandTotal = subtotalAfterDiscount;
 
   const applyCoupon = async () => {
     const code = couponInput.trim();
@@ -530,13 +531,8 @@ const Checkout = () => {
                         )}
                         <div className="flex justify-between font-body text-xs text-muted-foreground">
                           <span className="flex items-center gap-1.5"><Truck size={12} /> Dostava</span>
-                          <span>{shippingCost === 0 ? "Besplatno" : `${shippingCost} RSD`}</span>
+                          <span>Besplatno</span>
                         </div>
-                        {subtotalAfterDiscount < 5000 && (
-                          <p className="font-body text-[10px] text-warm-brown">
-                            Još {(5000 - subtotalAfterDiscount).toLocaleString("sr-RS")} RSD do besplatne dostave
-                          </p>
-                        )}
 
                         {/* Coupon input */}
                         <div className="border-t border-border/40 pt-3">
