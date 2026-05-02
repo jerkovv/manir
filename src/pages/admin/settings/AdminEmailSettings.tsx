@@ -395,6 +395,28 @@ const AdminEmailSettings = () => {
                 <Label className="text-xs">From email</Label>
                 <Input value={s.from_email} onChange={(e) => setS({ ...s, from_email: e.target.value })} placeholder="info@0202skin.com" />
               </div>
+              <div className="sm:col-span-2">
+                <Label className="text-xs">Reply-to email (odgovori kupaca)</Label>
+                <Input
+                  value={s.reply_to}
+                  onChange={(e) => setS({ ...s, reply_to: e.target.value })}
+                  placeholder="0202skin@gmail.com"
+                />
+                <p className="text-[11px] text-muted-foreground mt-1">
+                  Kad kupac odgovori na potvrdu porudžbine, mejl stiže na ovu adresu. Ostavi prazno da koristi admin email.
+                </p>
+              </div>
+              <div className="sm:col-span-2">
+                <Label className="text-xs">Admin email (CC za nove porudžbine)</Label>
+                <Input
+                  value={s.admin_email}
+                  onChange={(e) => setS({ ...s, admin_email: e.target.value })}
+                  placeholder="0202skin@gmail.com"
+                />
+                <p className="text-[11px] text-muted-foreground mt-1">
+                  Pored svih admin korisnika, i ova adresa dobija obaveštenje o novoj porudžbini.
+                </p>
+              </div>
             </div>
 
             <div className="flex flex-wrap gap-3 pt-2 border-t">
