@@ -179,7 +179,7 @@ export function customerOrderEmailHtml(d: OrderEmailData, isTestMode = false): s
     <h1 style="margin:0 0 14px 0;font-family:${SERIF};font-size:34px;font-weight:400;line-height:1.2;color:${BRAND_DARK};text-align:center;letter-spacing:-0.01em;">${greeting}</h1>
     <p style="margin:0 auto 8px auto;font-family:${SANS};font-size:14px;line-height:1.7;color:${BRAND_INK};text-align:center;max-width:440px;">Vaša porudžbina je primljena. Spremamo je pažljivo, pre slanja.</p>
     ${orderNumberBlock(d.orderId)}
-    ${shippingCard(d, false)}
+    ${shippingCard(d, true)}
     ${renderItemsTable(d.items)}
     ${totalsBlock(d)}
     ${d.note ? `<div style="margin:24px 0 0 0;padding:18px 22px;background:${BRAND_CREAM};border:1px solid ${BRAND_LINE};"><div style="font-family:${SANS};font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:${BRAND_DARK};font-weight:600;margin-bottom:8px;">Napomena</div><div style="font-family:${SERIF};font-size:15px;color:${BRAND_DARK};font-style:italic;line-height:1.5;">${escapeHtml(d.note)}</div></div>` : ""}
