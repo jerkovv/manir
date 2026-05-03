@@ -41,6 +41,7 @@ import AdminLanding from "./pages/admin/AdminLanding";
 import AdminEmailSettings from "./pages/admin/settings/AdminEmailSettings";
 import AdminRecoverySettings from "./pages/admin/settings/AdminRecoverySettings";
 import AdminUsers from "./pages/admin/settings/AdminUsers";
+import AdminEmailTest from "./pages/admin/AdminEmailTest";
 import { useEffect } from "react";
 
 const ScrollToTop = () => {
@@ -137,6 +138,7 @@ const App = () => (
                 <Route path="settings/email" element={<AdminEmailSettings />} />
                 <Route path="settings/recovery" element={<AdminRecoverySettings />} />
               <Route path="settings/users" element={<AdminUsers />} />
+              <Route path="email-test" element={<AdminEmailTest />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
