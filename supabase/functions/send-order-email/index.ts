@@ -10,11 +10,11 @@ import { applyTemplate, applyTextTemplate, renderItemsTable, type Item } from ".
 import { sendSmtpEmail } from "../_shared/simple-smtp.ts";
 
 interface Payload {
-  customerEmail: string;
-  customerName: string;
+  customerEmail?: string;
+  customerName?: string;
   orderId: string | number;
-  items: Item[];
-  total: number;
+  items?: Item[];
+  total?: number;
   customerPhone?: string;
   shippingAddress?: string;
   shippingCity?: string;
@@ -24,6 +24,16 @@ interface Payload {
   discountAmount?: number;
   discountLabel?: string;
   orderDate?: string;
+  // ── Test mode ──────────────────────────────────────────────
+  // Ako je bilo koje od testCustomerEmail/testAdminEmail prosleđeno,
+  // funkcija ulazi u "test mode": ne šalje na pravog kupca/admine,
+  // već samo na zadatu test adresu. Tip u email_logs postaje
+  // "order_test_customer" / "order_test_admin", order_id se NE upisuje
+  // (da ne kvari retry/resend logiku po orderu).
+  testCustomerEmail?: string;
+  testAdminEmail?: string;
+  sendCustomer?: boolean; // default true
+  sendAdmin?: boolean;    // default true
 }
 
 Deno.serve(async (req) => {
@@ -44,8 +54,33 @@ Deno.serve(async (req) => {
     return json({ error: "Invalid JSON" }, 400);
   }
 
-  if (!payload?.customerEmail || !payload?.orderId || !Array.isArray(payload.items)) {
-    return json({ error: "Missing required fields" }, 400);
+  if (!payload?.orderId) {
+    return json({ error: "Missing orderId" }, 400);
+  }
+
+  const isTestMode = !!(payload.testCustomerEmail || payload.testAdminEmail);
+  const sendCustomer = payload.sendCustomer !== false; // default true
+  const sendAdmin = payload.sendAdmin !== false;       // default true
+
+  // Ako payload nema items (test ili "lite" poziv), hidriraj sve iz baze
+  // koristeći service-role klijenta — radi i kada nema sesije i zaobilazi RLS.
+  const needsHydration = !Array.isArray(payload.items) || payload.items.length === 0;
+  if (needsHydration) {
+    const hydrated = await hydratePayloadFromDb(
+      // koristimo isti admin klijent koji je ispod
+      createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } }),
+      String(payload.orderId),
+    );
+    if (!hydrated.ok) {
+      return json({ error: hydrated.error }, 200);
+    }
+    payload = { ...hydrated.payload, ...payload, items: hydrated.payload.items };
+    // Spoj: sve iz baze + zadržati testCustomerEmail/testAdminEmail/sendCustomer/sendAdmin
+    // i orderId iz originalnog payload-a. (Spread iznad već sve to čuva.)
+  }
+
+  if (!payload.customerEmail || !Array.isArray(payload.items) || payload.items.length === 0) {
+    return json({ error: "Order missing customer email or items" }, 200);
   }
 
   // 1. Učitaj podešavanja + dekriptovanu lozinku
@@ -81,7 +116,7 @@ Deno.serve(async (req) => {
     : "";
   const data = {
     customerName: payload.customerName || "",
-    customerEmail: payload.customerEmail,
+    customerEmail: payload.customerEmail!,
     orderId: String(payload.orderId),
     itemsTable,
     total: totalStr,
@@ -132,98 +167,119 @@ Deno.serve(async (req) => {
   const results: Array<{ type: "customer" | "admin"; recipient?: string; status: "sent" | "failed"; error?: string }> = [];
 
   // 4a. Kupcu
-  try {
-    await sendSmtpEmail(smtp, {
-      from: fromAddr,
-      to: payload.customerEmail,
-      replyTo: settings.reply_to || settings.admin_email || undefined,
-      subject: customerSubject,
-      html: customerHtml,
-      text: htmlToText(customerHtml) || `Potvrda porudžbine #${data.orderId} — 0202skin`,
-    });
-    results.push({ type: "customer", recipient: payload.customerEmail, status: "sent" });
-    await admin.from("email_logs").insert({
-      order_id: isUuid(payload.orderId) ? payload.orderId : null,
-      recipient: payload.customerEmail,
-      type: "customer",
-      status: "sent",
-    });
-  } catch (e) {
-    const msg = e instanceof Error
-      ? `[send-order-email] ${e.message}`
-      : `[send-order-email] ${String(e)}`;
-    results.push({ type: "customer", recipient: payload.customerEmail, status: "failed", error: msg });
-    await admin.from("email_logs").insert({
-      order_id: isUuid(payload.orderId) ? payload.orderId : null,
-      recipient: payload.customerEmail,
-      type: "customer",
-      status: "failed",
-      error_message: msg,
-    });
+  // U test modu šaljemo na test email umesto pravog kupca; pravi kupac NE dobija nista.
+  const customerRecipient = isTestMode
+    ? (payload.testCustomerEmail || "")
+    : payload.customerEmail!;
+  const customerLogType = isTestMode ? "order_test_customer" : "customer";
+  const logOrderId = isTestMode ? null : (isUuid(payload.orderId) ? payload.orderId : null);
+
+  if (sendCustomer && customerRecipient) {
+    try {
+      await sendSmtpEmail(smtp, {
+        from: fromAddr,
+        to: customerRecipient,
+        replyTo: settings.reply_to || settings.admin_email || undefined,
+        subject: isTestMode ? `[TEST] ${customerSubject}` : customerSubject,
+        html: customerHtml,
+        text: htmlToText(customerHtml) || `Potvrda porudžbine #${data.orderId} — 0202skin`,
+      });
+      results.push({ type: "customer", recipient: customerRecipient, status: "sent" });
+      await admin.from("email_logs").insert({
+        order_id: logOrderId,
+        recipient: customerRecipient,
+        type: customerLogType,
+        status: "sent",
+      });
+    } catch (e) {
+      const msg = e instanceof Error
+        ? `[send-order-email] ${e.message}`
+        : `[send-order-email] ${String(e)}`;
+      results.push({ type: "customer", recipient: customerRecipient, status: "failed", error: msg });
+      await admin.from("email_logs").insert({
+        order_id: logOrderId,
+        recipient: customerRecipient,
+        type: customerLogType,
+        status: "failed",
+        error_message: msg,
+      });
+    }
   }
 
   // 4b. Adminu
-  // Skupi sve admin primaoce: ručno podešeni admin_email + svi aktivni korisnici admin panela.
+  // U test modu: admin email ide samo na zadatu test adresu (ako je sendAdmin = true).
+  // Pravi admini iz settings/app_users/user_roles se NE kontaktiraju.
   const adminRecipients = new Set<string>();
-  addRecipients(adminRecipients, settings.admin_email);
-  addRecipients(adminRecipients, settings.reply_to);
-
   let adminLookupError: string | null = null;
-  try {
-    const { data: appAdmins, error: appAdminsErr } = await admin
-      .from("app_users")
-      .select("email, role, status");
-    if (appAdminsErr) {
-      adminLookupError = appAdminsErr.message;
-      console.error("[send-order-email] app_users query error:", appAdminsErr);
-    }
-    const blockedStatuses = ["disabled", "suspended", "blocked", "deleted"];
-    const roleAdmins = (appAdmins ?? []).filter((u) => {
-      const status = String(u?.status ?? "active").toLowerCase().trim();
-      return !blockedStatuses.includes(status);
-    });
-    console.log("[send-order-email] app_users total:", appAdmins?.length ?? 0, "matched:", roleAdmins.length);
-    for (const u of roleAdmins) {
-      addRecipients(adminRecipients, u?.email);
-    }
-  } catch (e) {
-    adminLookupError = (e as Error).message;
-    console.error("[send-order-email] app_users lookup threw:", e);
-  }
 
-  try {
-    const { data: userRoles, error: userRolesErr } = await admin
-      .from("user_roles")
-      .select("user_id, role");
-    if (userRolesErr) {
-      adminLookupError = [adminLookupError, userRolesErr.message].filter(Boolean).join(" | ") || userRolesErr.message;
-      console.error("[send-order-email] user_roles query error:", userRolesErr);
-    } else {
-      const adminRoleUserIds = new Set((userRoles ?? [])
-        .filter((r) => String(r?.role ?? "").toLowerCase().trim() === "admin")
-        .map((r) => String(r.user_id)));
-      if (adminRoleUserIds.size > 0) {
-        const { data: authUsers, error: authUsersErr } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-        if (authUsersErr) throw authUsersErr;
-        for (const u of authUsers.users ?? []) {
-          if (adminRoleUserIds.has(u.id)) {
-            addRecipients(adminRecipients, u.email);
-            addRecipients(adminRecipients, u.user_metadata?.email);
-          }
-        }
-        console.log("[send-order-email] found user_roles admins:", adminRoleUserIds.size);
+  if (isTestMode) {
+    if (sendAdmin && payload.testAdminEmail) {
+      addRecipients(adminRecipients, payload.testAdminEmail);
+    }
+  } else if (sendAdmin) {
+    // Skupi sve admin primaoce: ručno podešeni admin_email + svi aktivni korisnici admin panela.
+    addRecipients(adminRecipients, settings.admin_email);
+    addRecipients(adminRecipients, settings.reply_to);
+
+    try {
+      const { data: appAdmins, error: appAdminsErr } = await admin
+        .from("app_users")
+        .select("email, role, status");
+      if (appAdminsErr) {
+        adminLookupError = appAdminsErr.message;
+        console.error("[send-order-email] app_users query error:", appAdminsErr);
       }
+      const blockedStatuses = ["disabled", "suspended", "blocked", "deleted"];
+      const roleAdmins = (appAdmins ?? []).filter((u) => {
+        const status = String(u?.status ?? "active").toLowerCase().trim();
+        return !blockedStatuses.includes(status);
+      });
+      console.log("[send-order-email] app_users total:", appAdmins?.length ?? 0, "matched:", roleAdmins.length);
+      for (const u of roleAdmins) {
+        addRecipients(adminRecipients, u?.email);
+      }
+    } catch (e) {
+      adminLookupError = (e as Error).message;
+      console.error("[send-order-email] app_users lookup threw:", e);
     }
-  } catch (e) {
-    const msg = (e as Error).message;
-    adminLookupError = [adminLookupError, msg].filter(Boolean).join(" | ") || msg;
-    console.error("[send-order-email] user_roles lookup threw:", e);
+
+    try {
+      const { data: userRoles, error: userRolesErr } = await admin
+        .from("user_roles")
+        .select("user_id, role");
+      if (userRolesErr) {
+        adminLookupError = [adminLookupError, userRolesErr.message].filter(Boolean).join(" | ") || userRolesErr.message;
+        console.error("[send-order-email] user_roles query error:", userRolesErr);
+      } else {
+        const adminRoleUserIds = new Set((userRoles ?? [])
+          .filter((r) => String(r?.role ?? "").toLowerCase().trim() === "admin")
+          .map((r) => String(r.user_id)));
+        if (adminRoleUserIds.size > 0) {
+          const { data: authUsers, error: authUsersErr } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+          if (authUsersErr) throw authUsersErr;
+          for (const u of authUsers.users ?? []) {
+            if (adminRoleUserIds.has(u.id)) {
+              addRecipients(adminRecipients, u.email);
+              addRecipients(adminRecipients, u.user_metadata?.email);
+            }
+          }
+          console.log("[send-order-email] found user_roles admins:", adminRoleUserIds.size);
+        }
+      }
+    } catch (e) {
+      const msg = (e as Error).message;
+      adminLookupError = [adminLookupError, msg].filter(Boolean).join(" | ") || msg;
+      console.error("[send-order-email] user_roles lookup threw:", e);
+    }
   }
 
-  console.log("[send-order-email] admin recipients:", Array.from(adminRecipients));
+  console.log("[send-order-email] testMode:", isTestMode, "admin recipients:", Array.from(adminRecipients));
 
   const validEmailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const customerReplyTo = validEmailRe.test(payload.customerEmail) ? payload.customerEmail : undefined;
+  const customerReplyTo = (!isTestMode && payload.customerEmail && validEmailRe.test(payload.customerEmail))
+    ? payload.customerEmail
+    : undefined;
+  const adminLogType = isTestMode ? "order_test_admin" : "admin";
 
   for (const recipient of adminRecipients) {
     try {
@@ -231,15 +287,15 @@ Deno.serve(async (req) => {
         from: fromAddr,
         to: recipient,
         replyTo: customerReplyTo,
-        subject: adminSubject,
+        subject: isTestMode ? `[TEST] ${adminSubject}` : adminSubject,
         html: adminHtml,
         text: htmlToText(adminHtml) || `Nova porudžbina #${data.orderId} — 0202skin`,
       });
       results.push({ type: "admin", recipient, status: "sent" });
       await admin.from("email_logs").insert({
-        order_id: isUuid(payload.orderId) ? payload.orderId : null,
+        order_id: logOrderId,
         recipient,
-        type: "admin",
+        type: adminLogType,
         status: "sent",
       });
     } catch (e) {
@@ -248,9 +304,9 @@ Deno.serve(async (req) => {
         : `[send-order-email] ${String(e)}`;
       results.push({ type: "admin", recipient, status: "failed", error: msg });
       await admin.from("email_logs").insert({
-        order_id: isUuid(payload.orderId) ? payload.orderId : null,
+        order_id: logOrderId,
         recipient,
-        type: "admin",
+        type: adminLogType,
         status: "failed",
         error_message: msg,
       });
@@ -259,6 +315,7 @@ Deno.serve(async (req) => {
 
   return json({
     ok: true,
+    testMode: isTestMode,
     results,
     adminRecipients: Array.from(adminRecipients),
     adminLookupError,
@@ -311,6 +368,61 @@ function formatOrderDate(d: Date): string {
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   const yyyy = d.getFullYear();
   return `${dd}.${mm}.${yyyy}.`;
+}
+
+// Hidracija payload-a iz baze: učitava order + order_items po UUID-u.
+// Vraća strukturu identičnu onome što checkout flow inače šalje, tako da
+// render dalje radi 1:1 isto kao za stvarni email.
+async function hydratePayloadFromDb(
+  admin: ReturnType<typeof createClient>,
+  orderId: string,
+): Promise<{ ok: true; payload: Payload } | { ok: false; error: string }> {
+  if (!isUuid(orderId)) {
+    return { ok: false, error: "orderId must be a UUID for hydration" };
+  }
+  const { data: order, error: oErr } = await admin
+    .from("orders")
+    .select("*")
+    .eq("id", orderId)
+    .maybeSingle();
+  if (oErr) return { ok: false, error: `Failed to load order: ${oErr.message}` };
+  if (!order) return { ok: false, error: "Order not found" };
+
+  const { data: itemRows, error: iErr } = await admin
+    .from("order_items")
+    .select("product_name, quantity, unit_price")
+    .eq("order_id", orderId);
+  if (iErr) return { ok: false, error: `Failed to load order_items: ${iErr.message}` };
+
+  const items: Item[] = (itemRows ?? []).map((r: any) => ({
+    name: String(r.product_name ?? ""),
+    quantity: Number(r.quantity ?? 1),
+    price: Number(r.unit_price ?? 0),
+  }));
+
+  const orderDate = order.created_at
+    ? formatOrderDate(new Date(order.created_at))
+    : formatOrderDate(new Date());
+
+  return {
+    ok: true,
+    payload: {
+      orderId: String(order.order_number ?? order.id),
+      customerEmail: String(order.customer_email ?? ""),
+      customerName: String(order.customer_name ?? ""),
+      customerPhone: order.customer_phone ?? "",
+      shippingAddress: order.shipping_address ?? "",
+      shippingCity: order.shipping_city ?? "",
+      shippingZip: order.shipping_postal_code ?? "",
+      note: order.notes ?? "",
+      subtotal: order.subtotal != null ? Number(order.subtotal) : undefined,
+      discountAmount: order.discount_amount != null ? Number(order.discount_amount) : undefined,
+      discountLabel: order.discount_label ?? "",
+      total: Number(order.total ?? 0),
+      items,
+      orderDate,
+    },
+  };
 }
 
 // redeploy: smtp-pre-send-validation v8 (2026-04-28T-force-rebuild)
