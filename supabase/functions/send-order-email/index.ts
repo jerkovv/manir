@@ -149,8 +149,8 @@ Deno.serve(async (req) => {
 
   // Subject-i: kratki, bez ID-ja i bez '?' / specijalnih karaktera koji
   // razbijaju denomailer Q-encoding u Apple Mail-u (vidi mem://design/email-encoding).
-  const customerSubject = "Potvrda porudžbine · 0202skin";
-  const adminSubject = "Nova porudžbina · 0202skin";
+  const customerSubject = `Potvrda porudžbine ${data.orderId} · 0202 SKIN`;
+  const adminSubject = `Nova porudžbina ${data.orderId} · 0202 SKIN`;
   const customerHtml = customerOrderEmailHtml(data, isTestMode);
   const adminHtml = adminOrderEmailHtml(data, isTestMode);
 
