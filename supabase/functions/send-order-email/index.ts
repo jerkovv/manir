@@ -419,6 +419,7 @@ async function hydratePayloadFromDb(
     ok: true,
     payload: {
       orderId: String(order.order_number ?? order.id),
+      orderNumberRaw: order.order_number ?? null,
       customerEmail: String(order.customer_email ?? ""),
       customerName: String(order.customer_name ?? ""),
       customerPhone: order.customer_phone ?? "",
