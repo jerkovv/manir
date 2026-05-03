@@ -95,7 +95,7 @@ function shippingCard(d: OrderEmailData, includeContact: boolean): string {
   const cityLine = [d.shippingZip, d.shippingCity].filter(Boolean).join(" ");
   if (!fullStreet && !cityLine && !d.customerPhone && !d.customerEmail) return "";
   const row = (label: string, value: string) => value
-    ? `<tr><td style="padding:6px 0;font-family:${SANS};font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:${BRAND_MUTED};width:42%;vertical-align:top;">${escapeHtml(label)}</td><td style="padding:6px 0;font-family:${SANS};font-size:14px;color:${BRAND_DARK};vertical-align:top;">${escapeHtml(value)}</td></tr>`
+    ? `<tr><td style="padding:6px 0;font-family:${SANS};font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:${BRAND_MUTED};width:42%;vertical-align:top;">${escapeHtml(label)}</td><td style="padding:6px 0;font-family:${SANS};font-size:14px;color:${BRAND_DARK};vertical-align:top;word-break:keep-all;overflow-wrap:normal;">${escapeHtml(value)}</td></tr>`
     : "";
   return `<div style="margin:0 0 28px 0;padding:22px 24px;background:${BRAND_CREAM};border:1px solid ${BRAND_LINE};">
     <div style="font-family:${SANS};font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:${BRAND_DARK};font-weight:600;margin-bottom:14px;">Adresa za isporuku</div>
@@ -141,6 +141,8 @@ function shell(inner: string): string {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="color-scheme" content="light only">
+<meta name="format-detection" content="telephone=no,address=no,email=no,date=no">
+<meta name="x-apple-disable-message-reformatting" content="">
 <title>0202 SKIN</title>
 </head>
 <body style="margin:0;padding:0;background:${BRAND_CREAM};font-family:${SANS};color:${BRAND_INK};-webkit-font-smoothing:antialiased;">
