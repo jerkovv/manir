@@ -6,8 +6,14 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { corsHeaders } from "../_shared/cors.ts";
-import { applyTemplate, applyTextTemplate, renderItemsTable, type Item } from "../_shared/email-template.ts";
 import { sendSmtpEmail } from "../_shared/simple-smtp.ts";
+import {
+  customerOrderEmailHtml,
+  adminOrderEmailHtml,
+  type Item,
+  type OrderEmailData,
+} from "../_shared/order-email-templates.ts";
+import { displayOrderNumber } from "../_shared/orderNumber.ts";
 
 interface Payload {
   customerEmail?: string;
@@ -34,6 +40,9 @@ interface Payload {
   testAdminEmail?: string;
   sendCustomer?: boolean; // default true
   sendAdmin?: boolean;    // default true
+  // Interno: postavljeno iz hidracije (sirov order_number iz baze) ili iz
+  // checkout flow-a ako pošalje. Ne dolazi spolja preko UI-ja.
+  orderNumberRaw?: number | string | null;
 }
 
 Deno.serve(async (req) => {
@@ -108,26 +117,33 @@ Deno.serve(async (req) => {
   const smtpPassword = pwdRow as string;
 
   // 2. Pripremi template podatke
-  const itemsTable = renderItemsTable(payload.items);
   const totalStr = Number(payload.total).toLocaleString("sr-RS");
   const subtotalStr = payload.subtotal != null ? Number(payload.subtotal).toLocaleString("sr-RS") : "";
   const discountStr = payload.discountAmount && payload.discountAmount > 0
     ? Number(payload.discountAmount).toLocaleString("sr-RS")
     : "";
-  const data = {
+
+  // Broj porudžbine: preferiramo sirov order_number (kratki redni broj) iz baze.
+  // Fallback na payload.orderId (može biti UUID ako je legacy poziv).
+  const shortOrderNo = displayOrderNumber(payload.orderNumberRaw);
+  const formattedOrderId = shortOrderNo
+    ? `#${shortOrderNo}`
+    : (isUuid(payload.orderId) ? `#${String(payload.orderId).slice(0, 8)}` : `#${String(payload.orderId)}`);
+
+  const data: OrderEmailData = {
     customerName: payload.customerName || "",
     customerEmail: payload.customerEmail!,
-    orderId: String(payload.orderId),
-    itemsTable,
-    total: totalStr,
     customerPhone: payload.customerPhone || "",
+    orderId: formattedOrderId,
+    items: payload.items,
+    subtotal: subtotalStr,
+    discountAmount: discountStr,
+    discountLabel: payload.discountLabel || "",
+    total: totalStr,
     shippingAddress: payload.shippingAddress || "",
     shippingCity: payload.shippingCity || "",
     shippingZip: payload.shippingZip || "",
     note: payload.note || "",
-    subtotal: subtotalStr,
-    discountAmount: discountStr,
-    discountLabel: payload.discountLabel || "",
     orderDate: payload.orderDate || formatOrderDate(new Date()),
   };
 
@@ -135,8 +151,8 @@ Deno.serve(async (req) => {
   // razbijaju denomailer Q-encoding u Apple Mail-u (vidi mem://design/email-encoding).
   const customerSubject = "Potvrda porudžbine · 0202skin";
   const adminSubject = "Nova porudžbina · 0202skin";
-  const customerHtml = applyTemplate(settings.customer_template, data);
-  const adminHtml = applyTemplate(settings.admin_template, { ...data, __isAdmin: 1 });
+  const customerHtml = customerOrderEmailHtml(data, isTestMode);
+  const adminHtml = adminOrderEmailHtml(data, isTestMode);
 
   // Sigurnosna provera: ako iz nekog razloga template vrati prazan HTML,
   // ne pokušavaj slanje (SMTP će odbiti sa "No content provided!").
