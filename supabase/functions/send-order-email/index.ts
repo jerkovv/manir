@@ -131,16 +131,11 @@ Deno.serve(async (req) => {
     orderDate: payload.orderDate || formatOrderDate(new Date()),
   };
 
-  const customerSubjectRaw = applyTextTemplate(settings.customer_subject, { ...data, itemsTable: "" });
-  const customerSubject = customerSubjectRaw && customerSubjectRaw.trim()
-    ? customerSubjectRaw
-    : `Potvrda porudžbine #${data.orderId} — 0202skin`;
+  // Subject-i: kratki, bez ID-ja i bez '?' / specijalnih karaktera koji
+  // razbijaju denomailer Q-encoding u Apple Mail-u (vidi mem://design/email-encoding).
+  const customerSubject = "Potvrda porudžbine · 0202skin";
+  const adminSubject = "Nova porudžbina · 0202skin";
   const customerHtml = applyTemplate(settings.customer_template, data);
-
-  const adminSubjectRaw = applyTextTemplate(settings.admin_subject, { ...data, itemsTable: "" });
-  const adminSubject = adminSubjectRaw && adminSubjectRaw.trim()
-    ? adminSubjectRaw
-    : `Nova porudžbina #${data.orderId} — 0202skin`;
   const adminHtml = applyTemplate(settings.admin_template, { ...data, __isAdmin: 1 });
 
   // Sigurnosna provera: ako iz nekog razloga template vrati prazan HTML,
@@ -182,7 +177,7 @@ Deno.serve(async (req) => {
         replyTo: settings.reply_to || settings.admin_email || undefined,
         subject: isTestMode ? `[TEST] ${customerSubject}` : customerSubject,
         html: customerHtml,
-        text: htmlToText(customerHtml) || `Potvrda porudžbine #${data.orderId} — 0202skin`,
+        htmlOnly: true,
       });
       results.push({ type: "customer", recipient: customerRecipient, status: "sent" });
       await admin.from("email_logs").insert({
@@ -289,7 +284,7 @@ Deno.serve(async (req) => {
         replyTo: customerReplyTo,
         subject: isTestMode ? `[TEST] ${adminSubject}` : adminSubject,
         html: adminHtml,
-        text: htmlToText(adminHtml) || `Nova porudžbina #${data.orderId} — 0202skin`,
+        htmlOnly: true,
       });
       results.push({ type: "admin", recipient, status: "sent" });
       await admin.from("email_logs").insert({
