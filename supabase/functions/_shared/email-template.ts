@@ -55,10 +55,41 @@ export function applyTemplate(
   // Uvek renderuj premium wrapper. Template iz baze se trenutno ignoriše
   // jer je čišćen i može biti prazan/nevalidan — premium dizajn je single
   // source of truth i garantuje neprazan HTML.
-  const html = wrapPremium(data);
-  if (html && html.trim()) return html;
+  // Defanzivno: očisti svaki string-field od ubačenih HTML/template fragmenata
+  // (npr. iz starih DB šablona) pre nego što ih pošaljemo u wrapper.
+  const sanitized: Record<string, string | number> = {};
+  for (const [k, v] of Object.entries(data)) {
+    sanitized[k] = typeof v === "string" ? sanitizeFieldValue(v) : v;
+  }
+  const html = wrapPremium(sanitized);
+  if (html && html.trim()) return finalSanitizeHtml(html);
   // Krajnji fallback (teorijski nedostižan) — minimalni neprazan HTML.
   return `<!DOCTYPE html><html><body><p>Porudžbina #${String(data.orderId ?? "")} — ${String(data.total ?? "")} RSD</p></body></html>`;
+}
+
+// Uklanja iz pojedinačnih polja (npr. discountLabel, note, customerName...)
+// sve što liči na HTML markup ili template placeholder — bilo da je u sirovom
+// (`<tr>...`) ili escape-ovanom (`&lt;tr&gt;...`) obliku. Ovi su se nekada
+// pojavljivali u poljima kao "discountLabel" zbog zaostalih kupon/popust
+// fragmenata iz starih šablona.
+function sanitizeFieldValue(v: string): string {
+  let s = v;
+  // 1) Escape-ovani HTML chunk (npr. &lt;tr&gt;...&lt;/tr&gt;)
+  s = s.replace(/&lt;[^&]*?&gt;[\s\S]*?&lt;\/[^&]*?&gt;/g, "");
+  // 2) Sirovi HTML tagovi unutar polja
+  s = s.replace(/<[^>]+>/g, "");
+  // 3) Template placeholder-i {field} ili {#if ...}{/if}
+  s = s.replace(/\{#if[\s\S]*?\{\/if\}/g, "");
+  s = s.replace(/\{[^}]*\}/g, "");
+  return s.replace(/\s{2,}/g, " ").trim();
+}
+
+// Finalni prolaz preko gotovog HTML-a: uklanja escape-ovane HTML chunkove
+// koji bi se inače renderovali kao vidljiv tekst u email klijentu.
+function finalSanitizeHtml(html: string): string {
+  // Skidamo blokove forme `&lt;tr...&gt;...&lt;/tr&gt;` koji su se nekada
+  // probijali iz starih šablona kao vidljiv tekst u telu email-a.
+  return html.replace(/&lt;tr[\s\S]*?&lt;\/tr&gt;/gi, "");
 }
 
 function renderTemplateString(template: string, data: Record<string, string | number>): string {
