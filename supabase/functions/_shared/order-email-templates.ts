@@ -161,7 +161,12 @@ function shell(inner: string): string {
   </table>
 </body>
 </html>`;
-  return html.replace(/>\s+</g, "><");
+  // VAŽNO: ne kolapsujemo u jednu liniju.
+  // RFC 5321 limit je 998 chars/line; preko toga SMTP relay-i ubacuju CRLF
+  // na proizvoljno mesto unutar taga (npr. "< table"). Zamenjujemo whitespace
+  // između tagova jednim newline-om — uklanja `=20` artefakte u QP, a drži
+  // linije kratke za 8bit transfer.
+  return html.replace(/>\s+</g, ">\n<");
 }
 
 export function customerOrderEmailHtml(d: OrderEmailData, isTestMode = false): string {
