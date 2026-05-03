@@ -35,6 +35,7 @@ const navGroups: NavGroup[] = [
       { to: "/admin/settings/email", label: "Email podešavanja", icon: Mail, perm: "manage_settings" },
       { to: "/admin/settings/recovery", label: "Recovery email-ovi", icon: MailWarning, perm: "manage_settings" },
       { to: "/admin/settings/users", label: "Korisnici", icon: UserCog, perm: "manage_users" },
+      { to: "/admin/email-test", label: "Test email", icon: Mail, perm: "manage_orders" },
     ],
   },
 ];
